@@ -3,23 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_lyrics">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="io.github.teccheck.fastlyrics.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/nav_lyrics"
+        android:name="io.github.teccheck.fastlyrics.ui.lyrics.LyricsFragment"
+        android:label="@string/menu_lyrics"
+        tools:layout="@layout/fragment_lyrics" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="io.github.teccheck.fastlyrics.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_saved"
+        android:name="io.github.teccheck.fastlyrics.ui.saved.SavedFragment"
+        android:label="@string/menu_saved"
+        tools:layout="@layout/fragment_saved" />
 
-    <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="io.github.teccheck.fastlyrics.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
 </navigation>

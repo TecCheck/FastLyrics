@@ -11,4 +11,6 @@
     <string name="menu_lyrics">Lyrics</string>
     <string name="menu_saved">Saved</string>
     <string name="menu_search">Search</string>
+
+    <string name="notification_access">Notification Access</string>
 </resources>

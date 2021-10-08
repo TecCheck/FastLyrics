@@ -9,6 +9,9 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="app/src/main/res/layout/app_bar_main.xml" value="0.22" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.1480978260869565" />
+        <entry key="app/src/main/res/layout/fragment_lyrics.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_saved.xml" value="0.13405797101449277" />
+        <entry key="app/src/main/res/layout/fragment_slideshow.xml" value="0.13405797101449277" />
         <entry key="app/src/main/res/layout/nav_header_main.xml" value="0.33" />
         <entry key="app/src/main/res/menu/activity_main_drawer.xml" value="0.2552083333333333" />
         <entry key="app/src/main/res/menu/activity_main_menu.xml" value="0.2546875" />

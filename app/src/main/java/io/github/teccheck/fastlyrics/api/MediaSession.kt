@@ -7,12 +7,12 @@ import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import androidx.appcompat.app.AppCompatActivity
 import io.github.teccheck.fastlyrics.model.SongMeta
-import io.github.teccheck.fastlyrics.service.NotificationListenerService
+import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 
 object MediaSession {
 
     fun getSongInformation(context: Context): SongMeta? {
-        val className = ComponentName(context, NotificationListenerService::class.java)
+        val className = ComponentName(context, DummyNotificationListenerService::class.java)
         val mediaSessionManager = context.getSystemService(AppCompatActivity.MEDIA_SESSION_SERVICE) as MediaSessionManager
         val controllers: List<MediaController> = mediaSessionManager.getActiveSessions(className)
 

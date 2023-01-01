@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import io.github.teccheck.fastlyrics.api.LyricsApi
 import io.github.teccheck.fastlyrics.api.MediaSession
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
@@ -14,28 +15,23 @@ class LyricsViewModel : ViewModel() {
 
     private val _songMeta = MutableLiveData<SongMeta>()
     private val _songWithLyrics = MutableLiveData<SongWithLyrics>()
-    private val _loading = MutableLiveData<Boolean>()
 
     val songMeta: LiveData<SongMeta> = _songMeta
-    val songWithLyrics: LiveData<SongWithLyrics> = _songWithLyrics
-    val loading: LiveData<Boolean> = _loading
+    val songWithLyrics: LiveData<SongWithLyrics?> = _songWithLyrics
 
-    fun loadLyricsForCurrentSong(context: Context) {
+    fun loadLyricsForCurrentSong(context: Context): Boolean {
         if (!DummyNotificationListenerService.canAccessNotifications(context)) {
             Log.w(TAG, "Can't access notifications")
-            _loading.value = false
-            return
+            return false
         }
-        _loading.value = true
 
         val songMeta = MediaSession.getSongInformation(context)
         songMeta?.let {
             _songMeta.value = it
+            LyricsApi.fetchLyrics(it, _songWithLyrics)
         }
 
-        // TODO: Fetch lyrics
-
-        _loading.value = false
+        return songMeta != null
     }
 
     fun loadLyricsForSongWithId(id: Int) {

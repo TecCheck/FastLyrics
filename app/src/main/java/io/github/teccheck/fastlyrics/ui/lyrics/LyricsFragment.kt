@@ -1,6 +1,7 @@
 package io.github.teccheck.fastlyrics.ui.lyrics
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,14 +35,18 @@ class LyricsFragment : Fragment() {
         }
 
         lyricsViewModel.songWithLyrics.observe(viewLifecycleOwner) {
+            Log.d(TAG, "observe")
+            binding.refreshLayout.isRefreshing = false
+
+            if (it == null) {
+                // Maybe show an error to the user?
+                return@observe
+            }
+
             binding.textSongTitle.text = it.title
             binding.textSongArtist.text = it.artist
             binding.textLyrics.text = it.lyrics
             Picasso.get().load(it.artUrl).into(binding.imageSongArt)
-        }
-
-        lyricsViewModel.loading.observe(viewLifecycleOwner) {
-            binding.refreshLayout.isRefreshing = it
         }
 
         binding.refreshLayout.setOnRefreshListener { loadLyricsForCurrentSong() }
@@ -61,7 +66,15 @@ class LyricsFragment : Fragment() {
 
     private fun loadLyricsForCurrentSong() {
         context?.let {
-            lyricsViewModel.loadLyricsForCurrentSong(it)
+            binding.refreshLayout.isRefreshing = true
+            val success = lyricsViewModel.loadLyricsForCurrentSong(it)
+
+            if (!success)
+                binding.refreshLayout.isRefreshing = false
         }
+    }
+
+    companion object {
+        private const val TAG = "LyricsFragment"
     }
 }

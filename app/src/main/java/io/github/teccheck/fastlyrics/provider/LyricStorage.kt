@@ -7,14 +7,14 @@ import java.io.File
 
 object LyricStorage {
 
-    private const val TAG ="LyricsStorage"
+    private const val TAG = "LyricsStorage"
     private const val FILENAME = "lyrics.json"
 
     private var songs = mutableListOf<SongWithLyrics>()
-    private var changed = false;
+    private var changed = false
 
     init {
-        read()
+        // read()
     }
 
     fun read() {
@@ -36,9 +36,11 @@ object LyricStorage {
     }
 
     fun store(song: SongWithLyrics) {
+        /*
         if (!songs.contains(song)) {
             songs.add(song)
             changed = true
         }
+        */
     }
 }

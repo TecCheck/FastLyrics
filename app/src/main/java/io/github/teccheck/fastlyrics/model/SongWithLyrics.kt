@@ -1,7 +1,7 @@
 package io.github.teccheck.fastlyrics.model
 
 data class SongWithLyrics(
-    val name: String,
+    val title: String,
     val artist: String,
     val lyrics: String,
     val sourceUrl: String,

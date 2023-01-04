@@ -1,4 +1,4 @@
-package io.github.teccheck.fastlyrics.provider
+package io.github.teccheck.fastlyrics.api
 
 import android.util.Log
 import com.google.gson.Gson
@@ -14,11 +14,14 @@ object LyricStorage {
     private var changed = false
 
     init {
-        // read()
+        read()
     }
 
     fun read() {
         val file = File(FILENAME)
+        if (!file.exists())
+            return
+
         val json = file.readText()
         val gson = Gson()
         songs = gson.fromJson(json, songs.javaClass)
@@ -32,15 +35,18 @@ object LyricStorage {
         val gson = Gson()
         val json = gson.toJson(songs)
         val file = File(FILENAME)
+
+        if (!file.exists())
+            file.createNewFile()
+
         file.writeText(json)
+        changed = false;
     }
 
     fun store(song: SongWithLyrics) {
-        /*
         if (!songs.contains(song)) {
             songs.add(song)
             changed = true
         }
-        */
     }
 }

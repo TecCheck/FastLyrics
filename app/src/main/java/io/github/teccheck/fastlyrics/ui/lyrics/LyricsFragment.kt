@@ -1,13 +1,13 @@
 package io.github.teccheck.fastlyrics.ui.lyrics
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
+import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.databinding.FragmentLyricsBinding
 
 class LyricsFragment : Fragment() {
@@ -35,7 +35,6 @@ class LyricsFragment : Fragment() {
         }
 
         lyricsViewModel.songWithLyrics.observe(viewLifecycleOwner) {
-            Log.d(TAG, "observe")
             binding.refreshLayout.isRefreshing = false
 
             if (it == null) {
@@ -49,6 +48,7 @@ class LyricsFragment : Fragment() {
             Picasso.get().load(it.artUrl).into(binding.imageSongArt)
         }
 
+        binding.refreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_secondary)
         binding.refreshLayout.setOnRefreshListener { loadLyricsForCurrentSong() }
 
         if (autoLoad) {

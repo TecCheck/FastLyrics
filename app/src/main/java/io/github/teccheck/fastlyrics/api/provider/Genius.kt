@@ -111,14 +111,14 @@ object Genius {
 
         val title = jsonSong.get(KEY_TITLE).asString
         val artist = jsonSong.get(KEY_PRIMARY_ARTIST).asJsonObject.get(KEY_NAME).asString
-        val url = jsonSong.get(KEY_URL).asString
+        val sourceUrl = jsonSong.get(KEY_URL).asString
         val album = jsonSong.get(KEY_ALBUM).asJsonObject.get(KEY_NAME).asString
         val artUrl = jsonSong.get(KEY_SONG_ART_URL).asString
 
         val lyrics =
             parseLyricsJsonTag(jsonSong.get(KEY_LYRICS).asJsonObject.get(KEY_DOM).asJsonObject)
 
-        return SongWithLyrics(title, artist, lyrics, url, album, artUrl)
+        return SongWithLyrics(title, artist, lyrics, sourceUrl, album, artUrl)
     }
 
     private fun parseLyricsJsonTag(lyricsJsonTag: JsonElement): String {

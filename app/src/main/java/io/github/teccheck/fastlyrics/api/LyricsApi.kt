@@ -1,6 +1,5 @@
 package io.github.teccheck.fastlyrics.api
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import io.github.teccheck.fastlyrics.api.provider.Genius
 import io.github.teccheck.fastlyrics.model.SongMeta
@@ -28,8 +27,7 @@ object LyricsApi {
 
             liveDataTarget.postValue(song)
             song?.let {
-                LyricStorage.store(it)
-                LyricStorage.write()
+                LyricStorage.store(it, true)
             }
         }
     }

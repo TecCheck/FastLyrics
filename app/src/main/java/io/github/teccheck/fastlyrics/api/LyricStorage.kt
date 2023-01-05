@@ -31,18 +31,22 @@ object LyricStorage {
     }
 
     fun store(song: SongWithLyrics, write: Boolean = false) {
+        storeSync(song)
         executor.submit {
-            storeSync(song)
             if (write)
                 writeSync()
         }
+    }
+
+    fun getLyrics(): List<SongWithLyrics> {
+        return songs
     }
 
     private fun readSync() {
         if (!file.exists())
             return
 
-        songs = Gson().fromJson(file.readText(), songs.javaClass)
+        songs = Gson().fromJson(file.readText(), Array<SongWithLyrics>::class.java).toMutableList()
     }
 
     private fun writeSync() {
@@ -54,7 +58,7 @@ object LyricStorage {
             file.createNewFile()
 
         file.writeText(Gson().toJson(songs))
-        changed = false;
+        changed = false
     }
 
     private fun storeSync(song: SongWithLyrics) {

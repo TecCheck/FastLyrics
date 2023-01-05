@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import io.github.teccheck.fastlyrics.api.LyricStorage
 import io.github.teccheck.fastlyrics.api.LyricsApi
 import io.github.teccheck.fastlyrics.api.MediaSession
 import io.github.teccheck.fastlyrics.model.SongMeta
@@ -34,8 +35,9 @@ class LyricsViewModel : ViewModel() {
         return songMeta != null
     }
 
-    fun loadLyricsForSongWithId(id: Int) {
-        // TODO
+    fun loadLyricsForSongFromStorage(title: String, artist: String) {
+        _songWithLyrics.value =
+            LyricStorage.getLyrics().find { it.artist == artist && it.title == title }
     }
 
     companion object {

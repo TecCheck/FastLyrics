@@ -48,8 +48,21 @@ class LyricsFragment : Fragment() {
             Picasso.get().load(it.artUrl).into(binding.imageSongArt)
         }
 
-        binding.refreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_secondary)
+        binding.refreshLayout.setColorSchemeResources(
+            R.color.theme_primary,
+            R.color.theme_secondary
+        )
         binding.refreshLayout.setOnRefreshListener { loadLyricsForCurrentSong() }
+
+        arguments?.let {
+            if (it.containsKey(ARG_TITLE) && it.containsKey(ARG_ARTIST)) {
+                autoLoad = false
+                lyricsViewModel.loadLyricsForSongFromStorage(
+                    it.getString(ARG_TITLE, ""),
+                    it.getString(ARG_ARTIST, "")
+                )
+            }
+        }
 
         if (autoLoad) {
             autoLoad = false
@@ -76,5 +89,8 @@ class LyricsFragment : Fragment() {
 
     companion object {
         private const val TAG = "LyricsFragment"
+
+        const val ARG_TITLE = "title"
+        const val ARG_ARTIST = "artist"
     }
 }

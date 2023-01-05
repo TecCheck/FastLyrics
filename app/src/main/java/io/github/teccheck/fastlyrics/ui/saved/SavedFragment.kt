@@ -1,15 +1,17 @@
 package io.github.teccheck.fastlyrics.ui.saved
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.api.LyricStorage
 import io.github.teccheck.fastlyrics.databinding.FragmentSavedBinding
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
+import io.github.teccheck.fastlyrics.ui.lyrics.LyricsFragment
 
 class SavedFragment : Fragment() {
 
@@ -21,7 +23,10 @@ class SavedFragment : Fragment() {
 
     private val itemClickListener = object : RecyclerAdapter.OnItemClickListener {
         override fun onItemClick(item: SongWithLyrics) {
-            Log.d(TAG, "Click on ${item.title} - ${item.artist}")
+            val bundle = Bundle()
+            bundle.putString(LyricsFragment.ARG_TITLE, item.title)
+            bundle.putString(LyricsFragment.ARG_ARTIST, item.artist)
+            findNavController().navigate(R.id.nav_lyrics, bundle)
         }
     }
 

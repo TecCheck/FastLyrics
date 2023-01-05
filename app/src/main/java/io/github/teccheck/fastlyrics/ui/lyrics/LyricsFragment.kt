@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.databinding.FragmentLyricsBinding
+import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 
 class LyricsFragment : Fragment() {
 
@@ -64,7 +65,10 @@ class LyricsFragment : Fragment() {
             }
         }
 
-        if (autoLoad) {
+        val notificationAccess =
+            context?.let { DummyNotificationListenerService.canAccessNotifications(it) } ?: false
+
+        if (autoLoad && notificationAccess) {
             autoLoad = false
             loadLyricsForCurrentSong()
         }

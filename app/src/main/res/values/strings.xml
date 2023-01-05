@@ -11,6 +11,12 @@
     <string name="menu_lyrics">Lyrics</string>
     <string name="menu_saved">Saved</string>
     <string name="menu_search">Search</string>
+    <string name="menu_permission">Notification Permission</string>
+
+    <string name="permission_description">FastLyrics needs access to your device\'s notifications in order to find out what song is currently playing. You can allow this in the settings by clicking the button below</string>
+    <string name="permission_tip">Tip: In newer versions of Android you can  individually select what FastLyrics has access to. You can deselect everything because FastLyrics doesn\'t actually access any notifications</string>
+    <string name="permission_goto_settings">Go to settings</string>
+    <string name="permission_comeback">You can always come back here and enable/disable notification access if you can\'t find the right place in your system settings</string>
 
     <string name="notification_access">Notification Access</string>
 </resources>

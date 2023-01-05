@@ -16,5 +16,10 @@
         android:name="io.github.teccheck.fastlyrics.ui.saved.SavedFragment"
         android:label="@string/menu_saved"
         tools:layout="@layout/fragment_saved" />
+    <fragment
+        android:id="@+id/nav_permission"
+        android:name="io.github.teccheck.fastlyrics.ui.permission.PermissionFragment"
+        android:label="@string/menu_permission"
+        tools:layout="@layout/fragment_permission" />
 
 </navigation>

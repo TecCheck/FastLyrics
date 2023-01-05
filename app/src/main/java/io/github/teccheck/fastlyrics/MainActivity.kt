@@ -1,6 +1,5 @@
 package io.github.teccheck.fastlyrics
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +11,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import io.github.teccheck.fastlyrics.databinding.ActivityMainBinding
+import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,6 +32,9 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_lyrics), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        if (!DummyNotificationListenerService.canAccessNotifications(this))
+            navController.navigate(R.id.nav_permission)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -42,11 +45,6 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-    }
-
-    private fun startNotificationsSettings() {
-        val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-        startActivity(intent)
     }
 
     companion object {

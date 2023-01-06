@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="navHeaderBackground" format="color" />
+    <attr name="navHeaderForeground" format="color" />
+    <attr name="materialToolbarStyle" format="reference" />
+</resources>

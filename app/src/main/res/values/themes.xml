@@ -1,25 +1,60 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.FastLyrics" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
+
+    <!-- Material 1 Theme -->
+    <style name="Theme.FastLyrics.Material1.Base" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/theme_primary</item>
         <item name="colorPrimaryVariant">@color/theme_primary_dark</item>
         <item name="colorOnPrimary">@color/theme_on_primary</item>
-        <!-- Secondary brand color. -->
+
         <item name="colorSecondary">@color/theme_secondary</item>
         <item name="colorSecondaryVariant">@color/theme_secondary_dark</item>
         <item name="colorOnSecondary">@color/theme_on_secondary</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:navigationBarColor">?android:colorBackground</item>
+
+        <item name="materialToolbarStyle">@style/Style.FastLyrics.Material1.Toolbar</item>
+
+        <item name="navHeaderBackground">?attr/colorPrimary</item>
+        <item name="navHeaderForeground">?attr/colorOnPrimary</item>
     </style>
 
-    <style name="Theme.FastLyrics.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="Theme.FastLyrics.Material1" parent="Theme.FastLyrics.Material1.Base">
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
     </style>
 
-    <style name="Theme.FastLyrics.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Style.FastLyrics.Material1.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary" />
 
-    <style name="Theme.FastLyrics.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <!-- Material 2 Theme -->
+    <style name="Theme.FastLyrics.Material2.Base" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/theme_primary</item>
+        <item name="colorPrimaryVariant">@color/theme_primary_dark</item>
+        <item name="colorOnPrimary">@color/theme_on_primary</item>
+
+        <item name="colorSecondary">@color/theme_secondary</item>
+        <item name="colorSecondaryVariant">@color/theme_secondary_dark</item>
+        <item name="colorOnSecondary">@color/theme_on_secondary</item>
+
+        <item name="android:statusBarColor">?android:colorBackground</item>
+        <item name="android:navigationBarColor">?android:colorBackground</item>
+
+        <item name="materialToolbarStyle">@style/Style.FastLyrics.Material2.Toolbar</item>
+        <item name="appBarLayoutStyle">@style/Style.FastLyrics.Material2.AppBarLayout</item>
+
+        <item name="navHeaderBackground">?attr/colorSurface</item>
+        <item name="navHeaderForeground">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Theme.FastLyrics.Material2" parent="Theme.FastLyrics.Material2.Base">
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+    </style>
+
+    <style name="Style.FastLyrics.Material2.Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
+        <item name="elevation">0dp</item>
+    </style>
+
+    <style name="Style.FastLyrics.Material2.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface">
+        <item name="elevation">0dp</item>
+    </style>
 </resources>

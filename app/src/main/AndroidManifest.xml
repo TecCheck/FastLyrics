@@ -10,12 +10,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.FastLyrics"
+        android:theme="@style/Theme.FastLyrics.Material1"
         android:name=".FastLyricsApp">
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.FastLyrics.NoActionBar">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

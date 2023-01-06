@@ -21,5 +21,9 @@
         android:name="io.github.teccheck.fastlyrics.ui.permission.PermissionFragment"
         android:label="@string/menu_permission"
         tools:layout="@layout/fragment_permission" />
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="io.github.teccheck.fastlyrics.ui.settings.SettingsFragment"
+        android:label="@string/menu_settings" />
 
 </navigation>

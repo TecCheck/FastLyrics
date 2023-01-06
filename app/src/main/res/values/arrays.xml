@@ -1,0 +1,23 @@
+<resources>
+    <string-array name="material_style">
+        <item>Material 1</item>
+        <item>Material 2</item>
+    </string-array>
+
+    <string-array name="material_style_values">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="app_theme">
+        <item>Follow system</item>
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+
+    <string-array name="app_theme_values">
+        <item>-1</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+</resources>

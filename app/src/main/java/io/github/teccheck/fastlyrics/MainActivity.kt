@@ -3,6 +3,7 @@ package io.github.teccheck.fastlyrics
 import android.os.Bundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -17,8 +18,13 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var settings: Settings
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        settings = Settings(this)
+        setTheme(settings.getMaterialStyle())
+        setNightMode(settings.getAppTheme())
+
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -45,6 +51,10 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    private fun setNightMode(mode: Int) {
+        AppCompatDelegate.setDefaultNightMode(mode)
     }
 
     companion object {

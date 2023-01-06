@@ -5,13 +5,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".FastLyricsApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.FastLyrics.Material1"
-        android:name=".FastLyricsApp">
+        android:theme="@style/Theme.FastLyrics.Material1">
         <activity
             android:name=".MainActivity"
             android:exported="true">

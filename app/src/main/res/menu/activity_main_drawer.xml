@@ -16,5 +16,14 @@
             android:id="@+id/nav_permission"
             android:icon="@drawable/ic_outline_notifications_24"
             android:title="@string/menu_permission" />
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_outline_settings_24"
+            android:title="@string/menu_settings" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_outline_info_24"
+            android:title="@string/menu_about" />
     </group>
 </menu>

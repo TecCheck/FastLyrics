@@ -15,10 +15,10 @@ import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 class LyricsViewModel : ViewModel() {
 
     private val _songMeta = MutableLiveData<SongMeta>()
-    private val _songWithLyrics = MutableLiveData<SongWithLyrics>()
+    private val _songWithLyrics = MutableLiveData<Result<SongWithLyrics>>()
 
     val songMeta: LiveData<SongMeta> = _songMeta
-    val songWithLyrics: LiveData<SongWithLyrics?> = _songWithLyrics
+    val songWithLyrics: LiveData<Result<SongWithLyrics>> = _songWithLyrics
 
     fun loadLyricsForCurrentSong(context: Context): Boolean {
         if (!DummyNotificationListenerService.canAccessNotifications(context)) {
@@ -36,8 +36,13 @@ class LyricsViewModel : ViewModel() {
     }
 
     fun loadLyricsForSongFromStorage(title: String, artist: String) {
-        _songWithLyrics.value =
-            LyricStorage.getLyrics().find { it.artist == artist && it.title == title }
+        val lyrics = LyricStorage.getLyrics().find { it.artist == artist && it.title == title }
+
+        if (lyrics != null) {
+            _songWithLyrics.value = Result.success(lyrics)
+        } else {
+            _songWithLyrics.value = Result.failure(Exception("Song not found in storage"))
+        }
     }
 
     companion object {

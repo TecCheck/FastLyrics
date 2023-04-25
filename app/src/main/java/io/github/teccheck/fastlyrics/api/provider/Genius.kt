@@ -3,6 +3,8 @@ package io.github.teccheck.fastlyrics.api.provider
 import android.util.Log
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
+import com.google.gson.JsonParseException
+import com.google.gson.JsonSyntaxException
 import io.github.teccheck.fastlyrics.Tokens
 import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
@@ -31,7 +33,7 @@ object Genius {
     private const val KEY_ID = "id"
     private const val KEY_SONG = "song"
     private const val KEY_ALBUM = "album"
-    private const val KEY_SONG_ART_URL = "custom_song_art_image_url"
+    private const val KEY_SONG_ART_URL = "header_image_thumbnail_url"
     private const val KEY_LYRICS = "lyrics"
     private const val KEY_DOM = "dom"
     private const val KEY_CHILDREN = "children"
@@ -61,21 +63,22 @@ object Genius {
         apiService = retrofit.create(ApiService::class.java)
     }
 
-    fun search(searchQuery: String): List<SearchResult>? {
-        Log.i(TAG, "Searching for $searchQuery")
+    fun search(searchQuery: String): Result<List<SearchResult>> {
+        Log.i(TAG, "Searching for \"$searchQuery\"")
 
         val results = mutableListOf<SearchResult>()
         val jsonBody: JsonElement?
 
         try {
             jsonBody = apiService.search(searchQuery)?.execute()?.body()
+            Log.d(TAG, "Body: $jsonBody")
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
-            return null
+            return Result.failure(e)
         }
 
         val jsonResponse = jsonBody?.asJsonObject?.getAsJsonObject(KEY_RESPONSE)
-        val jsonHits = jsonResponse?.getAsJsonArray(KEY_HITS) ?: return null
+        val jsonHits = jsonResponse?.getAsJsonArray(KEY_HITS) ?: return Result.failure(JsonParseException("hits element not found"))
         for (jsonHit in jsonHits) {
             try {
                 val jo = jsonHit.asJsonObject.get(KEY_RESULT).asJsonObject
@@ -92,22 +95,23 @@ object Genius {
             }
         }
 
-        return results
+        return Result.success(results)
     }
 
-    fun fetchLyrics(songId: Int): SongWithLyrics? {
+    fun fetchLyrics(songId: Int): Result<SongWithLyrics> {
         Log.i(TAG, "Fetching song $songId")
         val jsonBody: JsonElement?
 
         try {
             jsonBody = apiService.fetchSongInfo(songId)?.execute()?.body()
+            Log.d(TAG, "Body: $jsonBody")
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
-            return null
+            return Result.failure(e)
         }
 
         val jsonResponse = jsonBody?.asJsonObject?.getAsJsonObject(KEY_RESPONSE)
-        val jsonSong = jsonResponse?.getAsJsonObject(KEY_SONG) ?: return null
+        val jsonSong = jsonResponse?.getAsJsonObject(KEY_SONG) ?: return Result.failure(JsonParseException("song element not found"))
 
         val title = jsonSong.get(KEY_TITLE).asString
         val artist = jsonSong.get(KEY_PRIMARY_ARTIST).asJsonObject.get(KEY_NAME).asString
@@ -115,10 +119,12 @@ object Genius {
         val album = jsonSong.get(KEY_ALBUM).asJsonObject.get(KEY_NAME).asString
         val artUrl = jsonSong.get(KEY_SONG_ART_URL).asString
 
+        Log.d(TAG, "Parsing dom tree")
         val lyrics =
             parseLyricsJsonTag(jsonSong.get(KEY_LYRICS).asJsonObject.get(KEY_DOM).asJsonObject)
 
-        return SongWithLyrics(title, artist, lyrics, sourceUrl, album, artUrl)
+        Log.d(TAG, "Done parsing")
+        return Result.success(SongWithLyrics(title, artist, lyrics, sourceUrl, album, artUrl))
     }
 
     private fun parseLyricsJsonTag(lyricsJsonTag: JsonElement): String {

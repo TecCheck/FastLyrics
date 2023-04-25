@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.databinding.FragmentLyricsBinding
@@ -35,18 +36,20 @@ class LyricsFragment : Fragment() {
             binding.imageSongArt.setImageBitmap(it.art)
         }
 
-        lyricsViewModel.songWithLyrics.observe(viewLifecycleOwner) {
+        lyricsViewModel.songWithLyrics.observe(viewLifecycleOwner) { result ->
             binding.refreshLayout.isRefreshing = false
 
-            if (it == null) {
-                // Maybe show an error to the user?
-                return@observe
+            result.onSuccess {
+                binding.textSongTitle.text = it.title
+                binding.textSongArtist.text = it.artist
+                binding.textLyrics.text = it.lyrics
+                Picasso.get().load(it.artUrl).into(binding.imageSongArt)
             }
 
-            binding.textSongTitle.text = it.title
-            binding.textSongArtist.text = it.artist
-            binding.textLyrics.text = it.lyrics
-            Picasso.get().load(it.artUrl).into(binding.imageSongArt)
+            result.onFailure {
+                val message = it.message ?: "Unknown error"
+                Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+            }
         }
 
         binding.refreshLayout.setColorSchemeResources(

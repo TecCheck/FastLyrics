@@ -26,7 +26,7 @@ class SavedFragment : Fragment() {
             val bundle = Bundle()
             bundle.putString(LyricsFragment.ARG_TITLE, item.title)
             bundle.putString(LyricsFragment.ARG_ARTIST, item.artist)
-            findNavController().navigate(R.id.nav_lyrics, bundle)
+            findNavController().navigate(R.id.nav_lyrics_view_saved, bundle)
         }
     }
 

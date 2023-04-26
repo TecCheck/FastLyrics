@@ -65,6 +65,8 @@ class LyricsFragment : Fragment() {
         arguments?.let {
             if (it.containsKey(ARG_TITLE) && it.containsKey(ARG_ARTIST)) {
                 autoLoad = false
+                binding.refreshLayout.isEnabled = false
+
                 lyricsViewModel.loadLyricsForSongFromStorage(
                     it.getString(ARG_TITLE, ""),
                     it.getString(ARG_ARTIST, "")

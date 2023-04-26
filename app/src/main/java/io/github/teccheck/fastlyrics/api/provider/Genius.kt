@@ -3,9 +3,13 @@ package io.github.teccheck.fastlyrics.api.provider
 import android.util.Log
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
-import com.google.gson.JsonParseException
-import com.google.gson.JsonSyntaxException
+import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.Tokens
+import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
+import io.github.teccheck.fastlyrics.exceptions.NetworkException
+import io.github.teccheck.fastlyrics.exceptions.ParseException
 import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import okhttp3.OkHttpClient
@@ -63,55 +67,50 @@ object Genius {
         apiService = retrofit.create(ApiService::class.java)
     }
 
-    fun search(searchQuery: String): Result<List<SearchResult>> {
+    fun search(searchQuery: String): Result<List<SearchResult>, LyricsApiException> {
         Log.i(TAG, "Searching for \"$searchQuery\"")
 
-        val results = mutableListOf<SearchResult>()
         val jsonBody: JsonElement?
 
         try {
             jsonBody = apiService.search(searchQuery)?.execute()?.body()
-            Log.d(TAG, "Body: $jsonBody")
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
-            return Result.failure(e)
+            return Failure(NetworkException())
         }
 
         val jsonResponse = jsonBody?.asJsonObject?.getAsJsonObject(KEY_RESPONSE)
-        val jsonHits = jsonResponse?.getAsJsonArray(KEY_HITS) ?: return Result.failure(JsonParseException("hits element not found"))
+        val jsonHits = jsonResponse?.getAsJsonArray(KEY_HITS) ?: return Failure(ParseException())
+
+        val results = mutableListOf<SearchResult>()
         for (jsonHit in jsonHits) {
-            try {
-                val jo = jsonHit.asJsonObject.get(KEY_RESULT).asJsonObject
+            val jo = jsonHit.asJsonObject.get(KEY_RESULT).asJsonObject
 
-                val title = jo.get(KEY_TITLE).asString
-                val artist = jo.get(KEY_PRIMARY_ARTIST).asJsonObject.get(KEY_NAME).asString
-                val url = jo.get(KEY_URL).asString
-                val id = jo.get(KEY_ID).asInt
+            val title = jo.get(KEY_TITLE).asString
+            val artist = jo.get(KEY_PRIMARY_ARTIST).asJsonObject.get(KEY_NAME).asString
+            val url = jo.get(KEY_URL).asString
+            val id = jo.get(KEY_ID).asInt
 
-                val result = SearchResult(title, artist, null, url, id)
-                results.add(result)
-            } catch (e: Exception) {
-                Log.e(TAG, e.message, e)
-            }
+            val result = SearchResult(title, artist, null, url, id)
+            results.add(result)
         }
 
-        return Result.success(results)
+        return Success(results)
     }
 
-    fun fetchLyrics(songId: Int): Result<SongWithLyrics> {
+    fun fetchLyrics(songId: Int): Result<SongWithLyrics, LyricsApiException> {
         Log.i(TAG, "Fetching song $songId")
         val jsonBody: JsonElement?
 
         try {
             jsonBody = apiService.fetchSongInfo(songId)?.execute()?.body()
-            Log.d(TAG, "Body: $jsonBody")
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
-            return Result.failure(e)
+            return Failure(NetworkException())
         }
 
         val jsonResponse = jsonBody?.asJsonObject?.getAsJsonObject(KEY_RESPONSE)
-        val jsonSong = jsonResponse?.getAsJsonObject(KEY_SONG) ?: return Result.failure(JsonParseException("song element not found"))
+        val jsonSong = jsonResponse?.getAsJsonObject(KEY_SONG) ?: return Failure(ParseException())
 
         val title = jsonSong.get(KEY_TITLE).asString
         val artist = jsonSong.get(KEY_PRIMARY_ARTIST).asJsonObject.get(KEY_NAME).asString
@@ -119,12 +118,10 @@ object Genius {
         val album = jsonSong.get(KEY_ALBUM).asJsonObject.get(KEY_NAME).asString
         val artUrl = jsonSong.get(KEY_SONG_ART_URL).asString
 
-        Log.d(TAG, "Parsing dom tree")
         val lyrics =
             parseLyricsJsonTag(jsonSong.get(KEY_LYRICS).asJsonObject.get(KEY_DOM).asJsonObject)
 
-        Log.d(TAG, "Done parsing")
-        return Result.success(SongWithLyrics(title, artist, lyrics, sourceUrl, album, artUrl))
+        return Success(SongWithLyrics(title, artist, lyrics, sourceUrl, album, artUrl))
     }
 
     private fun parseLyricsJsonTag(lyricsJsonTag: JsonElement): String {

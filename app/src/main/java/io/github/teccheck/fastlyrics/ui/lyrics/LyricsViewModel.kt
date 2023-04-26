@@ -5,20 +5,26 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dev.forkhandles.result4k.Failure
 import io.github.teccheck.fastlyrics.api.LyricStorage
 import io.github.teccheck.fastlyrics.api.LyricsApi
 import io.github.teccheck.fastlyrics.api.MediaSession
+import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 
+import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.Success
+import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
+
 class LyricsViewModel : ViewModel() {
 
     private val _songMeta = MutableLiveData<SongMeta>()
-    private val _songWithLyrics = MutableLiveData<Result<SongWithLyrics>>()
+    private val _songWithLyrics = MutableLiveData<Result<SongWithLyrics, LyricsApiException>>()
 
     val songMeta: LiveData<SongMeta> = _songMeta
-    val songWithLyrics: LiveData<Result<SongWithLyrics>> = _songWithLyrics
+    val songWithLyrics: LiveData<Result<SongWithLyrics, LyricsApiException>> = _songWithLyrics
 
     fun loadLyricsForCurrentSong(context: Context): Boolean {
         if (!DummyNotificationListenerService.canAccessNotifications(context)) {
@@ -39,9 +45,9 @@ class LyricsViewModel : ViewModel() {
         val lyrics = LyricStorage.getLyrics().find { it.artist == artist && it.title == title }
 
         if (lyrics != null) {
-            _songWithLyrics.value = Result.success(lyrics)
+            _songWithLyrics.value = Success(lyrics)
         } else {
-            _songWithLyrics.value = Result.failure(Exception("Song not found in storage"))
+            _songWithLyrics.value = Failure(LyricsNotFoundException())
         }
     }
 

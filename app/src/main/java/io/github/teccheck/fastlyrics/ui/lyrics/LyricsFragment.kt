@@ -7,8 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
+import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.databinding.FragmentLyricsBinding
+import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
+import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
+import io.github.teccheck.fastlyrics.exceptions.NetworkException
+import io.github.teccheck.fastlyrics.exceptions.ParseException
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 
 class LyricsFragment : Fragment() {
@@ -38,21 +44,23 @@ class LyricsFragment : Fragment() {
         lyricsViewModel.songWithLyrics.observe(viewLifecycleOwner) { result ->
             binding.refreshLayout.isRefreshing = false
 
-            result.onSuccess {
-                binding.lyricsView.visibility = View.VISIBLE
-                binding.errorView.visibility = View.GONE
+            when (result) {
+                is Success -> {
+                    binding.lyricsView.visibility = View.VISIBLE
+                    binding.errorView.visibility = View.GONE
 
-                binding.textSongTitle.text = it.title
-                binding.textSongArtist.text = it.artist
-                binding.textLyrics.text = it.lyrics
-                Picasso.get().load(it.artUrl).into(binding.imageSongArt)
-            }
+                    binding.textSongTitle.text = result.value.title
+                    binding.textSongArtist.text = result.value.artist
+                    binding.textLyrics.text = result.value.lyrics
+                    Picasso.get().load(result.value.artUrl).into(binding.imageSongArt)
+                }
 
-            result.onFailure {
-                binding.lyricsView.visibility = View.GONE
-                binding.errorView.visibility = View.VISIBLE
+                is Failure -> {
+                    binding.lyricsView.visibility = View.GONE
+                    binding.errorView.visibility = View.VISIBLE
 
-                binding.errorText.text = it.message ?: "Unknown error"
+                    binding.errorText.text = getErrorTextForApiException(result.reason)
+                }
             }
         }
 
@@ -99,6 +107,14 @@ class LyricsFragment : Fragment() {
                 binding.refreshLayout.isRefreshing = false
         }
     }
+
+    private fun getErrorTextForApiException(exception: LyricsApiException): String =
+        when (exception) {
+            is LyricsNotFoundException -> getString(R.string.lyrics_not_found)
+            is NetworkException -> getString(R.string.lyrics_network_exception)
+            is ParseException -> getString(R.string.lyrics_parse_exception)
+            else -> getString(R.string.lyrics_unknown_error)
+        }
 
     companion object {
         private const val TAG = "LyricsFragment"

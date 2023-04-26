@@ -29,5 +29,10 @@
         android:id="@+id/nav_settings"
         android:name="io.github.teccheck.fastlyrics.ui.settings.SettingsFragment"
         android:label="@string/menu_settings" />
+    <fragment
+        android:id="@+id/nav_about"
+        android:name="io.github.teccheck.fastlyrics.ui.about.AboutFragment"
+        android:label="@string/menu_about"
+        tools:layout="@layout/fragment_about" />
 
 </navigation>

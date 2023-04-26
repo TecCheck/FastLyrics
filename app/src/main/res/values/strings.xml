@@ -31,6 +31,15 @@
     <string name="preference_material_style">Material Style</string>
     <string name="preference_app_theme">App theme</string>
 
+    <!-- About -->
+    <string name="source_code">Source code</string>
+    <string name="lyrics_sources">Lyrics sources</string>
+
+    <string name="source_genius">Genius</string>
+
+    <string name="source_code_url" translatable="false">https://github.com/TecCheck/FastLyrics</string>
+    <string name="source_url_genius" translatable="false">https://genius.com/</string>
+
     <!-- Notification listener service -->
     <string name="notification_access">Notification Access</string>
 </resources>

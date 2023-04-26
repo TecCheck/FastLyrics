@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.databinding.FragmentLyricsBinding
@@ -40,6 +39,9 @@ class LyricsFragment : Fragment() {
             binding.refreshLayout.isRefreshing = false
 
             result.onSuccess {
+                binding.lyricsView.visibility = View.VISIBLE
+                binding.errorView.visibility = View.GONE
+
                 binding.textSongTitle.text = it.title
                 binding.textSongArtist.text = it.artist
                 binding.textLyrics.text = it.lyrics
@@ -47,8 +49,10 @@ class LyricsFragment : Fragment() {
             }
 
             result.onFailure {
-                val message = it.message ?: "Unknown error"
-                Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+                binding.lyricsView.visibility = View.GONE
+                binding.errorView.visibility = View.VISIBLE
+
+                binding.errorText.text = it.message ?: "Unknown error"
             }
         }
 

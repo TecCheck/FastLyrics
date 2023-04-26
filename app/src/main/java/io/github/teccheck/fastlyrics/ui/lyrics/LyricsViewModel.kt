@@ -35,6 +35,13 @@ class LyricsViewModel : ViewModel() {
         val songMeta = MediaSession.getSongInformation(context)
         songMeta?.let {
             _songMeta.value = it
+
+            val lyrics = LyricStorage.findLyrics(songMeta.title, songMeta.artist ?: "")
+            if (lyrics != null) {
+                _songWithLyrics.value = Success(lyrics)
+                return@let
+            }
+
             LyricsApi.fetchLyrics(it, _songWithLyrics)
         }
 
@@ -42,12 +49,11 @@ class LyricsViewModel : ViewModel() {
     }
 
     fun loadLyricsForSongFromStorage(title: String, artist: String) {
-        val lyrics = LyricStorage.getLyrics().find { it.artist == artist && it.title == title }
-
-        if (lyrics != null) {
-            _songWithLyrics.value = Success(lyrics)
+        val lyrics = LyricStorage.findLyrics(title, artist)
+        _songWithLyrics.value = if (lyrics != null) {
+            Success(lyrics)
         } else {
-            _songWithLyrics.value = Failure(LyricsNotFoundException())
+            Failure(LyricsNotFoundException())
         }
     }
 

@@ -42,6 +42,9 @@ object LyricStorage {
         return songs
     }
 
+    fun findLyrics(title: String, artist: String) =
+        getLyrics().find { it.artist == artist && it.title == title }
+
     private fun readSync() {
         if (!file.exists())
             return

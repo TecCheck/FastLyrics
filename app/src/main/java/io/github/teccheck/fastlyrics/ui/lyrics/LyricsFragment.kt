@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
@@ -14,6 +15,7 @@ import io.github.teccheck.fastlyrics.databinding.FragmentLyricsBinding
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.exceptions.NetworkException
+import io.github.teccheck.fastlyrics.exceptions.NoMusicPlayingException
 import io.github.teccheck.fastlyrics.exceptions.ParseException
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 
@@ -35,10 +37,20 @@ class LyricsFragment : Fragment() {
         lyricsViewModel = ViewModelProvider(this).get(LyricsViewModel::class.java)
         _binding = FragmentLyricsBinding.inflate(inflater, container, false)
 
-        lyricsViewModel.songMeta.observe(viewLifecycleOwner) {
-            binding.textSongTitle.text = it.title
-            binding.textSongArtist.text = it.artist
-            binding.imageSongArt.setImageBitmap(it.art)
+        lyricsViewModel.songMeta.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is Success -> {
+                    binding.header.visibility = View.VISIBLE
+                    binding.errorView.visibility = View.GONE
+                    binding.textSongTitle.text = result.value.title
+                    binding.textSongArtist.text = result.value.artist
+                    binding.imageSongArt.setImageBitmap(result.value.art)
+                }
+
+                is Failure -> {
+                    displayError(result.reason)
+                }
+            }
         }
 
         lyricsViewModel.songWithLyrics.observe(viewLifecycleOwner) { result ->
@@ -46,6 +58,7 @@ class LyricsFragment : Fragment() {
 
             when (result) {
                 is Success -> {
+                    binding.header.visibility = View.VISIBLE
                     binding.lyricsView.visibility = View.VISIBLE
                     binding.errorView.visibility = View.GONE
 
@@ -56,10 +69,7 @@ class LyricsFragment : Fragment() {
                 }
 
                 is Failure -> {
-                    binding.lyricsView.visibility = View.GONE
-                    binding.errorView.visibility = View.VISIBLE
-
-                    binding.errorText.text = getErrorTextForApiException(result.reason)
+                    displayError(result.reason)
                 }
             }
         }
@@ -108,13 +118,37 @@ class LyricsFragment : Fragment() {
         }
     }
 
+    private fun displayError(exception: LyricsApiException) {
+        binding.lyricsView.visibility = View.GONE
+        binding.errorView.visibility = View.VISIBLE
+
+        binding.errorText.text = getErrorTextForApiException(exception)
+        binding.errorIcon.setImageDrawable(getErrorIconForApiException(exception))
+
+        val headerVisibility = if (exception is NoMusicPlayingException) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
+
+        binding.header.visibility = headerVisibility
+    }
+
     private fun getErrorTextForApiException(exception: LyricsApiException): String =
         when (exception) {
             is LyricsNotFoundException -> getString(R.string.lyrics_not_found)
             is NetworkException -> getString(R.string.lyrics_network_exception)
             is ParseException -> getString(R.string.lyrics_parse_exception)
+            is NoMusicPlayingException -> getString(R.string.no_song_playing)
             else -> getString(R.string.lyrics_unknown_error)
         }
+
+    private fun getErrorIconForApiException(exception: LyricsApiException) =
+        when (exception) {
+            is NoMusicPlayingException -> ResourcesCompat.getDrawable(resources, R.drawable.outline_music_off_24, null)
+            else -> ResourcesCompat.getDrawable(resources, R.drawable.baseline_error_outline_24, null)
+        }
+
 
     companion object {
         private const val TAG = "LyricsFragment"

@@ -20,10 +20,10 @@ import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 
 class LyricsViewModel : ViewModel() {
 
-    private val _songMeta = MutableLiveData<SongMeta>()
+    private val _songMeta = MutableLiveData<Result<SongMeta, LyricsApiException>>()
     private val _songWithLyrics = MutableLiveData<Result<SongWithLyrics, LyricsApiException>>()
 
-    val songMeta: LiveData<SongMeta> = _songMeta
+    val songMeta: LiveData<Result<SongMeta, LyricsApiException>> = _songMeta
     val songWithLyrics: LiveData<Result<SongWithLyrics, LyricsApiException>> = _songWithLyrics
 
     fun loadLyricsForCurrentSong(context: Context): Boolean {
@@ -32,20 +32,24 @@ class LyricsViewModel : ViewModel() {
             return false
         }
 
-        val songMeta = MediaSession.getSongInformation(context)
-        songMeta?.let {
-            _songMeta.value = it
+        val songMetaResult = MediaSession.getSongInformation(context)
+        _songMeta.value = songMetaResult
 
-            val lyrics = LyricStorage.findLyrics(songMeta.title, songMeta.artist ?: "")
-            if (lyrics != null) {
-                _songWithLyrics.value = Success(lyrics)
-                return@let
+        when(songMetaResult) {
+            is Success -> {
+                val songMeta = songMetaResult.value
+                val lyrics = LyricStorage.findLyrics(songMeta.title, songMeta.artist ?: "")
+                if (lyrics != null) {
+                    _songWithLyrics.value = Success(lyrics)
+                } else {
+                    LyricsApi.fetchLyrics(songMeta, _songWithLyrics)
+                }
             }
 
-            LyricsApi.fetchLyrics(it, _songWithLyrics)
+            else -> {}
         }
 
-        return songMeta != null
+        return songMetaResult is Success
     }
 
     fun loadLyricsForSongFromStorage(title: String, artist: String) {

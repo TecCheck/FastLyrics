@@ -83,7 +83,7 @@
                         android:orientation="vertical">
 
                         <ImageView
-                            android:id="@+id/imageView"
+                            android:id="@+id/error_icon"
                             android:layout_width="128dp"
                             android:layout_height="128dp"
                             android:layout_gravity="center_horizontal"

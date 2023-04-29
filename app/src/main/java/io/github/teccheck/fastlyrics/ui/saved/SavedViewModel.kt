@@ -3,11 +3,16 @@ package io.github.teccheck.fastlyrics.ui.saved
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import io.github.teccheck.fastlyrics.api.LyricStorage
+import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
+import io.github.teccheck.fastlyrics.model.SongWithLyrics
+import dev.forkhandles.result4k.Result
 
 class SavedViewModel : ViewModel() {
+    private val _songs = MutableLiveData<Result<List<SongWithLyrics>, LyricsApiException>>()
+    val songs: LiveData<Result<List<SongWithLyrics>, LyricsApiException>> = _songs
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "Saved Lyrics"
+    fun fetchSongs() {
+        LyricStorage.fetchSongsAsync(_songs)
     }
-    val text: LiveData<String> = _text
 }

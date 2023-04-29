@@ -121,7 +121,7 @@ object Genius {
         val lyrics =
             parseLyricsJsonTag(jsonSong.get(KEY_LYRICS).asJsonObject.get(KEY_DOM).asJsonObject)
 
-        return Success(SongWithLyrics(title, artist, lyrics, sourceUrl, album, artUrl))
+        return Success(SongWithLyrics(0, title, artist, lyrics, sourceUrl, album, artUrl))
     }
 
     private fun parseLyricsJsonTag(lyricsJsonTag: JsonElement): String {

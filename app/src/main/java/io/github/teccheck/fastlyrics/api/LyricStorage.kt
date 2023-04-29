@@ -2,72 +2,62 @@ package io.github.teccheck.fastlyrics.api
 
 import android.content.Context
 import android.util.Log
-import com.google.gson.Gson
+import androidx.lifecycle.MutableLiveData
+import androidx.room.Room
+import io.github.teccheck.fastlyrics.api.storage.LyricsDatabase
+import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
+import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
-import java.io.File
+import io.github.teccheck.fastlyrics.utils.Utils
 import java.util.concurrent.Executors
+import dev.forkhandles.result4k.Result
 
 object LyricStorage {
     private const val TAG = "LyricsStorage"
-    private const val FILENAME = "lyrics.json"
 
     private val executor = Executors.newSingleThreadExecutor()
-    private lateinit var file: File
-    private var songs = mutableListOf<SongWithLyrics>()
-    private var changed = false
+    private lateinit var database: LyricsDatabase
 
     fun init(context: Context) {
-        file = context.filesDir.resolve(FILENAME)
-        Log.d(TAG, "File ${file.absolutePath}")
-        readSync()
+        database = Room.databaseBuilder(context, LyricsDatabase::class.java, "lyrics").build()
     }
 
-    fun read() {
-        executor.submit { readSync() }
+    fun deleteAsync(song: SongWithLyrics) {
+        executor.submit { database.songsDao().delete(song) }
     }
 
-    fun write() {
-        executor.submit { writeSync() }
-    }
-
-    fun store(song: SongWithLyrics, write: Boolean = false) {
-        storeSync(song)
+    fun fetchSongsAsync(liveDataTarget: MutableLiveData<Result<List<SongWithLyrics>, LyricsApiException>>) {
+        Log.d(TAG, "fetchSongsAsync")
         executor.submit {
-            if (write)
-                writeSync()
+            liveDataTarget.postValue(
+                Utils.result(
+                    database.songsDao().getAll(),
+                    LyricsNotFoundException()
+                )
+            )
         }
     }
 
-    fun getLyrics(): List<SongWithLyrics> {
-        return songs
-    }
-
-    fun findLyrics(title: String, artist: String) =
-        getLyrics().find { it.artist == artist && it.title == title }
-
-    private fun readSync() {
-        if (!file.exists())
-            return
-
-        songs = Gson().fromJson(file.readText(), Array<SongWithLyrics>::class.java).toMutableList()
-    }
-
-    private fun writeSync() {
-        if (!changed) {
-            Log.w(TAG, "Tried to write without changes")
-        }
-
-        if (!file.exists())
-            file.createNewFile()
-
-        file.writeText(Gson().toJson(songs))
-        changed = false
-    }
-
-    private fun storeSync(song: SongWithLyrics) {
-        if (!songs.contains(song)) {
-            songs.add(song)
-            changed = true
+    fun findLyricsAsync(
+        title: String,
+        artist: String,
+        liveDataTarget: MutableLiveData<Result<SongWithLyrics, LyricsApiException>>
+    ) {
+        Log.d(TAG, "findLyricsAsync")
+        executor.submit {
+            liveDataTarget.postValue(
+                Utils.result(
+                    findSong(title, artist), LyricsNotFoundException()
+                )
+            )
         }
     }
+
+    fun store(song: SongWithLyrics) {
+        Log.d(TAG, "store")
+        database.songsDao().insert(song)
+    }
+
+    fun findSong(title: String, artist: String): SongWithLyrics? =
+        database.songsDao().findSong(title, artist)
 }

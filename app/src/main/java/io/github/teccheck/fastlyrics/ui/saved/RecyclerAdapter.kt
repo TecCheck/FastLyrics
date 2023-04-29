@@ -1,5 +1,6 @@
 package io.github.teccheck.fastlyrics.ui.saved
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +11,10 @@ import com.squareup.picasso.Picasso
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 
-class RecyclerAdapter(
-    private val songs: List<SongWithLyrics>,
-    private val itemClickListener: OnItemClickListener
-) :
+class RecyclerAdapter(private val itemClickListener: OnItemClickListener) :
     RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+
+    private var songs: List<SongWithLyrics> = listOf()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageArt: ImageView
@@ -44,6 +44,12 @@ class RecyclerAdapter(
     }
 
     override fun getItemCount() = songs.size
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setSongs(songs: List<SongWithLyrics>) {
+        this.songs = songs
+        notifyDataSetChanged()
+    }
 
     interface OnItemClickListener {
         fun onItemClick(item: SongWithLyrics)

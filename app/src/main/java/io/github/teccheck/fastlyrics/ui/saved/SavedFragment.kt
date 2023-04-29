@@ -1,14 +1,16 @@
 package io.github.teccheck.fastlyrics.ui.saved
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.R
-import io.github.teccheck.fastlyrics.api.LyricStorage
 import io.github.teccheck.fastlyrics.databinding.FragmentSavedBinding
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import io.github.teccheck.fastlyrics.ui.lyrics.LyricsFragment
@@ -35,10 +37,21 @@ class SavedFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val viewModel = ViewModelProvider(this)[SavedViewModel::class.java]
         _binding = FragmentSavedBinding.inflate(inflater, container, false)
 
-        binding.recyclerView.adapter = RecyclerAdapter(LyricStorage.getLyrics(), itemClickListener)
+        val adapter = RecyclerAdapter(itemClickListener)
+        binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
+
+        viewModel.songs.observe(viewLifecycleOwner) { result ->
+            Log.d(TAG, "test")
+            if (result is Success) {
+                adapter.setSongs(result.value)
+            }
+        }
+
+        viewModel.fetchSongs()
 
         return binding.root
     }

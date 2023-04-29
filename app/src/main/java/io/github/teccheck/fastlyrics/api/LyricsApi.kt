@@ -17,6 +17,21 @@ object LyricsApi {
 
     private val executor = Executors.newSingleThreadExecutor()
 
+    fun getLyrics(
+        songMeta: SongMeta,
+        liveDataTarget: MutableLiveData<Result<SongWithLyrics, LyricsApiException>>
+    ) {
+        executor.submit {
+            val song = songMeta.artist?.let { LyricStorage.findSong(songMeta.title, it) }
+            if (song != null) {
+                liveDataTarget.apply { Success(song) }
+                return@submit
+            }
+
+            fetchLyrics(songMeta, liveDataTarget)
+        }
+    }
+
     fun fetchLyrics(
         songMeta: SongMeta,
         liveDataTarget: MutableLiveData<Result<SongWithLyrics, LyricsApiException>>
@@ -44,7 +59,7 @@ object LyricsApi {
             liveDataTarget.postValue(songResult)
 
             if (songResult is Success) {
-                LyricStorage.store(songResult.value, true)
+                LyricStorage.store(songResult.value)
             }
         }
     }

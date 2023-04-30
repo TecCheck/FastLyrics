@@ -24,7 +24,7 @@
             android:layout_height="48dp"
             android:background="@android:color/darker_gray"
             app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.SmallComponent"
-            app:srcCompat="@drawable/ic_round_music_note_24" />
+            app:srcCompat="@drawable/round_music_note_24" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/selection_icon"

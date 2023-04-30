@@ -48,7 +48,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="16dp"
                 android:text="@string/permission_goto_settings"
-                app:icon="@drawable/ic_baseline_arrow_forward_24"
+                app:icon="@drawable/baseline_arrow_forward_24"
                 app:iconGravity="textEnd"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

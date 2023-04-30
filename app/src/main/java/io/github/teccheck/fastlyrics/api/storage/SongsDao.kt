@@ -1,7 +1,6 @@
 package io.github.teccheck.fastlyrics.api.storage
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
@@ -21,6 +20,6 @@ interface SongsDao {
     @Insert
     fun insert(song: SongWithLyrics)
 
-    @Delete
-    fun delete(song: SongWithLyrics)
+    @Query("DELETE FROM songs WHERE id = :ids")
+    fun deleteAll(ids: List<Long>)
 }

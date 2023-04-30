@@ -34,7 +34,7 @@ class LyricsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        lyricsViewModel = ViewModelProvider(this).get(LyricsViewModel::class.java)
+        lyricsViewModel = ViewModelProvider(this)[LyricsViewModel::class.java]
         _binding = FragmentLyricsBinding.inflate(inflater, container, false)
 
         lyricsViewModel.songMeta.observe(viewLifecycleOwner) { result ->
@@ -81,13 +81,12 @@ class LyricsFragment : Fragment() {
         binding.refreshLayout.setOnRefreshListener { loadLyricsForCurrentSong() }
 
         arguments?.let {
-            if (it.containsKey(ARG_TITLE) && it.containsKey(ARG_ARTIST)) {
+            if (it.containsKey(ARG_SONG_ID)) {
                 autoLoad = false
                 binding.refreshLayout.isEnabled = false
 
                 lyricsViewModel.loadLyricsForSongFromStorage(
-                    it.getString(ARG_TITLE, ""),
-                    it.getString(ARG_ARTIST, "")
+                    it.getLong(ARG_SONG_ID, 0)
                 )
             }
         }
@@ -153,7 +152,6 @@ class LyricsFragment : Fragment() {
     companion object {
         private const val TAG = "LyricsFragment"
 
-        const val ARG_TITLE = "title"
-        const val ARG_ARTIST = "artist"
+        const val ARG_SONG_ID = "song_id"
     }
 }

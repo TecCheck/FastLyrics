@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="Theme.FastLyrics.Material2.ShapeRound">
         <item name="cornerSize">32dp</item>
+    </style>
+
+    <style name="Widget.App.ActionMode" parent="Widget.AppCompat.ActionMode">
+        <item name="titleTextStyle">?attr/textAppearanceHeadline6</item>
+        <item name="subtitleTextStyle">?attr/textAppearanceSubtitle1</item>
+        <item name="background">?attr/colorSurface</item>
+    </style>
+
+    <style name="Widget.App.ActionBarTheme" parent="ThemeOverlay.MaterialComponents.Toolbar.Surface">
     </style>
 </resources>

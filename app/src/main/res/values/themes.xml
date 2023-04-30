@@ -43,6 +43,11 @@
 
         <item name="navHeaderBackground">?attr/colorSurface</item>
         <item name="navHeaderForeground">?attr/colorPrimary</item>
+
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeStyle">@style/Widget.App.ActionMode</item>
+        <item name="actionModeCloseDrawable">@drawable/baseline_close_24</item>
+        <item name="actionBarTheme">@style/Widget.App.ActionBarTheme</item>
     </style>
 
     <style name="Theme.FastLyrics.Material2" parent="Theme.FastLyrics.Material2.Base">

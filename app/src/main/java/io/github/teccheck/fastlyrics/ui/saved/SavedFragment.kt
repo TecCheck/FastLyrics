@@ -3,16 +3,25 @@ package io.github.teccheck.fastlyrics.ui.saved
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.selection.ItemDetailsLookup
+import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StableIdKeyProvider
+import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
 import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.R
+import io.github.teccheck.fastlyrics.api.LyricStorage
 import io.github.teccheck.fastlyrics.databinding.FragmentSavedBinding
-import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import io.github.teccheck.fastlyrics.ui.lyrics.LyricsFragment
 
 class SavedFragment : Fragment() {
@@ -23,26 +32,83 @@ class SavedFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private val itemClickListener = object : RecyclerAdapter.OnItemClickListener {
-        override fun onItemClick(item: SongWithLyrics) {
-            val bundle = Bundle()
-            bundle.putString(LyricsFragment.ARG_TITLE, item.title)
-            bundle.putString(LyricsFragment.ARG_ARTIST, item.artist)
-            findNavController().navigate(R.id.nav_lyrics_view_saved, bundle)
+
+    private lateinit var viewModel: SavedViewModel
+    private lateinit var adapter: RecyclerAdapter
+    private lateinit var selectionTracker: SelectionTracker<Long>
+
+    private var actionMode: ActionMode? = null
+
+    private val selectionObserver = object : SelectionTracker.SelectionObserver<Long>() {
+        override fun onSelectionChanged() {
+            super.onSelectionChanged()
+
+            if (selectionTracker.hasSelection()) {
+                Log.d(TAG, "ActionMode")
+                if (actionMode == null) {
+                    actionMode =
+                        (activity as AppCompatActivity).startSupportActionMode(actionModeCallback)
+                }
+
+                actionMode?.title =
+                    getString(R.string.items_selected, selectionTracker.selection.size())
+            } else {
+                actionMode?.finish()
+            }
+        }
+    }
+
+    private val actionModeCallback = object : ActionMode.Callback {
+        override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+            activity?.menuInflater?.inflate(R.menu.fragment_saved_contextual_appbar_menu, menu)
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+            return false
+        }
+
+        override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+            return when (item?.itemId) {
+                R.id.delete -> {
+                    LyricStorage.deleteAsync(selectionTracker.selection.toList())
+                    viewModel.fetchSongs()
+                    actionMode?.finish()
+                    selectionTracker.clearSelection()
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        override fun onDestroyActionMode(mode: ActionMode?) {
+            actionMode = null
+            selectionTracker.clearSelection()
         }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        val viewModel = ViewModelProvider(this)[SavedViewModel::class.java]
+        viewModel = ViewModelProvider(this)[SavedViewModel::class.java]
         _binding = FragmentSavedBinding.inflate(inflater, container, false)
 
-        val adapter = RecyclerAdapter(itemClickListener)
+        adapter = RecyclerAdapter()
+        adapter.setHasStableIds(true)
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
+
+        selectionTracker = SelectionTracker.Builder(
+            "my-selection-id",
+            binding.recyclerView,
+            StableIdKeyProvider(binding.recyclerView),
+            DetailsLookup(binding.recyclerView),
+            StorageStrategy.createLongStorage()
+        ).withOnItemActivatedListener(this::onItemActivated).build()
+
+        selectionTracker.addObserver(selectionObserver)
+        adapter.setSelectionTracker(selectionTracker)
 
         viewModel.songs.observe(viewLifecycleOwner) { result ->
             Log.d(TAG, "test")
@@ -59,6 +125,31 @@ class SavedFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        selectionTracker.onSaveInstanceState(outState)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        selectionTracker.onRestoreInstanceState(savedInstanceState)
+    }
+
+    private fun onItemActivated(
+        item: ItemDetailsLookup.ItemDetails<Long>, e: MotionEvent
+    ): Boolean {
+        item.selectionKey?.let { viewSong(it) }
+        return false
+    }
+
+    private fun viewSong(id: Long) {
+        Log.d(TAG, "Show song $id")
+        val bundle = Bundle()
+        bundle.putLong(LyricsFragment.ARG_SONG_ID, id)
+
+        findNavController().navigate(R.id.nav_lyrics_view_saved, bundle)
     }
 
     companion object {

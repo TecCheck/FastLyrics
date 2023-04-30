@@ -22,8 +22,8 @@ object LyricStorage {
         database = Room.databaseBuilder(context, LyricsDatabase::class.java, "lyrics").build()
     }
 
-    fun deleteAsync(song: SongWithLyrics) {
-        executor.submit { database.songsDao().delete(song) }
+    fun deleteAsync(ids: List<Long>) {
+        executor.submit { database.songsDao().deleteAll(ids) }
     }
 
     fun fetchSongsAsync(liveDataTarget: MutableLiveData<Result<List<SongWithLyrics>, LyricsApiException>>) {
@@ -31,9 +31,18 @@ object LyricStorage {
         executor.submit {
             liveDataTarget.postValue(
                 Utils.result(
-                    database.songsDao().getAll(),
-                    LyricsNotFoundException()
+                    database.songsDao().getAll(), LyricsNotFoundException()
                 )
+            )
+        }
+    }
+
+    fun getSongAsync(
+        id: Long, liveDataTarget: MutableLiveData<Result<SongWithLyrics, LyricsApiException>>
+    ) {
+        executor.submit {
+            liveDataTarget.postValue(
+                Utils.result(getSong(id), LyricsNotFoundException())
             )
         }
     }
@@ -57,6 +66,8 @@ object LyricStorage {
         Log.d(TAG, "store")
         database.songsDao().insert(song)
     }
+
+    fun getSong(id: Long): SongWithLyrics? = database.songsDao().getSong(id)
 
     fun findSong(title: String, artist: String): SongWithLyrics? =
         database.songsDao().findSong(title, artist)

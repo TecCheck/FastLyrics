@@ -40,8 +40,8 @@ class LyricsViewModel : ViewModel() {
         return songMetaResult is Success
     }
 
-    fun loadLyricsForSongFromStorage(title: String, artist: String) {
-        LyricStorage.findLyricsAsync(title, artist, _songWithLyrics)
+    fun loadLyricsForSongFromStorage(songId: Long) {
+        LyricStorage.getSongAsync(songId, _songWithLyrics)
     }
 
     companion object {

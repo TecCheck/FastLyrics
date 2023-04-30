@@ -21,6 +21,10 @@
     <string name="lyrics_network_exception">There was a network problem while loading lyrics</string>
     <string name="lyrics_unknown_error">An unknown error occurred</string>
 
+    <!-- Saved songs view -->
+    <string name="delete">Delete</string>
+    <string name="items_selected">%1$d selected</string>
+
     <!-- Notification permissions -->
     <string name="permission_description">FastLyrics needs access to your device\'s notifications in order to find out what song is currently playing. You can allow this in the settings by clicking the button below</string>
     <string name="permission_tip">Tip: In newer versions of Android you can  individually select what FastLyrics has access to. You can deselect everything because FastLyrics doesn\'t actually access any notifications</string>

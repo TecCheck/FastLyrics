@@ -108,7 +108,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    tools:visibility="gone">
+                    android:visibility="gone"
+                    tools:visibility="visible">
 
                     <TextView
                         android:id="@+id/text_lyrics"
@@ -119,6 +120,32 @@
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                         android:textSize="20sp"
                         tools:text="Some lyrics here" />
+
+                    <LinearLayout
+                        android:id="@+id/footer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginBottom="16dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/lyrics_provider_over_line"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Overline" />
+
+                        <TextView
+                            android:id="@+id/text_lyrics_provider"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawablePadding="8dp"
+                            android:padding="8dp"
+                            android:text="@string/source_genius"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                            app:drawableStartCompat="@drawable/genius" />
+                    </LinearLayout>
+
                 </LinearLayout>
 
             </LinearLayout>

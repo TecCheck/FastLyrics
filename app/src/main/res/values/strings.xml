@@ -21,6 +21,8 @@
     <string name="lyrics_network_exception">There was a network problem while loading lyrics</string>
     <string name="lyrics_unknown_error">An unknown error occurred</string>
 
+    <string name="lyrics_provider_over_line">Lyrics from</string>
+
     <!-- Saved songs view -->
     <string name="delete">Delete</string>
     <string name="items_selected">%1$d selected</string>
@@ -40,7 +42,7 @@
     <string name="source_code">Source code</string>
     <string name="lyrics_sources">Lyrics sources</string>
 
-    <string name="source_genius">Genius</string>
+    <string name="source_genius" translatable="false">Genius</string>
 
     <string name="source_code_url" translatable="false">https://github.com/TecCheck/FastLyrics</string>
     <string name="source_url_genius" translatable="false">https://genius.com/</string>

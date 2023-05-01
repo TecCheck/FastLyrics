@@ -16,7 +16,6 @@
             style="?attr/materialToolbarStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:menu="@menu/activity_main_menu"
             app:navigationIcon="?attr/homeAsUpIndicator"
             app:title="@string/app_name" />
 

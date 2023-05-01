@@ -1,7 +1,6 @@
 package io.github.teccheck.fastlyrics
 
 import android.os.Bundle
-import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
@@ -41,11 +40,6 @@ class MainActivity : AppCompatActivity() {
 
         if (!DummyNotificationListenerService.canAccessNotifications(this))
             navController.navigate(R.id.nav_permission)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.activity_main_menu, menu)
-        return true
     }
 
     override fun onSupportNavigateUp(): Boolean {

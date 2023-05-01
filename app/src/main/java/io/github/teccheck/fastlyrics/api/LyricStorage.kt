@@ -64,7 +64,9 @@ object LyricStorage {
 
     fun store(song: SongWithLyrics) {
         Log.d(TAG, "store")
-        database.songsDao().insert(song)
+
+        if (findSong(song.title, song.artist) == null)
+            database.songsDao().insert(song)
     }
 
     fun getSong(id: Long): SongWithLyrics? = database.songsDao().getSong(id)

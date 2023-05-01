@@ -22,7 +22,7 @@ import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.api.LyricStorage
 import io.github.teccheck.fastlyrics.databinding.FragmentSavedBinding
-import io.github.teccheck.fastlyrics.ui.lyrics.LyricsFragment
+import io.github.teccheck.fastlyrics.ui.viewlyrics.ViewLyricsFragment
 
 class SavedFragment : Fragment() {
 
@@ -147,9 +147,8 @@ class SavedFragment : Fragment() {
     private fun viewSong(id: Long) {
         Log.d(TAG, "Show song $id")
         val bundle = Bundle()
-        bundle.putLong(LyricsFragment.ARG_SONG_ID, id)
-
-        findNavController().navigate(R.id.nav_lyrics_view_saved, bundle)
+        bundle.putLong(ViewLyricsFragment.ARG_SONG_ID, id)
+        findNavController().navigate(R.id.nav_view_lyrics, bundle)
     }
 
     companion object {

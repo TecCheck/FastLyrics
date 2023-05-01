@@ -5,7 +5,7 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_lyrics"
+            android:id="@+id/nav_fast_lyrics"
             android:icon="@drawable/outline_queue_music_24"
             android:title="@string/menu_lyrics" />
         <item

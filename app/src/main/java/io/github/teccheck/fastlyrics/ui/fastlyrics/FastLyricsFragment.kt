@@ -1,4 +1,4 @@
-package io.github.teccheck.fastlyrics.ui.lyrics
+package io.github.teccheck.fastlyrics.ui.fastlyrics
 
 import android.os.Bundle
 import android.util.Log
@@ -17,7 +17,7 @@ import com.squareup.picasso.Picasso
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.R
-import io.github.teccheck.fastlyrics.databinding.FragmentLyricsBinding
+import io.github.teccheck.fastlyrics.databinding.FragmentFastLyricsBinding
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.exceptions.NetworkException
@@ -25,15 +25,13 @@ import io.github.teccheck.fastlyrics.exceptions.NoMusicPlayingException
 import io.github.teccheck.fastlyrics.exceptions.ParseException
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 
-class LyricsFragment : Fragment() {
+class FastLyricsFragment : Fragment() {
 
-    private lateinit var lyricsViewModel: LyricsViewModel
-    private var _binding: FragmentLyricsBinding? = null
+    private lateinit var lyricsViewModel: FastLyricsViewModel
+    private var _binding: FragmentFastLyricsBinding? = null
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
-
-    private var autoLoad = true
 
     private val menuProvider = object : MenuProvider {
         override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -49,8 +47,8 @@ class LyricsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        lyricsViewModel = ViewModelProvider(this)[LyricsViewModel::class.java]
-        _binding = FragmentLyricsBinding.inflate(inflater, container, false)
+        lyricsViewModel = ViewModelProvider(this)[FastLyricsViewModel::class.java]
+        _binding = FragmentFastLyricsBinding.inflate(inflater, container, false)
 
         lyricsViewModel.songMeta.observe(viewLifecycleOwner) { result ->
             when (result) {
@@ -94,24 +92,10 @@ class LyricsFragment : Fragment() {
         )
         binding.refreshLayout.setOnRefreshListener { loadLyricsForCurrentSong() }
 
-        arguments?.let {
-            if (it.containsKey(ARG_SONG_ID)) {
-                autoLoad = false
-                binding.refreshLayout.isEnabled = false
-
-                lyricsViewModel.loadLyricsForSongFromStorage(
-                    it.getLong(ARG_SONG_ID, 0)
-                )
-            }
-        }
-
         val notificationAccess =
             context?.let { DummyNotificationListenerService.canAccessNotifications(it) } ?: false
 
-        if (autoLoad && notificationAccess) {
-            autoLoad = false
-            loadLyricsForCurrentSong()
-        }
+        if (notificationAccess) loadLyricsForCurrentSong()
 
         return binding.root
     }
@@ -189,8 +173,6 @@ class LyricsFragment : Fragment() {
     }
 
     companion object {
-        private const val TAG = "LyricsFragment"
-
-        const val ARG_SONG_ID = "song_id"
+        private const val TAG = "FastLyricsFragment"
     }
 }

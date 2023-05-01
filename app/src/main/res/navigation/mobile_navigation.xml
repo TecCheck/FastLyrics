@@ -3,23 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_lyrics">
+    app:startDestination="@+id/nav_fast_lyrics">
 
     <fragment
-        android:id="@+id/nav_lyrics"
-        android:name="io.github.teccheck.fastlyrics.ui.lyrics.LyricsFragment"
-        android:label="@string/menu_lyrics"
-        tools:layout="@layout/fragment_lyrics" />
+        android:id="@+id/nav_fast_lyrics"
+        android:name="io.github.teccheck.fastlyrics.ui.fastlyrics.FastLyricsFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_fast_lyrics" />
     <fragment
         android:id="@+id/nav_saved"
         android:name="io.github.teccheck.fastlyrics.ui.saved.SavedFragment"
         android:label="@string/menu_saved"
         tools:layout="@layout/fragment_saved" />
     <fragment
-        android:id="@+id/nav_lyrics_view_saved"
-        android:name="io.github.teccheck.fastlyrics.ui.lyrics.LyricsFragment"
+        android:id="@+id/nav_view_lyrics"
+        android:name="io.github.teccheck.fastlyrics.ui.viewlyrics.ViewLyricsFragment"
         android:label="@string/menu_lyrics"
-        tools:layout="@layout/fragment_lyrics" />
+        tools:layout="@layout/fragment_view_lyrics" />
     <fragment
         android:id="@+id/nav_permission"
         android:name="io.github.teccheck.fastlyrics.ui.permission.PermissionFragment"

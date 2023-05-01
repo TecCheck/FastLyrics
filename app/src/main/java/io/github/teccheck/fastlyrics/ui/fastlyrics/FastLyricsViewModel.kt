@@ -1,11 +1,12 @@
-package io.github.teccheck.fastlyrics.ui.lyrics
+package io.github.teccheck.fastlyrics.ui.fastlyrics
 
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.github.teccheck.fastlyrics.api.LyricStorage
+import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.api.LyricsApi
 import io.github.teccheck.fastlyrics.api.MediaSession
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
@@ -13,10 +14,7 @@ import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 
-import dev.forkhandles.result4k.Result
-import dev.forkhandles.result4k.Success
-
-class LyricsViewModel : ViewModel() {
+class FastLyricsViewModel : ViewModel() {
 
     private val _songMeta = MutableLiveData<Result<SongMeta, LyricsApiException>>()
     private val _songWithLyrics = MutableLiveData<Result<SongWithLyrics, LyricsApiException>>()
@@ -40,11 +38,7 @@ class LyricsViewModel : ViewModel() {
         return songMetaResult is Success
     }
 
-    fun loadLyricsForSongFromStorage(songId: Long) {
-        LyricStorage.getSongAsync(songId, _songWithLyrics)
-    }
-
     companion object {
-        private const val TAG = "LyricsViewModel"
+        private const val TAG = "FastLyricsViewModel"
     }
 }

@@ -11,18 +11,18 @@ class DetailsLookup(private val recyclerView: RecyclerView) : ItemDetailsLookup<
             ?: return null
 
         return SongWithLyricsDetails(
-            recyclerView.getChildAdapterPosition(view), viewHolder.getSongId()
+            viewHolder.adapterPosition,
+            viewHolder.itemId,
+            viewHolder.getSongId()
         )
     }
 
-    class SongWithLyricsDetails(private val position: Int, private val key: Long?) :
-        ItemDetails<Long>() {
-        override fun getPosition(): Int {
-            return position
-        }
+    class SongWithLyricsDetails(
+        private val position: Int, private val itemId: Long?, val songId: Long?
+    ) : ItemDetails<Long>() {
 
-        override fun getSelectionKey(): Long? {
-            return key
-        }
+        override fun getPosition() = position
+
+        override fun getSelectionKey() = itemId
     }
 }

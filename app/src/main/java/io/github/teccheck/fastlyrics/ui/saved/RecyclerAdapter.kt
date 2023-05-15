@@ -53,16 +53,13 @@ class RecyclerAdapter() :
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val song = songs[position]
-        val selected = selectionTracker?.isSelected(song.id) ?: false
-
+        val selected = selectionTracker?.isSelected(position.toLong()) ?: false
         viewHolder.bind(song, selected)
     }
 
     override fun getItemCount() = songs.size
 
-    override fun getItemId(position: Int): Long {
-        return songs[position].id
-    }
+    override fun getItemId(position: Int) = position.toLong()
 
     @SuppressLint("NotifyDataSetChanged")
     fun setSongs(songs: List<SongWithLyrics>) {

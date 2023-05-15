@@ -44,7 +44,6 @@ class SavedFragment : Fragment() {
             super.onSelectionChanged()
 
             if (selectionTracker.hasSelection()) {
-                Log.d(TAG, "ActionMode")
                 if (actionMode == null) {
                     actionMode =
                         (activity as AppCompatActivity).startSupportActionMode(actionModeCallback)
@@ -71,7 +70,7 @@ class SavedFragment : Fragment() {
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
             return when (item?.itemId) {
                 R.id.delete -> {
-                    LyricStorage.deleteAsync(selectionTracker.selection.toList())
+                    deleteItems(selectionTracker.selection.toList())
                     viewModel.fetchSongs()
                     actionMode?.finish()
                     selectionTracker.clearSelection()
@@ -140,7 +139,7 @@ class SavedFragment : Fragment() {
     private fun onItemActivated(
         item: ItemDetailsLookup.ItemDetails<Long>, e: MotionEvent
     ): Boolean {
-        item.selectionKey?.let { viewSong(it) }
+        (item as DetailsLookup.SongWithLyricsDetails).songId?.let { viewSong(it) }
         return false
     }
 
@@ -149,6 +148,13 @@ class SavedFragment : Fragment() {
         val bundle = Bundle()
         bundle.putLong(ViewLyricsFragment.ARG_SONG_ID, id)
         findNavController().navigate(R.id.nav_view_lyrics, bundle)
+    }
+
+    private fun deleteItems(itemIds: List<Long>) {
+        val songIds =
+            itemIds.map { (binding.recyclerView.findViewHolderForItemId(it) as RecyclerAdapter.ViewHolder).getSongId()!! }
+
+        LyricStorage.deleteAsync(songIds)
     }
 
     companion object {

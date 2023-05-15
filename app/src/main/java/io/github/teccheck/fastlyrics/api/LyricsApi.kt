@@ -17,49 +17,45 @@ object LyricsApi {
 
     private val executor = Executors.newSingleThreadExecutor()
 
-    fun getLyrics(
+    fun getLyricsAsync(
         songMeta: SongMeta,
         liveDataTarget: MutableLiveData<Result<SongWithLyrics, LyricsApiException>>
     ) {
         executor.submit {
             val song = songMeta.artist?.let { LyricStorage.findSong(songMeta.title, it) }
             if (song != null) {
-                liveDataTarget.apply { Success(song) }
+                liveDataTarget.postValue(Success(song))
                 return@submit
             }
 
-            fetchLyrics(songMeta, liveDataTarget)
+            val result = fetchLyrics(songMeta)
+            liveDataTarget.postValue(result)
+
+            if (result is Success) {
+                LyricStorage.store(result.value)
+            }
         }
     }
 
-    fun fetchLyrics(
-        songMeta: SongMeta,
-        liveDataTarget: MutableLiveData<Result<SongWithLyrics, LyricsApiException>>
-    ) {
-        executor.submit {
-            var searchQuery = songMeta.title
-            if (songMeta.artist != null) {
-                searchQuery += " ${songMeta.artist}"
+    private fun fetchLyrics(
+        songMeta: SongMeta
+    ): Result<SongWithLyrics, LyricsApiException> {
+        var searchQuery = songMeta.title
+        if (songMeta.artist != null) {
+            searchQuery += " ${songMeta.artist}"
+        }
+
+        return when (val searchResult = Genius.search(searchQuery)) {
+            is Failure -> {
+                searchResult
             }
 
-            val songResult = when (val searchResult = Genius.search(searchQuery)) {
-                is Failure -> {
-                    searchResult
+            is Success -> {
+                if (searchResult.value.isNotEmpty()) {
+                    Genius.fetchLyrics(searchResult.value[0].id!!)
+                } else {
+                    Failure(LyricsNotFoundException())
                 }
-
-                is Success -> {
-                    if (searchResult.value.isNotEmpty()) {
-                        Genius.fetchLyrics(searchResult.value[0].id!!)
-                    } else {
-                        Failure(LyricsNotFoundException())
-                    }
-                }
-            }
-
-            liveDataTarget.postValue(songResult)
-
-            if (songResult is Success) {
-                LyricStorage.store(songResult.value)
             }
         }
     }

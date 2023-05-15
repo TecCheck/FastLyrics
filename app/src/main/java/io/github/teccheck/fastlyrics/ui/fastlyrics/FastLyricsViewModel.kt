@@ -32,7 +32,7 @@ class FastLyricsViewModel : ViewModel() {
         _songMeta.value = songMetaResult
 
         if (songMetaResult is Success) {
-            LyricsApi.getLyrics(songMetaResult.value, _songWithLyrics)
+            LyricsApi.getLyricsAsync(songMetaResult.value, _songWithLyrics)
         }
 
         return songMetaResult is Success

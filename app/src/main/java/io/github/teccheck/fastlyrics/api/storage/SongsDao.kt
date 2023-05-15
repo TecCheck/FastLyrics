@@ -20,6 +20,6 @@ interface SongsDao {
     @Insert
     fun insert(song: SongWithLyrics)
 
-    @Query("DELETE FROM songs WHERE id = :ids")
+    @Query("DELETE FROM songs WHERE id in (:ids)")
     fun deleteAll(ids: List<Long>)
 }

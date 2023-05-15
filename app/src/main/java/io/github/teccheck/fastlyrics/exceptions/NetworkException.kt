@@ -1,4 +1,3 @@
 package io.github.teccheck.fastlyrics.exceptions
 
-class NetworkException : LyricsApiException() {
-}
+class NetworkException : LyricsApiException()

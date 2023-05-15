@@ -2,10 +2,6 @@
     <string name="app_name">FastLyrics</string>
 
     <!-- Nav drawer -->
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="nav_header_icon_desc">Navigation header icon</string>
 
     <string name="menu_lyrics">Lyrics</string>
     <string name="menu_saved">Saved</string>

@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 
-class RecyclerAdapter() :
+class RecyclerAdapter :
     RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
     private var songs: List<SongWithLyrics> = listOf()

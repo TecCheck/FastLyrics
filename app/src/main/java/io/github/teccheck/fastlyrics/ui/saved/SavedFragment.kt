@@ -32,35 +32,23 @@ class SavedFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-
     private lateinit var viewModel: SavedViewModel
     private lateinit var adapter: RecyclerAdapter
     private lateinit var selectionTracker: SelectionTracker<Long>
 
     private var actionMode: ActionMode? = null
 
+    // These two only forward to methods within SavedFragment
     private val selectionObserver = object : SelectionTracker.SelectionObserver<Long>() {
         override fun onSelectionChanged() {
             super.onSelectionChanged()
-
-            if (selectionTracker.hasSelection()) {
-                if (actionMode == null) {
-                    actionMode =
-                        (activity as AppCompatActivity).startSupportActionMode(actionModeCallback)
-                }
-
-                actionMode?.title =
-                    getString(R.string.items_selected, selectionTracker.selection.size())
-            } else {
-                actionMode?.finish()
-            }
+            this@SavedFragment.onSelectionChanged()
         }
     }
 
     private val actionModeCallback = object : ActionMode.Callback {
         override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-            activity?.menuInflater?.inflate(R.menu.fragment_saved_contextual_appbar_menu, menu)
-            return true
+            return this@SavedFragment.onCreateActionMode(menu)
         }
 
         override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
@@ -68,22 +56,11 @@ class SavedFragment : Fragment() {
         }
 
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
-            return when (item?.itemId) {
-                R.id.delete -> {
-                    deleteItems(selectionTracker.selection.toList())
-                    viewModel.fetchSongs()
-                    actionMode?.finish()
-                    selectionTracker.clearSelection()
-                    true
-                }
-
-                else -> false
-            }
+            return this@SavedFragment.onActionItemClicked(mode, item)
         }
 
         override fun onDestroyActionMode(mode: ActionMode?) {
-            actionMode = null
-            selectionTracker.clearSelection()
+            this@SavedFragment.onDestroyActionMode()
         }
     }
 
@@ -99,7 +76,7 @@ class SavedFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
         selectionTracker = SelectionTracker.Builder(
-            "my-selection-id",
+            SELECTION_ID,
             binding.recyclerView,
             StableIdKeyProvider(binding.recyclerView),
             DetailsLookup(binding.recyclerView),
@@ -110,7 +87,6 @@ class SavedFragment : Fragment() {
         adapter.setSelectionTracker(selectionTracker)
 
         viewModel.songs.observe(viewLifecycleOwner) { result ->
-            Log.d(TAG, "test")
             if (result is Success) {
                 adapter.setSongs(result.value)
             }
@@ -143,6 +119,43 @@ class SavedFragment : Fragment() {
         return false
     }
 
+    private fun onSelectionChanged() {
+        if (!selectionTracker.hasSelection()) {
+            actionMode?.finish()
+            return
+        }
+
+        if (actionMode == null) {
+            actionMode = (activity as AppCompatActivity).startSupportActionMode(actionModeCallback)
+        }
+
+        actionMode?.title = getString(R.string.items_selected, selectionTracker.selection.size())
+    }
+
+    private fun onCreateActionMode(menu: Menu?): Boolean {
+        activity?.menuInflater?.inflate(R.menu.fragment_saved_contextual_appbar_menu, menu)
+        return true
+    }
+
+    private fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.delete -> {
+                deleteItems(selectionTracker.selection.toList())
+                viewModel.fetchSongs()
+                selectionTracker.clearSelection()
+                mode?.finish()
+                true
+            }
+
+            else -> false
+        }
+    }
+
+    private fun onDestroyActionMode() {
+        actionMode = null
+        selectionTracker.clearSelection()
+    }
+
     private fun viewSong(id: Long) {
         Log.d(TAG, "Show song $id")
         val bundle = Bundle()
@@ -159,5 +172,6 @@ class SavedFragment : Fragment() {
 
     companion object {
         private const val TAG = "SavedFragment"
+        private const val SELECTION_ID = "song-selection"
     }
 }

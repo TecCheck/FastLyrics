@@ -33,6 +33,8 @@
     <string name="appearance_header">Appearance</string>
     <string name="preference_material_style">Material Style</string>
     <string name="preference_app_theme">App theme</string>
+    <string name="preference_auto_refresh">Auto refresh lyrics</string>
+    <string name="preference_auto_refresh_description">Automatically refresh lyrics when the music changes</string>
 
     <!-- About -->
     <string name="source_code">Source code</string>

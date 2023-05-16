@@ -22,6 +22,8 @@ class FastLyricsViewModel : ViewModel() {
     val songMeta: LiveData<Result<SongMeta, LyricsApiException>> = _songMeta
     val songWithLyrics: LiveData<Result<SongWithLyrics, LyricsApiException>> = _songWithLyrics
 
+    var autoRefresh = false
+
     fun loadLyricsForCurrentSong(context: Context): Boolean {
         if (!DummyNotificationListenerService.canAccessNotifications(context)) {
             Log.w(TAG, "Can't access notifications")
@@ -36,6 +38,16 @@ class FastLyricsViewModel : ViewModel() {
         }
 
         return songMetaResult is Success
+    }
+
+    fun setupSongMetaListener(context: Context) {
+        MediaSession.registerSongMetaListener(context) { songMeta ->
+            if (!autoRefresh)
+                return@registerSongMetaListener
+
+            _songMeta.postValue(Success(songMeta))
+            LyricsApi.getLyricsAsync(songMeta, _songWithLyrics)
+        }
     }
 
     companion object {

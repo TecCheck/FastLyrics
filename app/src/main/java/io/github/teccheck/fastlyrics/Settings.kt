@@ -28,9 +28,14 @@ class Settings(context: Context) {
             R.style.Theme_FastLyrics_Material2
     }
 
+    fun getIsAutoRefreshEnabled(): Boolean {
+        return sharedPreferences.getBoolean(KEY_AUTO_REFRESH, false)
+    }
+
     companion object {
         private const val KEY_APP_THEME = "app_theme"
         private const val KEY_MATERIAL_STYLE = "material_style"
+        private const val KEY_AUTO_REFRESH = "auto_refresh"
 
         private const val MATERIAL_STYLE_ONE = "1"
         private const val MATERIAL_STYLE_TWO = "2"

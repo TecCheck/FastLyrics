@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.R
+import io.github.teccheck.fastlyrics.Settings
 import io.github.teccheck.fastlyrics.databinding.FragmentFastLyricsBinding
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
@@ -96,6 +97,12 @@ class FastLyricsFragment : Fragment() {
             context?.let { DummyNotificationListenerService.canAccessNotifications(it) } ?: false
 
         if (notificationAccess) loadLyricsForCurrentSong()
+
+        val context = requireContext()
+        val settings = Settings(context)
+
+        lyricsViewModel.setupSongMetaListener(context)
+        lyricsViewModel.autoRefresh = settings.getIsAutoRefreshEnabled()
 
         return binding.root
     }

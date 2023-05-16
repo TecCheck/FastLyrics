@@ -13,3 +13,10 @@ Not all of the features, planned are currently implemented. Here's an overview.
 * [x] Material 1 and 2 Design
 * [ ] Manual search
 * [ ] Nice onboarding UI 
+
+## Screenshots
+![](https://github.com/TecCheck/FastLyrics/blob/11794d113aed1eb51ad5d7183c7b568011fa3dbf/fastlane/metadata/android/en-Us/images/phoneScreenshots/1.png)
+![](https://github.com/TecCheck/FastLyrics/blob/11794d113aed1eb51ad5d7183c7b568011fa3dbf/fastlane/metadata/android/en-Us/images/phoneScreenshots/2.png)
+![](https://github.com/TecCheck/FastLyrics/blob/11794d113aed1eb51ad5d7183c7b568011fa3dbf/fastlane/metadata/android/en-Us/images/phoneScreenshots/3.png)
+![](https://github.com/TecCheck/FastLyrics/blob/11794d113aed1eb51ad5d7183c7b568011fa3dbf/fastlane/metadata/android/en-Us/images/phoneScreenshots/4.png)
+

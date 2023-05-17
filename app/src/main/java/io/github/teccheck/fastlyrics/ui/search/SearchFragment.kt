@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
@@ -92,6 +93,7 @@ class SearchFragment : Fragment() {
         super.onDestroyView()
         _binding = null
         searchView?.setOnQueryTextListener(null)
+        searchMenuItem?.setOnActionExpandListener(null)
     }
 
     private fun onQueryTextSubmit(query: String?): Boolean {
@@ -117,7 +119,8 @@ class SearchFragment : Fragment() {
         Log.d(TAG, "Show search result $searchResult")
         val bundle = Bundle()
         bundle.putSerializable(ViewLyricsFragment.ARG_SEARCH_RESULT, searchResult)
-        findNavController().navigate(R.id.nav_view_lyrics, bundle)
+        val options = NavOptions.Builder().setPopUpTo(R.id.nav_fast_lyrics, false).build()
+        findNavController().navigate(R.id.nav_view_lyrics, bundle, options)
 
         searchMenuItem?.setOnActionExpandListener(null)
         searchMenuItem?.collapseActionView()

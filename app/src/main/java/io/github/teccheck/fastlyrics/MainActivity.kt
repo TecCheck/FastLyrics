@@ -59,7 +59,8 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.app_bar_search -> {
-                navController.navigate(R.id.nav_search)
+                if (navController.currentDestination?.id != R.id.nav_search)
+                    navController.navigate(R.id.nav_search)
                 true
             }
 

@@ -13,4 +13,7 @@
 
     <style name="Widget.App.ActionBarTheme" parent="ThemeOverlay.MaterialComponents.Toolbar.Surface">
     </style>
+
+    <style name="AppTheme.SearchView" parent="Widget.AppCompat.SearchView.ActionBar">
+    </style>
 </resources>

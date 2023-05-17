@@ -14,6 +14,7 @@
         <item name="android:navigationBarColor">?android:colorBackground</item>
 
         <item name="materialToolbarStyle">@style/Style.FastLyrics.Material1.Toolbar</item>
+        <item name="searchViewStyle">@style/AppTheme.SearchView</item>
 
         <item name="navHeaderBackground">?attr/colorPrimary</item>
         <item name="navHeaderForeground">?attr/colorOnPrimary</item>
@@ -40,6 +41,7 @@
 
         <item name="materialToolbarStyle">@style/Style.FastLyrics.Material2.Toolbar</item>
         <item name="appBarLayoutStyle">@style/Style.FastLyrics.Material2.AppBarLayout</item>
+        <item name="searchViewStyle">@style/AppTheme.SearchView</item>
 
         <item name="navHeaderBackground">?attr/colorSurface</item>
         <item name="navHeaderForeground">?attr/colorPrimary</item>

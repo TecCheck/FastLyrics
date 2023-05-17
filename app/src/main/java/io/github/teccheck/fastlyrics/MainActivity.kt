@@ -1,6 +1,7 @@
 package io.github.teccheck.fastlyrics
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -46,21 +47,23 @@ class MainActivity : AppCompatActivity() {
             onDestinationChanged(destination)
         }
 
-        if (!DummyNotificationListenerService.canAccessNotifications(this))
-            navController.navigate(R.id.nav_permission)
+        if (!DummyNotificationListenerService.canAccessNotifications(this)) navController.navigate(R.id.nav_permission)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        Log.d(TAG, "onCreateOptionsMenu")
         menuInflater.inflate(R.menu.menu_main, menu)
         menu?.findItem(R.id.app_bar_search)?.let { searchMenuItem = it }
+        updateSearchEnabled()
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.app_bar_search -> {
-                if (navController.currentDestination?.id != R.id.nav_search)
-                    navController.navigate(R.id.nav_search)
+                if (navController.currentDestination?.id != R.id.nav_search) navController.navigate(
+                    R.id.nav_search
+                )
                 true
             }
 
@@ -84,11 +87,12 @@ class MainActivity : AppCompatActivity() {
         }
         binding.drawerLayout.setDrawerLockMode(lockMode)
 
-        setSearchEnabled(destination.id == R.id.nav_fast_lyrics || destination.id == R.id.nav_search)
+        updateSearchEnabled()
     }
 
-    private fun setSearchEnabled(enabled: Boolean) {
-        searchMenuItem?.isVisible = enabled
+    private fun updateSearchEnabled() {
+        val dest = navController.currentDestination ?: return
+        searchMenuItem?.isVisible = dest.id == R.id.nav_fast_lyrics || dest.id == R.id.nav_search
     }
 
     fun getSearchMenuItem(): MenuItem? {

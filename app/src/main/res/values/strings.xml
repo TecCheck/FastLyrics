@@ -46,5 +46,5 @@
     <string name="source_url_genius" translatable="false">https://genius.com/</string>
 
     <!-- Notification listener service -->
-    <string name="notification_access">Notification Access</string>
+    <string name="notification_access">Fastlyrics song metadata access</string>
 </resources>

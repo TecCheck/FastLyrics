@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
 import dev.forkhandles.result4k.Success
+import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.databinding.FragmentViewLyricsBinding
 import io.github.teccheck.fastlyrics.model.SearchResult
 
@@ -26,7 +27,13 @@ class ViewLyricsFragment : Fragment() {
         lyricsViewModel = ViewModelProvider(this)[ViewLyricsViewModel::class.java]
         _binding = FragmentViewLyricsBinding.inflate(inflater, container, false)
 
+        binding.refreshLayout.isEnabled = false
+        binding.refreshLayout.setColorSchemeResources(
+            R.color.theme_primary, R.color.theme_secondary
+        )
+
         lyricsViewModel.songWithLyrics.observe(viewLifecycleOwner) { result ->
+            binding.refreshLayout.isRefreshing = false
             if (result is Success) {
                 binding.header.textSongTitle.text = result.value.title
                 binding.header.textSongArtist.text = result.value.artist
@@ -39,6 +46,7 @@ class ViewLyricsFragment : Fragment() {
             if (it.containsKey(ARG_SONG_ID)) {
                 lyricsViewModel.loadLyricsForSongFromStorage(it.getLong(ARG_SONG_ID, 0))
             } else if (it.containsKey(ARG_SEARCH_RESULT)) {
+                binding.refreshLayout.isRefreshing = true
                 val searchResult = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     it.getSerializable(ARG_SEARCH_RESULT, SearchResult::class.java)
                 } else {

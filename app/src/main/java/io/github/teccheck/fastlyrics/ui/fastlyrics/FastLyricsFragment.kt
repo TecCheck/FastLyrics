@@ -1,5 +1,7 @@
 package io.github.teccheck.fastlyrics.ui.fastlyrics
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -39,7 +41,6 @@ class FastLyricsFragment : Fragment() {
         lyricsViewModel.songMeta.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Success -> {
-
                     binding.header.container.visibility = View.VISIBLE
                     binding.errorView.container.visibility = View.GONE
                     binding.header.textSongTitle.text = result.value.title
@@ -66,6 +67,8 @@ class FastLyricsFragment : Fragment() {
                     binding.header.textSongArtist.text = result.value.artist
                     binding.lyricsView.textLyrics.text = result.value.lyrics
                     Picasso.get().load(result.value.artUrl).into(binding.header.imageSongArt)
+
+                    binding.lyricsView.footer.setOnClickListener { openLink(result.value.sourceUrl) }
                 }
 
                 is Failure -> {
@@ -141,6 +144,8 @@ class FastLyricsFragment : Fragment() {
             resources, R.drawable.baseline_error_outline_24, null
         )
     }
+
+    private fun openLink(link: String) = startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
 
     companion object {
         private const val TAG = "FastLyricsFragment"

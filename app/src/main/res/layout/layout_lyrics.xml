@@ -12,35 +12,60 @@
         android:id="@+id/text_lyrics"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="16dp"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         android:textSize="20sp"
         tools:text="Some lyrics here" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:orientation="vertical">
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/textView5"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:text="@string/lyrics_provider_over_line"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Overline" />
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
+            app:layout_constraintBottom_toTopOf="@+id/text_lyrics_provider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/text_lyrics_provider"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
             android:drawablePadding="8dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:text="@string/source_genius"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             app:drawableStartCompat="@drawable/genius"
-            app:drawableTint="?android:attr/textColorPrimary" />
-    </LinearLayout>
+            app:drawableTint="?android:attr/textColorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/baseline_open_in_new_24"
+            app:tint="?attr/colorControlNormal" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

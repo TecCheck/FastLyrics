@@ -1,5 +1,7 @@
 package io.github.teccheck.fastlyrics.ui.viewlyrics
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -39,6 +41,8 @@ class ViewLyricsFragment : Fragment() {
                 binding.header.textSongArtist.text = result.value.artist
                 binding.lyricsView.textLyrics.text = result.value.lyrics
                 Picasso.get().load(result.value.artUrl).into(binding.header.imageSongArt)
+
+                binding.lyricsView.footer.setOnClickListener { openLink(result.value.sourceUrl) }
             }
         }
 
@@ -64,6 +68,8 @@ class ViewLyricsFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    private fun openLink(link: String) = startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
 
     companion object {
         private const val TAG = "ViewLyricsFragment"

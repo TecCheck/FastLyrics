@@ -34,14 +34,17 @@ class FastLyricsFragment : Fragment() {
         lyricsViewModel = ViewModelProvider(this)[FastLyricsViewModel::class.java]
         _binding = FragmentFastLyricsBinding.inflate(inflater, container, false)
 
+        binding.lyricsView.container.visibility = View.GONE
+
         lyricsViewModel.songMeta.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Success -> {
-                    binding.header.visibility = View.VISIBLE
-                    binding.errorView.visibility = View.GONE
-                    binding.textSongTitle.text = result.value.title
-                    binding.textSongArtist.text = result.value.artist
-                    binding.imageSongArt.setImageBitmap(result.value.art)
+
+                    binding.header.container.visibility = View.VISIBLE
+                    binding.errorView.container.visibility = View.GONE
+                    binding.header.textSongTitle.text = result.value.title
+                    binding.header.textSongArtist.text = result.value.artist
+                    binding.header.imageSongArt.setImageBitmap(result.value.art)
                 }
 
                 is Failure -> {
@@ -55,14 +58,14 @@ class FastLyricsFragment : Fragment() {
 
             when (result) {
                 is Success -> {
-                    binding.header.visibility = View.VISIBLE
-                    binding.lyricsView.visibility = View.VISIBLE
-                    binding.errorView.visibility = View.GONE
+                    binding.header.container.visibility = View.VISIBLE
+                    binding.lyricsView.container.visibility = View.VISIBLE
+                    binding.errorView.container.visibility = View.GONE
 
-                    binding.textSongTitle.text = result.value.title
-                    binding.textSongArtist.text = result.value.artist
-                    binding.textLyrics.text = result.value.lyrics
-                    Picasso.get().load(result.value.artUrl).into(binding.imageSongArt)
+                    binding.header.textSongTitle.text = result.value.title
+                    binding.header.textSongArtist.text = result.value.artist
+                    binding.lyricsView.textLyrics.text = result.value.lyrics
+                    Picasso.get().load(result.value.artUrl).into(binding.header.imageSongArt)
                 }
 
                 is Failure -> {
@@ -105,11 +108,11 @@ class FastLyricsFragment : Fragment() {
     }
 
     private fun displayError(exception: LyricsApiException) {
-        binding.lyricsView.visibility = View.GONE
-        binding.errorView.visibility = View.VISIBLE
+        binding.lyricsView.container.visibility = View.GONE
+        binding.errorView.container.visibility = View.VISIBLE
 
-        binding.errorText.text = getErrorTextForApiException(exception)
-        binding.errorIcon.setImageDrawable(getErrorIconForApiException(exception))
+        binding.errorView.errorText.text = getErrorTextForApiException(exception)
+        binding.errorView.errorIcon.setImageDrawable(getErrorIconForApiException(exception))
 
         val headerVisibility = if (exception is NoMusicPlayingException) {
             View.GONE
@@ -117,7 +120,7 @@ class FastLyricsFragment : Fragment() {
             View.VISIBLE
         }
 
-        binding.header.visibility = headerVisibility
+        binding.header.container.visibility = headerVisibility
     }
 
     private fun getErrorTextForApiException(exception: LyricsApiException): String =

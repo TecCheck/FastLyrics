@@ -28,10 +28,10 @@ class ViewLyricsFragment : Fragment() {
 
         lyricsViewModel.songWithLyrics.observe(viewLifecycleOwner) { result ->
             if (result is Success) {
-                binding.textSongTitle.text = result.value.title
-                binding.textSongArtist.text = result.value.artist
-                binding.textLyrics.text = result.value.lyrics
-                Picasso.get().load(result.value.artUrl).into(binding.imageSongArt)
+                binding.header.textSongTitle.text = result.value.title
+                binding.header.textSongArtist.text = result.value.artist
+                binding.lyricsView.textLyrics.text = result.value.lyrics
+                Picasso.get().load(result.value.artUrl).into(binding.header.imageSongArt)
             }
         }
 

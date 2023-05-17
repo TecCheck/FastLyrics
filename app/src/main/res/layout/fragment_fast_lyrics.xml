@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,130 +22,25 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <LinearLayout
+                <include
                     android:id="@+id/header"
+                    layout="@layout/layout_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="32dp" />
 
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/image_song_art"
-                        android:layout_width="96dp"
-                        android:layout_height="96dp"
-                        android:background="@android:color/darker_gray"
-                        app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent"
-                        app:srcCompat="@drawable/round_music_note_24" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="16dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/text_song_title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                            tools:text="Song Name" />
-
-                        <TextView
-                            android:id="@+id/text_song_artist"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                            tools:text="Artist" />
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <View
-                    android:id="@+id/divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="?android:attr/listDivider"
-                    android:visibility="gone" />
-
-                <FrameLayout
+                <include
                     android:id="@+id/error_view"
+                    layout="@layout/layout_error"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:visibility="gone">
+                    android:layout_height="wrap_content" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:id="@+id/error_icon"
-                            android:layout_width="128dp"
-                            android:layout_height="128dp"
-                            android:layout_gravity="center_horizontal"
-                            app:srcCompat="@drawable/baseline_error_outline_24"
-                            app:tint="@color/theme_secondary" />
-
-                        <TextView
-                            android:id="@+id/error_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="16dp"
-                            android:gravity="center_horizontal"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                            tools:text="Error" />
-                    </LinearLayout>
-
-                </FrameLayout>
-
-                <LinearLayout
+                <include
                     android:id="@+id/lyrics_view"
+                    layout="@layout/layout_lyrics"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone"
-                    tools:visibility="visible">
-
-                    <TextView
-                        android:id="@+id/text_lyrics"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                        android:textSize="20sp"
-                        tools:text="Some lyrics here" />
-
-                    <LinearLayout
-                        android:id="@+id/footer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="32dp"
-                        android:layout_marginBottom="16dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/lyrics_provider_over_line"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Overline" />
-
-                        <TextView
-                            android:id="@+id/text_lyrics_provider"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:drawablePadding="8dp"
-                            android:padding="8dp"
-                            android:text="@string/source_genius"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                            app:drawableStartCompat="@drawable/genius" />
-                    </LinearLayout>
-
-                </LinearLayout>
+                    android:layout_marginBottom="16dp" />
 
             </LinearLayout>
 

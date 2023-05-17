@@ -5,9 +5,14 @@
         <item name="cornerSize">32dp</item>
     </style>
 
-    <style name="Widget.App.ActionMode" parent="Widget.AppCompat.ActionMode">
+    <style name="Widget.App.ActionMode.Base" parent="Widget.AppCompat.ActionMode">
         <item name="titleTextStyle">?attr/textAppearanceHeadline6</item>
         <item name="subtitleTextStyle">?attr/textAppearanceSubtitle1</item>
+        <item name="actionModeCloseDrawable">@drawable/baseline_close_24</item>
+        <item name="closeIconTint">?attr/colorControlNormal</item>
+    </style>
+
+    <style name="Widget.App.ActionMode" parent="Widget.App.ActionMode.Base">
         <item name="background">?attr/colorSurface</item>
     </style>
 

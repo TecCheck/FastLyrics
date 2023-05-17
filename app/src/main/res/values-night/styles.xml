@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.App.ActionMode" parent="Widget.App.ActionMode.Base">
+        <item name="background">@color/theme_background_dark</item>
+    </style>
+</resources>

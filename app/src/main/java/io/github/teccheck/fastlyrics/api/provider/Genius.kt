@@ -88,10 +88,11 @@ object Genius {
 
             val title = jo.get(KEY_TITLE).asString
             val artist = jo.get(KEY_PRIMARY_ARTIST).asJsonObject.get(KEY_NAME).asString
+            val artUrl = jo.get(KEY_SONG_ART_URL).asString
             val url = jo.get(KEY_URL).asString
             val id = jo.get(KEY_ID).asInt
 
-            val result = SearchResult(title, artist, null, url, id)
+            val result = SearchResult(title, artist, null, artUrl, url, id)
             results.add(result)
         }
 

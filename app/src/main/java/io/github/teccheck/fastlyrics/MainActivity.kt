@@ -1,23 +1,29 @@
 package io.github.teccheck.fastlyrics
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.navigation.NavigationView
 import io.github.teccheck.fastlyrics.databinding.ActivityMainBinding
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var navController: NavController
     private lateinit var binding: ActivityMainBinding
     private lateinit var settings: Settings
+
+    private var searchMenuItem: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         settings = Settings(this)
@@ -30,34 +36,62 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.appBarMain.toolbar)
 
-        val drawerLayout: DrawerLayout = binding.drawerLayout
-        val navView: NavigationView = binding.navView
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        navController = findNavController(R.id.nav_host_fragment_content_main)
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_fast_lyrics), binding.drawerLayout)
 
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_fast_lyrics), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        binding.navView.setupWithNavController(navController)
 
-        navController.addOnDestinationChangedListener { controller, destination, arguments ->
-            val lockMode = if (destination.id in appBarConfiguration.topLevelDestinations) {
-                DrawerLayout.LOCK_MODE_UNLOCKED
-            } else {
-                DrawerLayout.LOCK_MODE_LOCKED_CLOSED
-            }
-            drawerLayout.setDrawerLockMode(lockMode)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            onDestinationChanged(destination)
         }
 
         if (!DummyNotificationListenerService.canAccessNotifications(this))
             navController.navigate(R.id.nav_permission)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        menu?.findItem(R.id.app_bar_search)?.let { searchMenuItem = it }
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.app_bar_search -> {
+                navController.navigate(R.id.nav_search)
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
     private fun setNightMode(mode: Int) {
         AppCompatDelegate.setDefaultNightMode(mode)
+    }
+
+    private fun onDestinationChanged(destination: NavDestination) {
+        val lockMode = if (destination.id in appBarConfiguration.topLevelDestinations) {
+            DrawerLayout.LOCK_MODE_UNLOCKED
+        } else {
+            DrawerLayout.LOCK_MODE_LOCKED_CLOSED
+        }
+        binding.drawerLayout.setDrawerLockMode(lockMode)
+
+        setSearchEnabled(destination.id == R.id.nav_fast_lyrics || destination.id == R.id.nav_search)
+    }
+
+    private fun setSearchEnabled(enabled: Boolean) {
+        searchMenuItem?.isVisible = enabled
+    }
+
+    fun getSearchMenuItem(): MenuItem? {
+        return searchMenuItem
     }
 
     companion object {

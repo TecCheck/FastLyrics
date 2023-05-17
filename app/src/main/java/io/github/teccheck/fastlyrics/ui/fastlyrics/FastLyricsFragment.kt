@@ -1,16 +1,10 @@
 package io.github.teccheck.fastlyrics.ui.fastlyrics
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.ComponentActivity
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
@@ -33,17 +27,6 @@ class FastLyricsFragment : Fragment() {
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
-
-    private val menuProvider = object : MenuProvider {
-        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-            menuInflater.inflate(R.menu.fragment_lyrics_menu, menu)
-        }
-
-        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-            Log.d(TAG, "MenuItem selected: ${menuItem.itemId}")
-            return false
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -107,17 +90,6 @@ class FastLyricsFragment : Fragment() {
         return binding.root
     }
 
-
-    override fun onResume() {
-        super.onResume()
-        enableMenu()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        disableMenu()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -165,18 +137,6 @@ class FastLyricsFragment : Fragment() {
         else -> ResourcesCompat.getDrawable(
             resources, R.drawable.baseline_error_outline_24, null
         )
-    }
-
-    private fun enableMenu() {
-        if (activity is ComponentActivity) {
-            (activity as ComponentActivity).addMenuProvider(menuProvider)
-        }
-    }
-
-    private fun disableMenu() {
-        if (activity is ComponentActivity) {
-            (activity as ComponentActivity).removeMenuProvider(menuProvider)
-        }
     }
 
     companion object {

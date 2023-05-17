@@ -21,6 +21,11 @@
         android:label="@string/menu_lyrics"
         tools:layout="@layout/fragment_view_lyrics" />
     <fragment
+        android:id="@+id/nav_search"
+        android:name="io.github.teccheck.fastlyrics.ui.search.SearchFragment"
+        android:label="@string/menu_search"
+        tools:layout="@layout/fragment_search"/>
+    <fragment
         android:id="@+id/nav_permission"
         android:name="io.github.teccheck.fastlyrics.ui.permission.PermissionFragment"
         android:label="@string/menu_permission"

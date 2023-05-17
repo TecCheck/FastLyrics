@@ -38,6 +38,15 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+            val lockMode = if (destination.id in appBarConfiguration.topLevelDestinations) {
+                DrawerLayout.LOCK_MODE_UNLOCKED
+            } else {
+                DrawerLayout.LOCK_MODE_LOCKED_CLOSED
+            }
+            drawerLayout.setDrawerLockMode(lockMode)
+        }
+
         if (!DummyNotificationListenerService.canAccessNotifications(this))
             navController.navigate(R.id.nav_permission)
     }

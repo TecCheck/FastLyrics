@@ -11,7 +11,7 @@ Not all of the features, planned are currently implemented. Here's an overview.
 * [x] Fetching lyrics for a playing song
 * [x] Saving lyrics for offline use
 * [x] Material 1 and 2 Design
-* [ ] Manual search
+* [x] Manual search
 * [ ] Nice onboarding UI 
 
 ## Screenshots

@@ -12,11 +12,12 @@ Not all of the features, planned are currently implemented. Here's an overview.
 * [x] Saving lyrics for offline use
 * [x] Material 1 and 2 Design
 * [x] Manual search
-* [ ] Nice onboarding UI 
+* [ ] Nice onboarding UI
+* [x] Automatic refresh, once the current song changes
 
 ## Screenshots
-![](https://github.com/TecCheck/FastLyrics/blob/11794d113aed1eb51ad5d7183c7b568011fa3dbf/fastlane/metadata/android/en-Us/images/phoneScreenshots/1.png)
-![](https://github.com/TecCheck/FastLyrics/blob/11794d113aed1eb51ad5d7183c7b568011fa3dbf/fastlane/metadata/android/en-Us/images/phoneScreenshots/2.png)
-![](https://github.com/TecCheck/FastLyrics/blob/11794d113aed1eb51ad5d7183c7b568011fa3dbf/fastlane/metadata/android/en-Us/images/phoneScreenshots/3.png)
-![](https://github.com/TecCheck/FastLyrics/blob/11794d113aed1eb51ad5d7183c7b568011fa3dbf/fastlane/metadata/android/en-Us/images/phoneScreenshots/4.png)
+![](https://github.com/TecCheck/FastLyrics/blob/11794d113aed1eb51ad5d7183c7b568011fa3dbf/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png)
+![](https://github.com/TecCheck/FastLyrics/blob/11794d113aed1eb51ad5d7183c7b568011fa3dbf/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png)
+![](https://github.com/TecCheck/FastLyrics/blob/11794d113aed1eb51ad5d7183c7b568011fa3dbf/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png)
+![](https://github.com/TecCheck/FastLyrics/blob/11794d113aed1eb51ad5d7183c7b568011fa3dbf/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png)
 

@@ -24,6 +24,17 @@ class FastLyricsViewModel : ViewModel() {
 
     var autoRefresh = false
 
+    private val songMetaCallback = object : MediaSession.SongMetaCallback() {
+        var currentContext: Context? = null
+
+        override fun onSongMetaChanged(songMeta: SongMeta) {
+            if (!autoRefresh) return
+
+            _songMeta.postValue(Success(songMeta))
+            LyricsApi.getLyricsAsync(songMeta, _songWithLyrics)
+        }
+    }
+
     fun loadLyricsForCurrentSong(context: Context): Boolean {
         if (!DummyNotificationListenerService.canAccessNotifications(context)) {
             Log.w(TAG, "Can't access notifications")
@@ -41,12 +52,14 @@ class FastLyricsViewModel : ViewModel() {
     }
 
     fun setupSongMetaListener(context: Context) {
-        MediaSession.registerSongMetaListener(context) { songMeta ->
-            if (!autoRefresh)
-                return@registerSongMetaListener
+        songMetaCallback.currentContext = context
+        MediaSession.registerSongMetaCallback(context, songMetaCallback)
+    }
 
-            _songMeta.postValue(Success(songMeta))
-            LyricsApi.getLyricsAsync(songMeta, _songWithLyrics)
+    override fun onCleared() {
+        super.onCleared()
+        songMetaCallback.currentContext?.let {
+            MediaSession.unregisterSongMetaCallback(it, songMetaCallback)
         }
     }
 

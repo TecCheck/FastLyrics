@@ -16,7 +16,7 @@ import dev.forkhandles.result4k.Success
 object MediaSession {
 
     fun getSongInformation(context: Context): Result<SongMeta, NoMusicPlayingException> {
-        return when (val result = getDefaultMediaSessionController(context)) {
+        return when (val result = getDefaultMediaController(context)) {
             is Failure -> result
             is Success -> {
                 val metadata = result.value.metadata ?: return Failure(NoMusicPlayingException())
@@ -25,26 +25,26 @@ object MediaSession {
         }
     }
 
-    fun registerSongMetaListener(context: Context, listener: SongMetaListener) {
-        val result = getDefaultMediaSessionController(context)
-        if (result is Success) {
-            result.value.registerCallback(object : MediaController.Callback() {
-                override fun onMetadataChanged(metadata: MediaMetadata?) {
-                    if (metadata != null) listener.onSongMetaChanged(metadata.getSongMeta())
-                }
-            })
-        }
+    fun registerSongMetaCallback(context: Context, callback: SongMetaCallback) {
+        val result = getDefaultMediaController(context)
+        if (result is Success) result.value.registerCallback(callback)
     }
 
-    private fun getDefaultMediaSessionController(context: Context): Result<MediaController, NoMusicPlayingException> {
+    fun unregisterSongMetaCallback(context: Context, callback: SongMetaCallback) {
+        getMediaControllers(context).forEach { it.unregisterCallback(callback) }
+    }
+
+    private fun getDefaultMediaController(context: Context): Result<MediaController, NoMusicPlayingException> {
+        val controllers = getMediaControllers(context)
+        if (controllers.isEmpty()) return Failure(NoMusicPlayingException())
+        return Success(controllers[0])
+    }
+
+    private fun getMediaControllers(context: Context): List<MediaController> {
         val className = ComponentName(context, DummyNotificationListenerService::class.java)
         val mediaSessionManager =
             context.getSystemService(AppCompatActivity.MEDIA_SESSION_SERVICE) as MediaSessionManager
-        val controllers: List<MediaController> = mediaSessionManager.getActiveSessions(className)
-
-        if (controllers.isEmpty()) return Failure(NoMusicPlayingException())
-
-        return Success(controllers[0])
+        return mediaSessionManager.getActiveSessions(className)
     }
 
     private fun MediaMetadata.getSongMeta(): SongMeta {
@@ -62,7 +62,12 @@ object MediaSession {
         return SongMeta(title, artist, album, art)
     }
 
-    fun interface SongMetaListener {
-        fun onSongMetaChanged(songMeta: SongMeta)
+    abstract class SongMetaCallback : MediaController.Callback() {
+
+        override fun onMetadataChanged(metadata: MediaMetadata?) {
+            if (metadata != null) onSongMetaChanged(metadata.getSongMeta())
+        }
+
+        abstract fun onSongMetaChanged(songMeta: SongMeta)
     }
 }

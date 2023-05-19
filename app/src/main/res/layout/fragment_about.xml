@@ -80,6 +80,12 @@
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
             </LinearLayout>
 
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -95,7 +101,8 @@
                     android:layout_marginBottom="16dp"
                     android:text="@string/lyrics_sources"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                    android:textColor="@color/theme_secondary" />
+                    android:textColor="@color/theme_secondary"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:id="@+id/layout_source_genius"

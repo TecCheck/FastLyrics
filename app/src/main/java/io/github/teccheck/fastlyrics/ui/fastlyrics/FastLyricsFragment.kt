@@ -85,13 +85,13 @@ class FastLyricsFragment : Fragment() {
         val notificationAccess =
             context?.let { DummyNotificationListenerService.canAccessNotifications(it) } ?: false
 
-        if (notificationAccess) loadLyricsForCurrentSong()
-
-        val context = requireContext()
-        val settings = Settings(context)
-
-        lyricsViewModel.setupSongMetaListener(context)
-        lyricsViewModel.autoRefresh = settings.getIsAutoRefreshEnabled()
+        if (notificationAccess) {
+            loadLyricsForCurrentSong()
+            context?.let {
+                lyricsViewModel.setupSongMetaListener(it)
+                lyricsViewModel.autoRefresh= Settings(it).getIsAutoRefreshEnabled()
+            }
+        }
 
         return binding.root
     }

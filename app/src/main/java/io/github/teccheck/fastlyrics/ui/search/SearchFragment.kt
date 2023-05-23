@@ -31,6 +31,8 @@ class SearchFragment : Fragment() {
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
+    private val searchTimer = SearchTimer(this::onQueryTextSubmit)
+
     private lateinit var viewModel: SearchViewModel
     private lateinit var recyclerAdapter: RecyclerAdapter
     private lateinit var selectionTracker: SelectionTracker<Long>
@@ -97,12 +99,16 @@ class SearchFragment : Fragment() {
     }
 
     private fun onQueryTextSubmit(query: String?): Boolean {
+        if (query?.isBlank() != false)
+            return true
+
         binding.progresIndicator.visibility = View.VISIBLE
-        query?.let { viewModel.search(query) }
+        viewModel.search(query)
         return true
     }
 
     private fun onQueryTextChange(newText: String?): Boolean {
+        searchTimer.setQuery(newText)
         return true
     }
 

@@ -3,6 +3,7 @@ package io.github.teccheck.fastlyrics.api.provider
 import android.util.Log
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
@@ -74,29 +75,30 @@ object Genius {
 
         try {
             jsonBody = apiService.search(searchQuery)?.execute()?.body()
+            val jsonResponse = jsonBody?.asJsonObject?.getAsJsonObject(KEY_RESPONSE)
+            val jsonHits =
+                jsonResponse?.getAsJsonArray(KEY_HITS) ?: return Failure(ParseException())
+
+            val results = mutableListOf<SearchResult>()
+            for (jsonHit in jsonHits) {
+                val jo = jsonHit.asJsonObject.get(KEY_RESULT).asJsonObject
+
+                val title = jo.get(KEY_TITLE).asString
+                val artist = jo.get(KEY_PRIMARY_ARTIST).asJsonObject.get(KEY_NAME).asString
+                val album = getAlbum(jo)
+                val artUrl = jo.get(KEY_SONG_ART_URL).asString
+                val url = jo.get(KEY_URL).asString
+                val id = jo.get(KEY_ID).asInt
+
+                val result = SearchResult(title, artist, album, artUrl, url, id)
+                results.add(result)
+            }
+
+            return Success(results)
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
             return Failure(NetworkException())
         }
-
-        val jsonResponse = jsonBody?.asJsonObject?.getAsJsonObject(KEY_RESPONSE)
-        val jsonHits = jsonResponse?.getAsJsonArray(KEY_HITS) ?: return Failure(ParseException())
-
-        val results = mutableListOf<SearchResult>()
-        for (jsonHit in jsonHits) {
-            val jo = jsonHit.asJsonObject.get(KEY_RESULT).asJsonObject
-
-            val title = jo.get(KEY_TITLE).asString
-            val artist = jo.get(KEY_PRIMARY_ARTIST).asJsonObject.get(KEY_NAME).asString
-            val artUrl = jo.get(KEY_SONG_ART_URL).asString
-            val url = jo.get(KEY_URL).asString
-            val id = jo.get(KEY_ID).asInt
-
-            val result = SearchResult(title, artist, null, artUrl, url, id)
-            results.add(result)
-        }
-
-        return Success(results)
     }
 
     fun fetchLyrics(songId: Int): Result<SongWithLyrics, LyricsApiException> {
@@ -105,24 +107,31 @@ object Genius {
 
         try {
             jsonBody = apiService.fetchSongInfo(songId)?.execute()?.body()
+
+            val jsonResponse = jsonBody?.asJsonObject?.getAsJsonObject(KEY_RESPONSE)
+            val jsonSong =
+                jsonResponse?.getAsJsonObject(KEY_SONG) ?: return Failure(ParseException())
+
+            val title = jsonSong.get(KEY_TITLE).asString
+            val artist = jsonSong.get(KEY_PRIMARY_ARTIST).asJsonObject.get(KEY_NAME).asString
+            val sourceUrl = jsonSong.get(KEY_URL).asString
+            val album = getAlbum(jsonSong)
+            val artUrl = jsonSong.get(KEY_SONG_ART_URL).asString
+
+            val lyrics =
+                parseLyricsJsonTag(jsonSong.get(KEY_LYRICS).asJsonObject.get(KEY_DOM).asJsonObject)
+
+            return Success(SongWithLyrics(0, title, artist, lyrics, sourceUrl, album, artUrl))
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
             return Failure(NetworkException())
         }
+    }
 
-        val jsonResponse = jsonBody?.asJsonObject?.getAsJsonObject(KEY_RESPONSE)
-        val jsonSong = jsonResponse?.getAsJsonObject(KEY_SONG) ?: return Failure(ParseException())
-
-        val title = jsonSong.get(KEY_TITLE).asString
-        val artist = jsonSong.get(KEY_PRIMARY_ARTIST).asJsonObject.get(KEY_NAME).asString
-        val sourceUrl = jsonSong.get(KEY_URL).asString
-        val album = jsonSong.get(KEY_ALBUM).asJsonObject.get(KEY_NAME).asString
-        val artUrl = jsonSong.get(KEY_SONG_ART_URL).asString
-
-        val lyrics =
-            parseLyricsJsonTag(jsonSong.get(KEY_LYRICS).asJsonObject.get(KEY_DOM).asJsonObject)
-
-        return Success(SongWithLyrics(0, title, artist, lyrics, sourceUrl, album, artUrl))
+    private fun getAlbum(jsonObject: JsonObject): String? {
+        val albumJson = jsonObject.get(KEY_ALBUM) ?: return null
+        if (albumJson.isJsonNull) return null
+        return albumJson.asJsonObject.get(KEY_NAME).asString
     }
 
     private fun parseLyricsJsonTag(lyricsJsonTag: JsonElement): String {

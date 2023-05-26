@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_copy_lyrics_to_clipboard"
+        android:icon="@drawable/baseline_content_copy_24"
+        android:title="@string/menu_copy_lyrics_to_clipboard"
+        app:showAsAction="ifRoom" />
+</menu>

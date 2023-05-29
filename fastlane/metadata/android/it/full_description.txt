@@ -1,0 +1,2 @@
+FastLyrics è un'app che scarica i testi delle canzoni che stai ascoltando.
+L'app salva i testi per un uso offline e per un accesso più rapido.

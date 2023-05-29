@@ -1,0 +1,1 @@
+Un'app che scarica i testi delle canzoni, anche di quelle che stai ascoltando

@@ -32,7 +32,7 @@
     <string name="permission_description">FastLyrics ha bisogno dell'accesso alle notifiche del tuo dispositivo per scoprire qual è il brano in riproduzione. Puoi concedere il permesso nelle impostazioni cliccando sul bottone sottostante</string>
     <string name="permission_tip">Suggerimento: nelle nuove versioni di Android puoi fare le singole selezioni a cosa FastLyrics può avere accesso. Puoi deselezionare tutto in quanto attualmente FastLyrics non ha accesso ad alcuna notifica</string>
     <string name="permission_goto_settings">Vai nelle impostazioni</string>
-    <string name="permission_comeback">Puoi sempre ritornare qui e concedere/negare l'accesso alle notifiche se non riesci a trovare il posto giusto nelle impostazioni di sistema</string>
+    <string name="permission_comeback">Puoi sempre ritornare qui e concedere/negare l\'accesso alle notifiche se non riesci a trovare il posto giusto nelle impostazioni di sistema</string>
 
     <!-- Settings -->
     <string name="appearance_header">Aspetto</string>

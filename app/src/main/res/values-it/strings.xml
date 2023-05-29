@@ -1,0 +1,50 @@
+<resources>
+    <string name="app_name">FastLyrics</string>
+
+    <!-- Nav drawer -->
+
+    <string name="menu_lyrics">Testo</string>
+    <string name="menu_saved">Salvati</string>
+    <string name="menu_search">Cerca</string>
+    <string name="menu_permission">Permesso per notifiche</string>
+    <string name="menu_settings">Impostazioni</string>
+    <string name="menu_about">Informazioni</string>
+
+    <!-- Menu strings -->
+    <string name="menu_copy_lyrics_to_clipboard">Copia testo negli appunti</string>
+
+    <!-- Lyrics View -->
+    <string name="no_song_playing">Non stai ascoltando niente in questo momento</string>
+    <string name="lyrics_not_found">Impossibile trovare il testo per questa canzone</string>
+    <string name="lyrics_parse_exception">Impossibile processare il testo</string>
+    <string name="lyrics_network_exception">C\'è stato un problema di rete mentre si stava caricando il testo</string>
+    <string name="lyrics_unknown_error">C\'è stato un errore sconosciuto</string>
+
+    <string name="lyrics_provider_over_line">Testo da</string>
+
+    <string name="lyrics_clipboard_label">Testo</string>
+
+    <!-- Saved songs view -->
+    <string name="delete">Elimina</string>
+    <string name="items_selected">%1$d selezionati</string>
+
+    <!-- Notification permissions -->
+    <string name="permission_description">FastLyrics ha bisogno dell'accesso alle notifiche del tuo dispositivo per scoprire qual è il brano in riproduzione. Puoi concedere il permesso nelle impostazioni cliccando sul bottone sottostante</string>
+    <string name="permission_tip">Suggerimento: nelle nuove versioni di Android puoi fare le singole selezioni a cosa FastLyrics può avere accesso. Puoi deselezionare tutto in quanto attualmente FastLyrics non ha accesso ad alcuna notifica</string>
+    <string name="permission_goto_settings">Vai nelle impostazioni</string>
+    <string name="permission_comeback">Puoi sempre ritornare qui e concedere/negare l'accesso alle notifiche se non riesci a trovare il posto giusto nelle impostazioni di sistema</string>
+
+    <!-- Settings -->
+    <string name="appearance_header">Aspetto</string>
+    <string name="preference_material_style">Stile Material</string>
+    <string name="preference_app_theme">Tema dell\'app</string>
+    <string name="preference_auto_refresh">Auto-aggiornamento dei testi</string>
+    <string name="preference_auto_refresh_description">Aggiorna automaticamente il testo quando cambia la canzone</string>
+
+    <!-- About -->
+    <string name="source_code">Codice sorgente</string>
+    <string name="lyrics_sources">Fonti del testo</string>
+
+    <!-- Notification listener service -->
+    <string name="notification_access">Accesso ai metadata dei brani per Fastlyrics</string>
+</resources>

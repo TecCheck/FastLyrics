@@ -1,17 +1,10 @@
 package io.github.teccheck.fastlyrics.ui.viewlyrics
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.ComponentActivity
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
@@ -20,6 +13,8 @@ import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.databinding.FragmentViewLyricsBinding
 import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.utils.Utils.copyToClipboard
+import io.github.teccheck.fastlyrics.utils.Utils.openLink
+import io.github.teccheck.fastlyrics.utils.Utils.share
 
 class ViewLyricsFragment : Fragment() {
 
@@ -28,25 +23,6 @@ class ViewLyricsFragment : Fragment() {
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
-
-    private val menuProvider = object : MenuProvider {
-        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-            menuInflater.inflate(R.menu.fragment_lyrics_menu, menu)
-        }
-
-        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-            if (menuItem.itemId == R.id.menu_copy_lyrics_to_clipboard) {
-                lyricsViewModel.songWithLyrics.value?.let {
-                    if (it is Success) {
-                        copyToClipboard(getString(R.string.lyrics_clipboard_label), it.value.lyrics)
-                    }
-                }
-
-                return true
-            }
-            return false
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -62,12 +38,25 @@ class ViewLyricsFragment : Fragment() {
         lyricsViewModel.songWithLyrics.observe(viewLifecycleOwner) { result ->
             binding.refreshLayout.isRefreshing = false
             if (result is Success) {
-                binding.header.textSongTitle.text = result.value.title
-                binding.header.textSongArtist.text = result.value.artist
-                binding.lyricsView.textLyrics.text = result.value.lyrics
-                Picasso.get().load(result.value.artUrl).into(binding.header.imageSongArt)
+                val song = result.value
+                binding.header.textSongTitle.text = song.title
+                binding.header.textSongArtist.text = song.artist
+                binding.lyricsView.textLyrics.text = song.lyrics
+                Picasso.get().load(song.artUrl).into(binding.header.imageSongArt)
 
-                binding.lyricsView.footer.setOnClickListener { openLink(result.value.sourceUrl) }
+                binding.lyricsView.source.setOnClickListener { openLink(song.sourceUrl) }
+                binding.lyricsView.copy.setOnClickListener {
+                    copyToClipboard(
+                        getString(R.string.lyrics_clipboard_label), song.lyrics
+                    )
+                }
+                binding.lyricsView.share.setOnClickListener {
+                    share(
+                        song.title,
+                        song.artist,
+                        song.lyrics
+                    )
+                }
             }
         }
 
@@ -89,33 +78,9 @@ class ViewLyricsFragment : Fragment() {
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-        enableMenu()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        disableMenu()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun openLink(link: String) = startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
-
-    private fun enableMenu() {
-        if (activity is ComponentActivity) {
-            (activity as ComponentActivity).addMenuProvider(menuProvider)
-        }
-    }
-
-    private fun disableMenu() {
-        if (activity is ComponentActivity) {
-            (activity as ComponentActivity).removeMenuProvider(menuProvider)
-        }
     }
 
     companion object {

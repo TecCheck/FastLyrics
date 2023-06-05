@@ -22,7 +22,11 @@
 
     <string name="lyrics_provider_over_line">Lyrics from</string>
 
+    <string name="copy">Copy</string>
     <string name="lyrics_clipboard_label">Lyrics</string>
+
+    <string name="share">Share</string>
+    <string name="share_title">Lyrics for %1$s - %2$s</string>
 
     <!-- Saved songs view -->
     <string name="delete">Delete</string>

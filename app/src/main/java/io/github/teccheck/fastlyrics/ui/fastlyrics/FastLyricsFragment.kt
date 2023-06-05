@@ -18,6 +18,8 @@ import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.exceptions.NetworkException
 import io.github.teccheck.fastlyrics.exceptions.NoMusicPlayingException
 import io.github.teccheck.fastlyrics.exceptions.ParseException
+import io.github.teccheck.fastlyrics.model.SongMeta
+import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 import io.github.teccheck.fastlyrics.utils.Utils.copyToClipboard
 import io.github.teccheck.fastlyrics.utils.Utils.openLink
@@ -42,54 +44,16 @@ class FastLyricsFragment : Fragment() {
 
         lyricsViewModel.songMeta.observe(viewLifecycleOwner) { result ->
             when (result) {
-                is Success -> {
-                    binding.header.container.visibility = View.VISIBLE
-                    binding.errorView.container.visibility = View.GONE
-                    binding.header.textSongTitle.text = result.value.title
-                    binding.header.textSongArtist.text = result.value.artist
-                    binding.header.imageSongArt.setImageBitmap(result.value.art)
-                }
-
-                is Failure -> {
-                    displayError(result.reason)
-                }
+                is Success -> displaySongMeta(result.value)
+                is Failure -> displayError(result.reason)
             }
         }
 
         lyricsViewModel.songWithLyrics.observe(viewLifecycleOwner) { result ->
             binding.refreshLayout.isRefreshing = false
-
             when (result) {
-                is Success -> {
-                    binding.header.container.visibility = View.VISIBLE
-                    binding.lyricsView.container.visibility = View.VISIBLE
-                    binding.errorView.container.visibility = View.GONE
-
-                    val song = result.value
-
-                    binding.header.textSongTitle.text = song.title
-                    binding.header.textSongArtist.text = song.artist
-                    binding.lyricsView.textLyrics.text = song.lyrics
-                    Picasso.get().load(song.artUrl).into(binding.header.imageSongArt)
-
-                    binding.lyricsView.source.setOnClickListener { openLink(song.sourceUrl) }
-                    binding.lyricsView.copy.setOnClickListener {
-                        copyToClipboard(
-                            getString(R.string.lyrics_clipboard_label), song.lyrics
-                        )
-                    }
-                    binding.lyricsView.share.setOnClickListener {
-                        share(
-                            song.title,
-                            song.artist,
-                            song.lyrics
-                        )
-                    }
-                }
-
-                is Failure -> {
-                    displayError(result.reason)
-                }
+                is Success -> displaySongWithLyrics(result.value)
+                is Failure -> displayError(result.reason)
             }
         }
 
@@ -126,20 +90,49 @@ class FastLyricsFragment : Fragment() {
         }
     }
 
+    private fun displaySongMeta(songMeta: SongMeta) {
+        binding.header.container.visibility = View.VISIBLE
+        binding.errorView.container.visibility = View.GONE
+
+        binding.header.textSongTitle.text = songMeta.title
+        binding.header.textSongArtist.text = songMeta.artist
+        binding.header.imageSongArt.setImageBitmap(songMeta.art)
+    }
+
+    private fun displaySongWithLyrics(song: SongWithLyrics) {
+        binding.header.container.visibility = View.VISIBLE
+        binding.lyricsView.container.visibility = View.VISIBLE
+        binding.errorView.container.visibility = View.GONE
+
+        binding.header.textSongTitle.text = song.title
+        binding.header.textSongArtist.text = song.artist
+        binding.lyricsView.textLyrics.text = song.lyrics
+        Picasso.get().load(song.artUrl).into(binding.header.imageSongArt)
+
+        binding.lyricsView.source.setOnClickListener { openLink(song.sourceUrl) }
+        binding.lyricsView.copy.setOnClickListener {
+            copyToClipboard(
+                getString(R.string.lyrics_clipboard_label), song.lyrics
+            )
+        }
+        binding.lyricsView.share.setOnClickListener {
+            share(
+                song.title, song.artist, song.lyrics
+            )
+        }
+    }
+
     private fun displayError(exception: LyricsApiException) {
         binding.lyricsView.container.visibility = View.GONE
         binding.errorView.container.visibility = View.VISIBLE
-
-        binding.errorView.errorText.text = getErrorTextForApiException(exception)
-        binding.errorView.errorIcon.setImageDrawable(getErrorIconForApiException(exception))
-
-        val headerVisibility = if (exception is NoMusicPlayingException) {
+        binding.header.container.visibility = if (exception is NoMusicPlayingException) {
             View.GONE
         } else {
             View.VISIBLE
         }
 
-        binding.header.container.visibility = headerVisibility
+        binding.errorView.errorText.text = getErrorTextForApiException(exception)
+        binding.errorView.errorIcon.setImageDrawable(getErrorIconForApiException(exception))
     }
 
     private fun getErrorTextForApiException(exception: LyricsApiException): String =

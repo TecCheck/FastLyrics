@@ -129,7 +129,8 @@ class SavedFragment : Fragment() {
             actionMode = (activity as AppCompatActivity).startSupportActionMode(actionModeCallback)
         }
 
-        actionMode?.title = getString(R.string.items_selected, selectionTracker.selection.size())
+        val count = selectionTracker.selection.size()
+        actionMode?.title = resources.getQuantityString(R.plurals.items_selected, count, count)
     }
 
     private fun onCreateActionMode(menu: Menu?): Boolean {

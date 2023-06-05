@@ -26,7 +26,9 @@
 
     <!-- Saved songs view -->
     <string name="delete">Delete</string>
-    <string name="items_selected">%1$d selected</string>
+    <plurals name="items_selected">
+        <item quantity="other">%d selected</item>
+    </plurals>
 
     <!-- Notification permissions -->
     <string name="permission_description">FastLyrics needs access to your device\'s notifications in order to find out what song is currently playing. You can allow this in the settings by clicking the button below</string>

@@ -1,0 +1,3 @@
+Kleine Bugfixes und Design Verbesserungen
+Klick auf Quellen banner öffnet Quelle
+Suchfunktion

@@ -1,0 +1,3 @@
+Fixed a few bugs, odd behavior and styling issues
+Added the ability to click on the footer to get to the lyrics' source
+Added a search function

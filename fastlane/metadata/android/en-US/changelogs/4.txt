@@ -1,0 +1,6 @@
+Italian translation
+German translation
+Better search
+Add copy and share button
+Add Material 3 design (experimental)
+

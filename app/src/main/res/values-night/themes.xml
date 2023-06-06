@@ -23,4 +23,14 @@
         <item name="android:background">@color/theme_background_dark</item>
     </style>
 
+    <!-- Material 3 Theme -->
+    <style name="Theme.FastLyrics.Material3" parent="Theme.FastLyrics.Material3.Base">
+        <item name="navHeaderBackground">@color/theme_background_dark</item>
+        <item name="navigationViewStyle">@style/Style.FastLyrics.Material3.NavView</item>
+    </style>
+
+    <style name="Style.FastLyrics.Material3.NavView" parent="Widget.Material3.NavigationView">
+        <item name="android:background">@color/theme_background_dark</item>
+    </style>
+
 </resources>

@@ -35,7 +35,7 @@
             android:visibility="gone"
             app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.SmallComponent"
             app:srcCompat="@drawable/baseline_check_circle_24"
-            app:tint="@color/theme_secondary"
+            app:tint="?attr/colorSecondary"
             tools:visibility="visible" />
     </FrameLayout>
 

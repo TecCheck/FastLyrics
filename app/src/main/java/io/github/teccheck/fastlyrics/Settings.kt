@@ -21,11 +21,12 @@ class Settings(context: Context) {
 
     @StyleRes
     fun getMaterialStyle(): Int {
-        val style = sharedPreferences.getString(KEY_MATERIAL_STYLE, DEFAULT_MATERIAL_STYLE)
-        return if (MATERIAL_STYLE_ONE == style)
-            R.style.Theme_FastLyrics_Material1
-        else
-            R.style.Theme_FastLyrics_Material2
+        return when (sharedPreferences.getString(KEY_MATERIAL_STYLE, DEFAULT_MATERIAL_STYLE)) {
+            MATERIAL_STYLE_ONE -> R.style.Theme_FastLyrics_Material1
+            MATERIAL_STYLE_TWO -> R.style.Theme_FastLyrics_Material2
+            MATERIAL_STYLE_THREE -> R.style.Theme_FastLyrics_Material3
+            else -> R.style.Theme_FastLyrics_Material2
+        }
     }
 
     fun getIsAutoRefreshEnabled(): Boolean {
@@ -39,6 +40,7 @@ class Settings(context: Context) {
 
         private const val MATERIAL_STYLE_ONE = "1"
         private const val MATERIAL_STYLE_TWO = "2"
+        private const val MATERIAL_STYLE_THREE = "3"
 
         private const val DEFAULT_APP_THEME = "-1"
         private const val DEFAULT_MATERIAL_STYLE = MATERIAL_STYLE_TWO

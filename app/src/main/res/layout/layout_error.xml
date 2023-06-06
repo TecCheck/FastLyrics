@@ -22,7 +22,7 @@
             android:layout_height="128dp"
             android:layout_gravity="center_horizontal"
             app:srcCompat="@drawable/baseline_error_outline_24"
-            app:tint="@color/theme_secondary" />
+            app:tint="?attr/colorSecondary" />
 
         <TextView
             android:id="@+id/error_text"

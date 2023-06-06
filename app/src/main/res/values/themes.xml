@@ -63,4 +63,44 @@
     <style name="Style.FastLyrics.Material2.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface">
         <item name="elevation">0dp</item>
     </style>
+
+    <!-- Material 3 Theme -->
+    <style name="Theme.FastLyrics.Material3.Base" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">?android:colorBackground</item>
+        <item name="android:navigationBarColor">?android:colorBackground</item>
+
+        <item name="materialToolbarStyle">@style/Style.FastLyrics.Material3.Toolbar</item>
+        <item name="appBarLayoutStyle">@style/Style.FastLyrics.Material3.AppBarLayout</item>
+        <item name="searchViewStyle">@style/AppTheme.SearchView</item>
+
+        <item name="navHeaderBackground">?attr/colorSurface</item>
+        <item name="navHeaderForeground">?attr/colorPrimary</item>
+
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeStyle">@style/Widget.App.ActionMode</item>
+        <item name="actionBarTheme">@style/Widget.App.ActionBarTheme</item>
+
+        <item name="preferenceTheme">@style/Style.FastLyrics.Material3.Preferences</item>
+    </style>
+
+    <style name="Theme.FastLyrics.Material3" parent="Theme.FastLyrics.Material3.Base">
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+    </style>
+
+    <style name="Style.FastLyrics.Material3.Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
+        <item name="elevation">0dp</item>
+    </style>
+
+    <style name="Style.FastLyrics.Material3.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface">
+        <item name="elevation">0dp</item>
+    </style>
+
+    <style name="Style.FastLyrics.Material3.Preferences" parent="PreferenceThemeOverlay">
+        <item name="switchPreferenceStyle">@style/Preference.SwitchPreference.Material3</item>
+    </style>
+
+    <style name="Preference.SwitchPreference.Material3" parent="Preference.SwitchPreference.Material">
+        <item name="android:widgetLayout">@layout/preference_widget_switch_m3</item>
+    </style>
 </resources>

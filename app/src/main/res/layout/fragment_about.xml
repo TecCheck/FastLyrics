@@ -101,7 +101,7 @@
                     android:layout_marginBottom="16dp"
                     android:text="@string/lyrics_sources"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                    android:textColor="@color/theme_secondary"
+                    android:textColor="?attr/colorSecondary"
                     android:textStyle="bold" />
 
                 <LinearLayout

@@ -2,11 +2,13 @@
     <string-array name="material_style">
         <item>Material 1</item>
         <item>Material 2</item>
+        <item>Material 3 (experimental)</item>
     </string-array>
 
     <string-array name="material_style_values">
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </string-array>
 
     <string-array name="app_theme">

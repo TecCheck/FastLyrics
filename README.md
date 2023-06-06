@@ -5,7 +5,7 @@
 
 > How to get lyrics online (fast)
 
-FastLyrics is an app that downloads lyrics for the song, you're listening too. It is mostly a clone of [QuickLyric](https://github.com/QuickLyric/QuickLyric), but more modern and in active development.
+FastLyrics is an app that downloads lyrics for the song, you're listening to. It is mostly a clone of [QuickLyric](https://github.com/QuickLyric/QuickLyric), but more modern and in active development.
 
 [<img alt="Get it on IzzyOnDroid" height="80" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/fdroid/index/apk/io.github.teccheck.fastlyrics/)
 

@@ -1,2 +1,2 @@
-FastLyrics is an app that downloads lyrics for the song, you're listening too.
+FastLyrics is an app that downloads lyrics for the song, you're listening to.
 It saves lyrics for offline use and even faster access.

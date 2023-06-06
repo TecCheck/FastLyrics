@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">FastLyrics</string>
+
+    <!-- Nav drawer -->
+
+    <string name="menu_lyrics">Songtext</string>
+    <string name="menu_saved">Gespeichert</string>
+    <string name="menu_search">Suche</string>
+    <string name="menu_permission">Benachrichtigungszugriff</string>
+    <string name="menu_settings">Einstellungen</string>
+    <string name="menu_about">Über</string>
+
+    <!-- Menu strings -->
+    <string name="menu_copy_lyrics_to_clipboard">Songtext in Zwischenablagen kopieren</string>
+
+    <!-- Lyrics View -->
+    <string name="no_song_playing">Es läuft derzeit keine Musik</string>
+    <string name="lyrics_not_found">Konnte keinen Songtext für diesen Song finden</string>
+    <string name="lyrics_parse_exception">Songtext konnte nicht gelesen werden</string>
+    <string name="lyrics_network_exception">Es gab ein Netzwerkproblem beim Laden des Textes</string>
+    <string name="lyrics_unknown_error">Unbekannter Fehler</string>
+
+    <string name="lyrics_provider_over_line">Songtext von</string>
+
+    <string name="copy">Kopieren</string>
+    <string name="lyrics_clipboard_label">Songtext</string>
+
+    <string name="share">Teilen</string>
+    <string name="share_title">Songtext für %1$s - %2$s</string>
+
+    <!-- Saved songs view -->
+    <string name="delete">Löschen</string>
+    <plurals name="items_selected">
+        <item quantity="other">%d ausgewählt</item>
+    </plurals>
+
+    <!-- Notification permissions -->
+    <string name="permission_description">FastLyrics benötigt Zugriff auf die Benachrichtungen deines Gerätes, um zu wissen, welcher Song gerade läuft. Mit dem Knopf unten gelangst du zu den passenden Einstellungen</string>
+    <string name="permission_tip">Tip: In neueren Android Versionen kannst du einstellen, was FastLyrics einsehen darf. Da FastLyrics eigentlich nicht wirklich Benachrichtigungen lesen muss, kannst du alles deaktivieren</string>
+    <string name="permission_goto_settings">Zu den Einstellungen</string>
+    <string name="permission_comeback">Um Zugriff ein und auszuschalten kannst du jederzeit hier her zurück, falls du die Einstellungen nicht findest</string>
+
+
+    <!-- Settings -->
+    <string name="appearance_header">Aussehen</string>
+    <string name="preference_material_style">Material Style</string>
+    <string name="preference_app_theme">App Thema</string>
+    <string name="preference_auto_refresh">Songtext automatisch neu laden</string>
+    <string name="preference_auto_refresh_description">Automatically refresh lyrics when the music changes</string>
+
+    <!-- About -->
+    <string name="source_code">Quellcode</string>
+    <string name="lyrics_sources">Songtext Quellen</string>
+
+    <!-- Notification listener service -->
+    <string name="notification_access">Fastlyrics Song Metadaten Zugriff</string>
+</resources>

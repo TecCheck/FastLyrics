@@ -1,0 +1,2 @@
+FastLyrics läd automatisch Songtexte zum aktuell laufenden Song herunter.
+Außerdem werden die Songtexte gespeichert, um sie offline anzuschauen

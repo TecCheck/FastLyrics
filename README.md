@@ -16,8 +16,5 @@ Not all of the features, planned are currently implemented. Here's an overview.
 * [x] Automatic refresh, once the current song changes
 
 ## Screenshots
-![](fastlane/metadata/android/en-US/images/phoneScreenshots/1.png)
-![](fastlane/metadata/android/en-US/images/phoneScreenshots/2.png)
-![](fastlane/metadata/android/en-US/images/phoneScreenshots/3.png)
-![](fastlane/metadata/android/en-US/images/phoneScreenshots/4.png)
+![](assets/screenshots.svg)
 

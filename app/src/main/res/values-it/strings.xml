@@ -22,14 +22,21 @@
 
     <string name="lyrics_provider_over_line">Testo da</string>
 
+    <string name="copy">Copia</string>
     <string name="lyrics_clipboard_label">Testo</string>
 
+    <string name="share">Condividi</string>
+    <string name="share_title">Testo di %1$s - %2$s</string>
+    
     <!-- Saved songs view -->
     <string name="delete">Elimina</string>
-    <string name="items_selected">%1$d selezionati</string>
-
+    <plurals name="items_selected">
+        <item quantity="one">%d selezionato</item>
+        <item quantity="other">%d selezionati</item>
+    </plurals>
+    
     <!-- Notification permissions -->
-    <string name="permission_description">FastLyrics ha bisogno dell'accesso alle notifiche del tuo dispositivo per scoprire qual è il brano in riproduzione. Puoi concedere il permesso nelle impostazioni cliccando sul bottone sottostante</string>
+    <string name="permission_description">FastLyrics ha bisogno dell\'accesso alle notifiche del tuo dispositivo per scoprire qual è il brano in riproduzione. Puoi concedere il permesso nelle impostazioni cliccando sul bottone sottostante</string>
     <string name="permission_tip">Suggerimento: nelle nuove versioni di Android puoi fare le singole selezioni a cosa FastLyrics può avere accesso. Puoi deselezionare tutto in quanto attualmente FastLyrics non ha accesso ad alcuna notifica</string>
     <string name="permission_goto_settings">Vai nelle impostazioni</string>
     <string name="permission_comeback">Puoi sempre ritornare qui e concedere/negare l\'accesso alle notifiche se non riesci a trovare il posto giusto nelle impostazioni di sistema</string>

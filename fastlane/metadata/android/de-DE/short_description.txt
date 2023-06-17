@@ -1,1 +1,1 @@
-Eine App, die automatisch Songtexte zum aktuell laufenden Song herunterläd und anzeigt
+Lädt automatisch Songtexte zum aktuell laufenden Song herunter und zeigt sie an

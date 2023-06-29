@@ -1,0 +1,3 @@
+Naprawiono kilka błędów, niepożądanych zachowań oraz problemów ze stylem
+Dodano możliwość dotknięcia stopki aby przejść do oryginalnej strony z tekstem utworu
+Dodano funkcję wyszukiwania

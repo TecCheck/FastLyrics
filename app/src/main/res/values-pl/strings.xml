@@ -1,0 +1,61 @@
+<resources>
+    <string name="app_name">FastLyrics</string>
+
+    <!-- Nav drawer -->
+
+    <string name="menu_lyrics">Tekst</string>
+    <string name="menu_saved">Zapisane</string>
+    <string name="menu_search">Szukaj</string>
+    <string name="menu_permission">Dostęp do powiadomień</string>
+    <string name="menu_settings">Ustawienia</string>
+    <string name="menu_about">O aplikacji</string>
+
+    <!-- Menu strings -->
+    <string name="menu_copy_lyrics_to_clipboard">Skopiuj tekst do schowka</string>
+
+    <!-- Lyrics View -->
+    <string name="no_song_playing">Nie odtwarzany jest żaden utwór</string>
+    <string name="lyrics_not_found">Nie udało się znaleźć tekstu tego utworu</string>
+    <string name="lyrics_parse_exception">Nie udało się poprawnie przetworzyć tekstu</string>
+    <string name="lyrics_network_exception">Błąd w połączeniu sieciowym podczas ładowania tekstu</string>
+    <string name="lyrics_unknown_error">Wystąpił nieznany błąd</string>
+
+    <string name="lyrics_provider_over_line">Dostawcą tekstu jest</string>
+
+    <string name="copy">Kopiuj</string>
+    <string name="lyrics_clipboard_label">Tekst</string>
+
+    <string name="share">Udostępnij</string>
+    <string name="share_title">Tekst %1$s - %2$s</string>
+
+    <!-- Saved songs view -->
+    <string name="delete">Usuń</string>
+    <plurals name="items_selected">
+        <item quantity="other">%d wybrano</item>
+    </plurals>
+
+    <!-- Notification permissions -->
+    <string name="permission_description">W celu uzyskania informacji o obecnie granym utworze należy udzielić FastLyrics dostępu do powiadomień. Możesz to zrobić za pomocą menu ustawień, dotykając poniższego przycisku</string>
+    <string name="permission_tip">Porada: W nowszych wersjach systemu Android możesz dokonać selektywnego wyboru funkcji, do których FastLyrics ma dostęp. Możesz odznaczyć wszystkie opcje, ponieważ FastLyrics w rzeczywistości z nich nie korzysta</string>
+    <string name="permission_goto_settings">Przejdź do ustawień</string>
+    <string name="permission_comeback">Zawsze możesz tu wrócić, aby zezwolić/odmówić dostępu do powiadomień, jeżeli nie jesteś w stanie znaleźć odpowiedniej sekcji w menu ustawień</string>
+
+    <!-- Settings -->
+    <string name="appearance_header">Wygląd</string>
+    <string name="preference_material_style">Material Style</string>
+    <string name="preference_app_theme">Motyw aplikacji</string>
+    <string name="preference_auto_refresh">Automatyczne odświeżanie</string>
+    <string name="preference_auto_refresh_description">Automatycznie odśwież tekst po zmianie odtwarzanego utworu</string>
+
+    <!-- About -->
+    <string name="source_code">Kod źródłowy</string>
+    <string name="lyrics_sources">Dostawcy tekstów</string>
+
+    <string name="source_genius" translatable="false">Genius</string>
+
+    <string name="source_code_url" translatable="false">https://github.com/TecCheck/FastLyrics</string>
+    <string name="source_url_genius" translatable="false">https://genius.com/</string>
+
+    <!-- Notification listener service -->
+    <string name="notification_access">Dostęp do metadanych utwórów dla FastLyrics</string>
+</resources>

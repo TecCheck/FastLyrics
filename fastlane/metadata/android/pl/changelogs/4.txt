@@ -1,0 +1,5 @@
+Dodano Włoskie tłumaczenie
+Dodano Niemieckie tłumaczenie
+Poprawono funkcję wyszukiwania
+Dodano przyciski Kopiuj i Udostępnij
+Dodano design Material 3 (eksperymentalne)

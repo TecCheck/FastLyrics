@@ -1,0 +1,1 @@
+Aplikacja wyświetlająca i pobierająca teksty słuchanych przez ciebie utworów

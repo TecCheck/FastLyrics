@@ -7,7 +7,12 @@
 
 FastLyrics is an app that downloads lyrics for the song, you're listening to. It is mostly a clone of [QuickLyric](https://github.com/QuickLyric/QuickLyric), but more modern and in active development.
 
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/io.github.teccheck.fastlyrics/)
 [<img alt="Get it on IzzyOnDroid" height="80" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/fdroid/index/apk/io.github.teccheck.fastlyrics/)
+
+Or download the latest APK from the [Releases Section](https://github.com/TecCheck/FastLyrics/releases/latest).
 
 ## Features
 Not all of the features, planned are currently implemented. Here's an overview.
@@ -22,4 +27,3 @@ Not all of the features, planned are currently implemented. Here's an overview.
 
 ## Screenshots
 ![](assets/screenshots.svg)
-

@@ -19,8 +19,10 @@ object MediaSession {
         return when (val result = getDefaultMediaController(context)) {
             is Failure -> result
             is Success -> {
-                val metadata = result.value.metadata ?: return Failure(NoMusicPlayingException())
-                Success(metadata.getSongMeta())
+                val metadata = result.value.metadata?.getSongMeta() ?: return Failure(
+                    NoMusicPlayingException()
+                )
+                Success(metadata)
             }
         }
     }
@@ -47,7 +49,7 @@ object MediaSession {
         return mediaSessionManager.getActiveSessions(className)
     }
 
-    private fun MediaMetadata.getSongMeta(): SongMeta {
+    private fun MediaMetadata.getSongMeta(): SongMeta? {
         // Some of those attributes may be stored with different keys (depending on the device)
         // For the ?: syntax see https://kotlinlang.org/docs/null-safety.html#elvis-operator
         val title = getString(MediaMetadata.METADATA_KEY_TITLE)
@@ -59,13 +61,17 @@ object MediaSession {
             MediaMetadata.METADATA_KEY_ART
         )
 
+        if (title == null)
+            return null
+
         return SongMeta(title, artist, album, art)
     }
 
     abstract class SongMetaCallback : MediaController.Callback() {
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
-            if (metadata != null) onSongMetaChanged(metadata.getSongMeta())
+            val songMeta = metadata?.getSongMeta() ?: return
+            onSongMetaChanged(songMeta)
         }
 
         abstract fun onSongMetaChanged(songMeta: SongMeta)

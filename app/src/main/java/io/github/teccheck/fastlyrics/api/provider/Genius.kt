@@ -11,6 +11,7 @@ import io.github.teccheck.fastlyrics.Tokens
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.NetworkException
 import io.github.teccheck.fastlyrics.exceptions.ParseException
+import io.github.teccheck.fastlyrics.model.LyricsType
 import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import okhttp3.OkHttpClient
@@ -23,7 +24,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import java.util.*
 
-object Genius {
+object Genius : LyricsProvider {
 
     private const val TAG = "GeniusProvider"
 
@@ -68,7 +69,7 @@ object Genius {
         apiService = retrofit.create(ApiService::class.java)
     }
 
-    fun search(searchQuery: String): Result<List<SearchResult>, LyricsApiException> {
+    override fun search(searchQuery: String): Result<List<SearchResult>, LyricsApiException> {
         Log.i(TAG, "Searching for \"$searchQuery\"")
 
         val jsonBody: JsonElement?
@@ -101,7 +102,7 @@ object Genius {
         }
     }
 
-    fun fetchLyrics(songId: Int): Result<SongWithLyrics, LyricsApiException> {
+    override fun fetchLyrics(songId: Int): Result<SongWithLyrics, LyricsApiException> {
         Log.i(TAG, "Fetching song $songId")
         val jsonBody: JsonElement?
 
@@ -121,7 +122,18 @@ object Genius {
             val lyrics =
                 parseLyricsJsonTag(jsonSong.get(KEY_LYRICS).asJsonObject.get(KEY_DOM).asJsonObject)
 
-            return Success(SongWithLyrics(0, title, artist, lyrics, sourceUrl, album, artUrl))
+            return Success(
+                SongWithLyrics(
+                    0,
+                    title,
+                    artist,
+                    lyrics,
+                    sourceUrl,
+                    album,
+                    artUrl,
+                    LyricsType.RAW_TEXT
+                )
+            )
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
             return Failure(NetworkException())

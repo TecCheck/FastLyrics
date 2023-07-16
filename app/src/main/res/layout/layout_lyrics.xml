@@ -15,6 +15,7 @@
         android:padding="16dp"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        android:textIsSelectable="true"
         android:textSize="20sp"
         tools:text="Some lyrics here" />
 

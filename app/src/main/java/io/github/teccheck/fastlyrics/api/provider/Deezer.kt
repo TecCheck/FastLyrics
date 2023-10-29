@@ -7,7 +7,6 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
-import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.exceptions.NetworkException
 import io.github.teccheck.fastlyrics.exceptions.ParseException
 import io.github.teccheck.fastlyrics.model.LyricsType
@@ -15,7 +14,6 @@ import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import retrofit2.Call
 import retrofit2.Retrofit
-import retrofit2.await
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -54,6 +52,8 @@ object Deezer : LyricsProvider {
         apiService = retrofit.create(ApiService::class.java)
     }
 
+    override fun getName() = "deezer"
+
     override fun search(searchQuery: String): Result<List<SearchResult>, LyricsApiException> {
         Log.i(TAG, "Searching for \"$searchQuery\"")
 
@@ -69,7 +69,7 @@ object Deezer : LyricsProvider {
             val artUrl = songObject.get(KEY_ALBUM).asJsonObject.get(KEY_COVER).asString
             val link = songObject.get(KEY_LINK).asString
 
-            return@map SearchResult(title, artist, album, artUrl, link, id)
+            return@map SearchResult(title, artist, album, artUrl, link, id, this)
         }
 
         return Success(results)

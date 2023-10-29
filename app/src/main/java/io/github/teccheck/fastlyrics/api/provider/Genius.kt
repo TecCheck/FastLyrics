@@ -69,6 +69,8 @@ object Genius : LyricsProvider {
         apiService = retrofit.create(ApiService::class.java)
     }
 
+    override fun getName() = "genius"
+
     override fun search(searchQuery: String): Result<List<SearchResult>, LyricsApiException> {
         Log.i(TAG, "Searching for \"$searchQuery\"")
 
@@ -91,7 +93,7 @@ object Genius : LyricsProvider {
                 val url = jo.get(KEY_URL).asString
                 val id = jo.get(KEY_ID).asInt
 
-                val result = SearchResult(title, artist, album, artUrl, url, id)
+                val result = SearchResult(title, artist, album, artUrl, url, id, this)
                 results.add(result)
             }
 

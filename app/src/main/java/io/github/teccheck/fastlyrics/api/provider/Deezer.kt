@@ -120,7 +120,7 @@ object Deezer : LyricsProvider {
 
         val lyrics = lines.joinToString(separator = "\n") {
             val line = it.asJsonObject
-            "${line.get("lrcTimestamp").asString}\n${line.get("line").asString}"
+            "${line.get("lrcTimestamp").asString}${line.get("line").asString}"
         }
 
         return lyrics

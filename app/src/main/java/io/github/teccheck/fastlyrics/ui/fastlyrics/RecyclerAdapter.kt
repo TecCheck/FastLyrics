@@ -47,8 +47,13 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
     fun setTime(time: Long): Int? {
         val index = syncedLyrics?.getLineIndex(time) ?: return null
+
+        if (index == activeLine) return null
+
+        val oldActive = activeLine
         activeLine = index
         notifyItemChanged(index)
+        notifyItemChanged(oldActive)
         return index
     }
 }

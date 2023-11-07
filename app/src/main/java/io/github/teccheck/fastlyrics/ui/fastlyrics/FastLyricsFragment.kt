@@ -62,6 +62,8 @@ class FastLyricsFragment : Fragment() {
             }
         }
 
+        lyricsViewModel.songPosition.observe(viewLifecycleOwner, this::setTime)
+
         binding.refreshLayout.setColorSchemeResources(
             R.color.theme_primary, R.color.theme_secondary
         )
@@ -73,7 +75,7 @@ class FastLyricsFragment : Fragment() {
         if (notificationAccess) {
             loadLyricsForCurrentSong()
             context?.let {
-                lyricsViewModel.setupSongMetaListener(it)
+                lyricsViewModel.setupSongMetaListener()
                 lyricsViewModel.autoRefresh = Settings(it).getIsAutoRefreshEnabled()
             }
         }
@@ -138,12 +140,14 @@ class FastLyricsFragment : Fragment() {
 
             binding.lyricsView.textLyrics.text = song.lyrics
             recyclerAdapter.setSyncedLyrics(null)
+            lyricsViewModel.setupPositionPolling(false)
         } else if (song.type == LyricsType.LRC) {
             binding.lyricsView.textLyrics.visibility = View.GONE
             binding.lyricsView.syncedRecycler.visibility = View.VISIBLE
 
             SyncedLyrics.parseLrc(song.lyrics)?.let { recyclerAdapter.setSyncedLyrics(it) }
             binding.lyricsView.textLyrics.text = ""
+            lyricsViewModel.setupPositionPolling(true)
         }
     }
 
@@ -184,12 +188,15 @@ class FastLyricsFragment : Fragment() {
         val recycler = binding.lyricsView.syncedRecycler
 
         recycler.post {
-            val y: Float = recycler.y + recycler.getChildAt(index).y
-            binding.scrollView.smoothScrollTo(0, y.toInt())
+            val recyclerPos = binding.lyricsView.root.y
+            val childPos = recycler.getChildAt(index).y
+            val y: Float = childPos - recyclerPos
+            binding.scrollView.smoothScrollTo(0, y.toInt(), SCROLL_DURATION)
         }
     }
 
     companion object {
         private const val TAG = "FastLyricsFragment"
+        private const val SCROLL_DURATION = 1000
     }
 }

@@ -13,26 +13,28 @@ import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
+import java.util.Timer
+import kotlin.concurrent.scheduleAtFixedRate
 
 class FastLyricsViewModel : ViewModel() {
 
     private val _songMeta = MutableLiveData<Result<SongMeta, LyricsApiException>>()
     private val _songWithLyrics = MutableLiveData<Result<SongWithLyrics, LyricsApiException>>()
+    private val _songPosition = MutableLiveData<Long>()
+
+    private var songPositionTimer: Timer? = null
 
     val songMeta: LiveData<Result<SongMeta, LyricsApiException>> = _songMeta
     val songWithLyrics: LiveData<Result<SongWithLyrics, LyricsApiException>> = _songWithLyrics
+    val songPosition: LiveData<Long> = _songPosition
 
     var autoRefresh = false
 
-    private val songMetaCallback = object : MediaSession.SongMetaCallback() {
-        var currentContext: Context? = null
+    private val songMetaCallback = MediaSession.SongMetaCallback {
+        if (!autoRefresh) return@SongMetaCallback
 
-        override fun onSongMetaChanged(songMeta: SongMeta) {
-            if (!autoRefresh) return
-
-            _songMeta.postValue(Success(songMeta))
-            LyricsApi.getLyricsAsync(songMeta, _songWithLyrics)
-        }
+        _songMeta.postValue(Success(it))
+        LyricsApi.getLyricsAsync(it, _songWithLyrics)
     }
 
     fun loadLyricsForCurrentSong(context: Context): Boolean {
@@ -41,7 +43,7 @@ class FastLyricsViewModel : ViewModel() {
             return false
         }
 
-        val songMetaResult = MediaSession.getSongInformation(context)
+        val songMetaResult = MediaSession.getSongInformation()
         _songMeta.value = songMetaResult
 
         if (songMetaResult is Success) {
@@ -51,19 +53,31 @@ class FastLyricsViewModel : ViewModel() {
         return songMetaResult is Success
     }
 
-    fun setupSongMetaListener(context: Context) {
-        songMetaCallback.currentContext = context
-        MediaSession.registerSongMetaCallback(context, songMetaCallback)
+    fun setupSongMetaListener() {
+        MediaSession.registerSongMetaCallback(songMetaCallback)
+    }
+
+    fun setupPositionPolling(enabled: Boolean) {
+        if (enabled) {
+            val timer = Timer()
+            timer.scheduleAtFixedRate(REFRESH_DELAY, REFRESH_DELAY) {
+                _songPosition.postValue(MediaSession.getSongPosition())
+            }
+
+            songPositionTimer = timer
+        } else {
+            songPositionTimer?.cancel()
+            songPositionTimer = null
+        }
     }
 
     override fun onCleared() {
         super.onCleared()
-        songMetaCallback.currentContext?.let {
-            MediaSession.unregisterSongMetaCallback(it, songMetaCallback)
-        }
+        MediaSession.unregisterSongMetaCallback(songMetaCallback)
     }
 
     companion object {
         private const val TAG = "FastLyricsViewModel"
+        private const val REFRESH_DELAY = 500L
     }
 }

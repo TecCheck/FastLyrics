@@ -4,49 +4,101 @@ import android.content.ComponentName
 import android.content.Context
 import android.media.MediaMetadata
 import android.media.session.MediaController
+import android.media.session.MediaSession
 import android.media.session.MediaSessionManager
-import androidx.appcompat.app.AppCompatActivity
+import android.media.session.PlaybackState
+import android.util.Log
+import androidx.core.content.getSystemService
 import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.exceptions.NoMusicPlayingException
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
-import dev.forkhandles.result4k.Result
-import dev.forkhandles.result4k.Success
 
 object MediaSession {
 
-    fun getSongInformation(context: Context): Result<SongMeta, NoMusicPlayingException> {
-        return when (val result = getDefaultMediaController(context)) {
-            is Failure -> result
-            is Success -> {
-                val metadata = result.value.metadata?.getSongMeta() ?: return Failure(
-                    NoMusicPlayingException()
-                )
-                Success(metadata)
+    private const val TAG = "MediaSession"
+
+    private lateinit var nls: ComponentName
+    private lateinit var msm: MediaSessionManager
+
+    private var activeMediaSession: MediaController? = null
+    private val internalCallbacks = mutableMapOf<MediaSession.Token, MediaController.Callback>()
+    private val callbacks = mutableListOf<SongMetaCallback>()
+
+    fun init(context: Context) {
+        nls = ComponentName(context, DummyNotificationListenerService::class.java)
+        msm = context.getSystemService()!!
+        msm.addOnActiveSessionsChangedListener(this::onActiveSessionsChanged, nls)
+
+        val activeSessions = msm.getActiveSessions(nls)
+        val activeSession = activeSessions.find { it.playbackState?.isActive == true }
+        activeMediaSession = activeSession ?: activeSessions.firstOrNull()
+        onActiveSessionsChanged(activeSessions)
+
+        Log.d(TAG, "INIT: $nls, $msm")
+    }
+
+    private fun onActiveSessionsChanged(controllers: List<MediaController?>?) {
+        val callbacks = mutableMapOf<MediaSession.Token, MediaController.Callback>()
+        controllers?.filterNotNull()?.forEach {
+            Log.d(TAG, "Session: $it (${it.sessionToken})")
+
+            if (internalCallbacks.containsKey(it.sessionToken)) {
+                callbacks[it.sessionToken] = internalCallbacks[it.sessionToken]!!
+            } else {
+                val callback = object : MediaController.Callback() {
+                    override fun onPlaybackStateChanged(state: PlaybackState?) =
+                        this@MediaSession.onPlaybackStateChanged(it, state)
+
+                    override fun onMetadataChanged(metadata: MediaMetadata?) =
+                        this@MediaSession.onMetadataChanged(it, metadata)
+                }
+
+                it.registerCallback(callback)
+                callbacks[it.sessionToken] = callback
             }
         }
+
+        internalCallbacks.clear()
+        internalCallbacks.putAll(callbacks)
     }
 
-    fun registerSongMetaCallback(context: Context, callback: SongMetaCallback) {
-        val result = getDefaultMediaController(context)
-        if (result is Success) result.value.registerCallback(callback)
+    private fun onPlaybackStateChanged(controller: MediaController, state: PlaybackState?) {
+        if (state?.isActive == true) setActiveMediaSession(controller)
     }
 
-    fun unregisterSongMetaCallback(context: Context, callback: SongMetaCallback) {
-        getMediaControllers(context).forEach { it.unregisterCallback(callback) }
+    private fun onMetadataChanged(controller: MediaController, metadata: MediaMetadata?) {
+        Log.d(TAG, "onMetadataChanged")
+
+        if (controller.sessionToken != activeMediaSession?.sessionToken) return
+        val songMeta = metadata?.getSongMeta() ?: return
+        callbacks.forEach { it.onSongMetaChanged(songMeta) }
     }
 
-    private fun getDefaultMediaController(context: Context): Result<MediaController, NoMusicPlayingException> {
-        val controllers = getMediaControllers(context)
-        if (controllers.isEmpty()) return Failure(NoMusicPlayingException())
-        return Success(controllers[0])
+    private fun setActiveMediaSession(newActive: MediaController) {
+        activeMediaSession = newActive
+        onMetadataChanged(newActive, newActive.metadata)
     }
 
-    private fun getMediaControllers(context: Context): List<MediaController> {
-        val className = ComponentName(context, DummyNotificationListenerService::class.java)
-        val mediaSessionManager =
-            context.getSystemService(AppCompatActivity.MEDIA_SESSION_SERVICE) as MediaSessionManager
-        return mediaSessionManager.getActiveSessions(className)
+    fun getSongInformation(): Result<SongMeta, NoMusicPlayingException> {
+        val session = activeMediaSession ?: return Failure(NoMusicPlayingException())
+        val metadata = session.metadata?.getSongMeta() ?: return Failure(
+            NoMusicPlayingException()
+        )
+
+        return Success(metadata)
+    }
+
+    fun getSongPosition(): Long? = activeMediaSession?.playbackState?.position
+
+    fun registerSongMetaCallback(callback: SongMetaCallback) {
+        callbacks.add(callback)
+    }
+
+    fun unregisterSongMetaCallback(callback: SongMetaCallback) {
+        callbacks.remove(callback)
     }
 
     private fun MediaMetadata.getSongMeta(): SongMeta? {
@@ -67,13 +119,7 @@ object MediaSession {
         return SongMeta(title, artist, album, art)
     }
 
-    abstract class SongMetaCallback : MediaController.Callback() {
-
-        override fun onMetadataChanged(metadata: MediaMetadata?) {
-            val songMeta = metadata?.getSongMeta() ?: return
-            onSongMetaChanged(songMeta)
-        }
-
-        abstract fun onSongMetaChanged(songMeta: SongMeta)
+    fun interface SongMetaCallback {
+        fun onSongMetaChanged(songMeta: SongMeta)
     }
 }

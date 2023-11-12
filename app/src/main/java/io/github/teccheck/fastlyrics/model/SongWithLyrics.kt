@@ -16,5 +16,8 @@ data class SongWithLyrics(
     val artUrl: String?,
 
     @ColumnInfo(defaultValue = "RAW_TEXT")
-    val type: LyricsType
+    val type: LyricsType,
+
+    @ColumnInfo(defaultValue = "genius")
+    val provider: String
 )

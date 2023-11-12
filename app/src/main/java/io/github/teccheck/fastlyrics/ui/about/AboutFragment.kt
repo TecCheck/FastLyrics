@@ -29,6 +29,7 @@ class AboutFragment : Fragment() {
         binding.textVersion.text = BuildConfig.VERSION_NAME
         binding.layoutSourceCode.setOnClickListener { openLink(R.string.source_code_url) }
         binding.layoutSourceGenius.setOnClickListener { openLink(R.string.source_url_genius) }
+        binding.layoutSourceDeezer.setOnClickListener { openLink(R.string.source_url_deezer) }
 
         return binding.root
     }

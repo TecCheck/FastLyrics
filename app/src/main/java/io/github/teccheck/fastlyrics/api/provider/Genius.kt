@@ -133,7 +133,8 @@ object Genius : LyricsProvider {
                     sourceUrl,
                     album,
                     artUrl,
-                    LyricsType.RAW_TEXT
+                    LyricsType.RAW_TEXT,
+                    getName()
                 )
             )
         } catch (e: Exception) {

@@ -102,7 +102,8 @@ object Deezer : LyricsProvider {
                 link,
                 album,
                 artUrl,
-                LyricsType.LRC
+                LyricsType.LRC,
+                getName()
             )
         )
     }

@@ -16,5 +16,7 @@ interface LyricsProvider {
         fun getAllProviders(): Array<LyricsProvider> {
             return arrayOf(Deezer, Genius)
         }
+
+        fun getProviderByName(name: String) = getAllProviders().find { it.getName() == name }
     }
 }

@@ -1,5 +1,6 @@
 package io.github.teccheck.fastlyrics.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -12,5 +13,11 @@ data class SongWithLyrics(
     val lyrics: String,
     val sourceUrl: String,
     val album: String?,
-    val artUrl: String?
+    val artUrl: String?,
+
+    @ColumnInfo(defaultValue = "RAW_TEXT")
+    val type: LyricsType,
+
+    @ColumnInfo(defaultValue = "genius")
+    val provider: String
 )

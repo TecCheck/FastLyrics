@@ -5,14 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
 import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.R
+import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
 import io.github.teccheck.fastlyrics.databinding.FragmentViewLyricsBinding
+import io.github.teccheck.fastlyrics.model.LyricsType
 import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
+import io.github.teccheck.fastlyrics.model.SyncedLyrics
+import io.github.teccheck.fastlyrics.utils.Utils
 import io.github.teccheck.fastlyrics.utils.Utils.copyToClipboard
 import io.github.teccheck.fastlyrics.utils.Utils.openLink
 import io.github.teccheck.fastlyrics.utils.Utils.share
@@ -62,8 +67,21 @@ class ViewLyricsFragment : Fragment() {
     private fun displaySongWithLyrics(song: SongWithLyrics) {
         binding.header.textSongTitle.text = song.title
         binding.header.textSongArtist.text = song.artist
-        binding.lyricsView.textLyrics.text = song.lyrics
+        displayLyrics(song)
         Picasso.get().load(song.artUrl).into(binding.header.imageSongArt)
+
+        val provider = LyricsProvider.getProviderByName(song.provider)
+        provider?.let {
+            val providerIconRes = Utils.getProviderIconRes(it)!!
+            val icon = AppCompatResources.getDrawable(requireContext(), providerIconRes)
+            binding.lyricsView.source.setIconResource(providerIconRes)
+            binding.lyricsView.textLyricsProvider.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
+
+            val nameRes = Utils.getProviderNameRes(it)!!
+            val name = getString(nameRes)
+            binding.lyricsView.source.text = name
+            binding.lyricsView.textLyricsProvider.text = name
+        }
 
         binding.lyricsView.source.setOnClickListener { openLink(song.sourceUrl) }
         binding.lyricsView.copy.setOnClickListener {
@@ -77,6 +95,15 @@ class ViewLyricsFragment : Fragment() {
                 song.artist,
                 song.lyrics
             )
+        }
+    }
+
+    private fun displayLyrics(song: SongWithLyrics) {
+        binding.lyricsView.textLyrics.text = if (song.type == LyricsType.LRC) {
+            val syncedLyrics = SyncedLyrics.parseLrc(song.lyrics)
+            syncedLyrics?.getFullText() ?: ""
+        } else {
+            song.lyrics
         }
     }
 

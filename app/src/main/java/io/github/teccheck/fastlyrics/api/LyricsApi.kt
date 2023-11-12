@@ -1,10 +1,11 @@
 package io.github.teccheck.fastlyrics.api
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
-import io.github.teccheck.fastlyrics.api.provider.Genius
+import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.model.SearchResult
@@ -17,6 +18,16 @@ object LyricsApi {
     private const val TAG = "LyricsApi"
 
     private val executor = Executors.newSingleThreadExecutor()
+
+    private var providers: Array<LyricsProvider> = LyricsProvider.getAllProviders()
+    private val provider: LyricsProvider
+        get() = providers.first()
+
+    fun setProviderOrder(order: Array<String>) {
+        val all = LyricsProvider.getAllProviders()
+        providers = order.mapNotNull { name -> all.find { provider -> provider.getName() == name } }
+            .toTypedArray()
+    }
 
     fun getLyricsAsync(
         songMeta: SongMeta,
@@ -43,7 +54,9 @@ object LyricsApi {
         liveDataTarget: MutableLiveData<Result<SongWithLyrics, LyricsApiException>>
     ) {
         executor.submit {
-            val result = searchResult.id?.let { Genius.fetchLyrics(it) } ?: Failure(
+            val provider = searchResult.provider
+
+            val result = searchResult.id?.let { provider.fetchLyrics(it) } ?: Failure(
                 LyricsNotFoundException()
             )
             liveDataTarget.postValue(result)
@@ -56,9 +69,16 @@ object LyricsApi {
 
     fun search(
         query: String,
-        liveDataTarget: MutableLiveData<Result<List<SearchResult>, LyricsApiException>>
+        liveDataTarget: MutableLiveData<Result<List<SearchResult>, LyricsApiException>>,
+        provider: LyricsProvider = this.provider
     ) {
-        executor.submit { liveDataTarget.postValue(Genius.search(query)) }
+        executor.submit {
+            liveDataTarget.postValue(provider.search(query))
+            val results = provider.search(query)
+
+            if (results is Success)
+                results.value[0].id?.let { provider.fetchLyrics(it) }
+        }
     }
 
     private fun fetchLyrics(
@@ -69,18 +89,53 @@ object LyricsApi {
             searchQuery += " ${songMeta.artist}"
         }
 
-        return when (val searchResult = Genius.search(searchQuery)) {
-            is Failure -> {
-                searchResult
+        var bestResult: SearchResult? = null
+        var bestResultScore = 0.0
+
+        for (provider in providers) {
+            val search = provider.search(searchQuery)
+            if (search !is Success)
+                continue
+
+            val result = search.value.maxByOrNull { getResultScore(songMeta, it) } ?: continue
+            val score = getResultScore(songMeta, result)
+
+            Log.d(TAG, "Search with ${provider.getName()}: ${result.title} by ${result.artist}, score: $score")
+
+            if (score > bestResultScore) {
+                bestResult = result
+                bestResultScore = score
             }
 
-            is Success -> {
-                if (searchResult.value.isNotEmpty()) {
-                    Genius.fetchLyrics(searchResult.value[0].id!!)
-                } else {
-                    Failure(LyricsNotFoundException())
-                }
-            }
+            if (score > 0.8)
+                break
         }
+
+        if (bestResult?.id == null) return Failure(LyricsNotFoundException())
+
+        Log.d(TAG, "Best result: ${bestResult.title}, score: $bestResultScore")
+        return bestResult.provider.fetchLyrics(bestResult.id!!)
+    }
+
+    private fun getResultScore(songMeta: SongMeta, searchResult: SearchResult): Double {
+        var score = 0.0
+
+        if (songMeta.title == searchResult.title)
+            score += 0.5
+        else if (songMeta.title.startsWith(searchResult.title))
+            score += 0.4
+        else if (searchResult.title.startsWith(songMeta.title))
+            score += 0.3
+
+        if (songMeta.artist == null)
+            return score
+        else if (songMeta.artist == searchResult.artist)
+            score += 0.5
+        else if (songMeta.artist.startsWith(searchResult.artist))
+            score += 0.4
+        else if (searchResult.artist.startsWith(songMeta.artist))
+            score += 0.3
+
+        return score
     }
 }

@@ -11,6 +11,9 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.R
+import io.github.teccheck.fastlyrics.api.provider.Deezer
+import io.github.teccheck.fastlyrics.api.provider.Genius
+import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
 
 object Utils {
     fun <T, E> result(value: T?, exception: E): Result<T, E> {
@@ -37,4 +40,19 @@ object Utils {
             .startChooser()
     }
 
+    fun getProviderIconRes(provider: LyricsProvider): Int? {
+        return when(provider) {
+            Genius -> R.drawable.genius
+            Deezer -> R.drawable.deezer
+            else -> null
+        }
+    }
+
+    fun getProviderNameRes(provider: LyricsProvider): Int? {
+        return when(provider) {
+            Genius -> R.string.source_genius
+            Deezer -> R.string.source_deezer
+            else -> null
+        }
+    }
 }

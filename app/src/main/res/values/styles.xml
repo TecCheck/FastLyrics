@@ -21,4 +21,12 @@
 
     <style name="AppTheme.SearchView" parent="Widget.AppCompat.SearchView.ActionBar">
     </style>
+
+    <style name="AppTheme.TextView.InactiveLyrics" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="AppTheme.TextView.ActiveLyrics" parent="AppTheme.TextView.InactiveLyrics">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
 </resources>

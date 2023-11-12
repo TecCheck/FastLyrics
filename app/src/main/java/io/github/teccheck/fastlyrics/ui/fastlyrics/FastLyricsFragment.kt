@@ -4,23 +4,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.picasso.Picasso
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.Settings
+import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
 import io.github.teccheck.fastlyrics.databinding.FragmentFastLyricsBinding
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.exceptions.NetworkException
 import io.github.teccheck.fastlyrics.exceptions.NoMusicPlayingException
 import io.github.teccheck.fastlyrics.exceptions.ParseException
+import io.github.teccheck.fastlyrics.model.LyricsType
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
+import io.github.teccheck.fastlyrics.model.SyncedLyrics
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
+import io.github.teccheck.fastlyrics.utils.Utils
 import io.github.teccheck.fastlyrics.utils.Utils.copyToClipboard
 import io.github.teccheck.fastlyrics.utils.Utils.openLink
 import io.github.teccheck.fastlyrics.utils.Utils.share
@@ -33,6 +39,8 @@ class FastLyricsFragment : Fragment() {
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var recyclerAdapter: RecyclerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -57,6 +65,8 @@ class FastLyricsFragment : Fragment() {
             }
         }
 
+        lyricsViewModel.songPosition.observe(viewLifecycleOwner, this::setTime)
+
         binding.refreshLayout.setColorSchemeResources(
             R.color.theme_primary, R.color.theme_secondary
         )
@@ -68,10 +78,14 @@ class FastLyricsFragment : Fragment() {
         if (notificationAccess) {
             loadLyricsForCurrentSong()
             context?.let {
-                lyricsViewModel.setupSongMetaListener(it)
+                lyricsViewModel.setupSongMetaListener()
                 lyricsViewModel.autoRefresh = Settings(it).getIsAutoRefreshEnabled()
             }
         }
+
+        recyclerAdapter = RecyclerAdapter()
+        binding.lyricsView.syncedRecycler.adapter = recyclerAdapter
+        binding.lyricsView.syncedRecycler.layoutManager = LinearLayoutManager(context)
 
         return binding.root
     }
@@ -106,8 +120,21 @@ class FastLyricsFragment : Fragment() {
 
         binding.header.textSongTitle.text = song.title
         binding.header.textSongArtist.text = song.artist
-        binding.lyricsView.textLyrics.text = song.lyrics
+        displayLyrics(song)
         Picasso.get().load(song.artUrl).into(binding.header.imageSongArt)
+
+        val provider = LyricsProvider.getProviderByName(song.provider)
+        provider?.let {
+            val providerIconRes = Utils.getProviderIconRes(it)!!
+            val icon = AppCompatResources.getDrawable(requireContext(), providerIconRes)
+            binding.lyricsView.source.setIconResource(providerIconRes)
+            binding.lyricsView.textLyricsProvider.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
+
+            val nameRes = Utils.getProviderNameRes(it)!!
+            val name = getString(nameRes)
+            binding.lyricsView.source.text = name
+            binding.lyricsView.textLyricsProvider.text = name
+        }
 
         binding.lyricsView.source.setOnClickListener { openLink(song.sourceUrl) }
         binding.lyricsView.copy.setOnClickListener {
@@ -119,6 +146,24 @@ class FastLyricsFragment : Fragment() {
             share(
                 song.title, song.artist, song.lyrics
             )
+        }
+    }
+
+    private fun displayLyrics(song: SongWithLyrics) {
+        if (song.type == LyricsType.RAW_TEXT) {
+            binding.lyricsView.syncedRecycler.visibility = View.GONE
+            binding.lyricsView.textLyrics.visibility = View.VISIBLE
+
+            binding.lyricsView.textLyrics.text = song.lyrics
+            recyclerAdapter.setSyncedLyrics(null)
+            lyricsViewModel.setupPositionPolling(false)
+        } else if (song.type == LyricsType.LRC) {
+            binding.lyricsView.textLyrics.visibility = View.GONE
+            binding.lyricsView.syncedRecycler.visibility = View.VISIBLE
+
+            SyncedLyrics.parseLrc(song.lyrics)?.let { recyclerAdapter.setSyncedLyrics(it) }
+            binding.lyricsView.textLyrics.text = ""
+            lyricsViewModel.setupPositionPolling(true)
         }
     }
 
@@ -154,7 +199,20 @@ class FastLyricsFragment : Fragment() {
         )
     }
 
+    private fun setTime(time: Long) {
+        val index = recyclerAdapter.setTime(time) ?: return
+        val recycler = binding.lyricsView.syncedRecycler
+
+        recycler.post {
+            val recyclerPos = binding.lyricsView.root.y
+            val childPos = recycler.getChildAt(index).y
+            val y: Float = childPos - recyclerPos
+            binding.scrollView.smoothScrollTo(0, y.toInt(), SCROLL_DURATION)
+        }
+    }
+
     companion object {
         private const val TAG = "FastLyricsFragment"
+        private const val SCROLL_DURATION = 1000
     }
 }

@@ -7,10 +7,12 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
+import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.exceptions.NetworkException
 import io.github.teccheck.fastlyrics.exceptions.ParseException
 import io.github.teccheck.fastlyrics.model.LyricsType
 import io.github.teccheck.fastlyrics.model.SearchResult
+import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -75,7 +77,9 @@ object Deezer : LyricsProvider {
         return Success(results)
     }
 
-    override fun fetchLyrics(songId: Int): Result<SongWithLyrics, LyricsApiException> {
+    override fun fetchLyrics(searchResult: SearchResult): Result<SongWithLyrics, LyricsApiException> {
+        val songId = (searchResult.id as Int?) ?: return Failure(LyricsNotFoundException())
+
         val query = getLyricsQuery(songId)
         val auth = "Bearer ${getAuthToken()}"
 

@@ -9,6 +9,6 @@ data class SearchResult(
     val album: String?,
     val artUrl: String?,
     val url: String?,
-    val id: Int?,
+    val id: Any?,
     val provider: LyricsProvider,
 ) : Serializable

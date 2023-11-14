@@ -9,6 +9,7 @@ import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.Tokens
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
+import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.exceptions.NetworkException
 import io.github.teccheck.fastlyrics.exceptions.ParseException
 import io.github.teccheck.fastlyrics.model.LyricsType
@@ -104,8 +105,8 @@ object Genius : LyricsProvider {
         }
     }
 
-    override fun fetchLyrics(songId: Int): Result<SongWithLyrics, LyricsApiException> {
-        Log.i(TAG, "Fetching song $songId")
+    override fun fetchLyrics(searchResult: SearchResult): Result<SongWithLyrics, LyricsApiException> {
+        val songId = (searchResult.id as Int?) ?: return Failure(LyricsNotFoundException())
         val jsonBody: JsonElement?
 
         try {

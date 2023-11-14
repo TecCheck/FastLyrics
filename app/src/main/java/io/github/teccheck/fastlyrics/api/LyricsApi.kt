@@ -54,11 +54,7 @@ object LyricsApi {
         liveDataTarget: MutableLiveData<Result<SongWithLyrics, LyricsApiException>>
     ) {
         executor.submit {
-            val provider = searchResult.provider
-
-            val result = searchResult.id?.let { provider.fetchLyrics(it) } ?: Failure(
-                LyricsNotFoundException()
-            )
+            val result = searchResult.provider.fetchLyrics(searchResult)
             liveDataTarget.postValue(result)
 
             if (result is Success) {
@@ -72,35 +68,27 @@ object LyricsApi {
         liveDataTarget: MutableLiveData<Result<List<SearchResult>, LyricsApiException>>,
         provider: LyricsProvider = this.provider
     ) {
-        executor.submit {
-            liveDataTarget.postValue(provider.search(query))
-            val results = provider.search(query)
-
-            if (results is Success)
-                results.value[0].id?.let { provider.fetchLyrics(it) }
-        }
+        executor.submit { liveDataTarget.postValue(provider.search(query)) }
     }
 
     private fun fetchLyrics(
         songMeta: SongMeta
     ): Result<SongWithLyrics, LyricsApiException> {
-        var searchQuery = songMeta.title
-        if (songMeta.artist != null) {
-            searchQuery += " ${songMeta.artist}"
-        }
-
         var bestResult: SearchResult? = null
         var bestResultScore = 0.0
 
         for (provider in providers) {
-            val search = provider.search(searchQuery)
+            val search = provider.search(songMeta)
             if (search !is Success)
                 continue
 
             val result = search.value.maxByOrNull { getResultScore(songMeta, it) } ?: continue
             val score = getResultScore(songMeta, result)
 
-            Log.d(TAG, "Search with ${provider.getName()}: ${result.title} by ${result.artist}, score: $score")
+            Log.d(
+                TAG,
+                "Search with ${provider.getName()}: ${result.title} by ${result.artist}, score: $score"
+            )
 
             if (score > bestResultScore) {
                 bestResult = result
@@ -114,7 +102,7 @@ object LyricsApi {
         if (bestResult?.id == null) return Failure(LyricsNotFoundException())
 
         Log.d(TAG, "Best result: ${bestResult.title}, score: $bestResultScore")
-        return bestResult.provider.fetchLyrics(bestResult.id!!)
+        return bestResult.provider.fetchLyrics(bestResult)
     }
 
     private fun getResultScore(songMeta: SongMeta, searchResult: SearchResult): Double {

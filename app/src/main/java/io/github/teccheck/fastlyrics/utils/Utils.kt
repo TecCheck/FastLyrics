@@ -14,6 +14,7 @@ import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.api.provider.Deezer
 import io.github.teccheck.fastlyrics.api.provider.Genius
 import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
+import io.github.teccheck.fastlyrics.api.provider.PetitLyrics
 
 object Utils {
     fun <T, E> result(value: T?, exception: E): Result<T, E> {
@@ -44,6 +45,7 @@ object Utils {
         return when(provider) {
             Genius -> R.drawable.genius
             Deezer -> R.drawable.deezer
+            PetitLyrics -> R.drawable.petitlyrics
             else -> null
         }
     }
@@ -52,6 +54,7 @@ object Utils {
         return when(provider) {
             Genius -> R.string.source_genius
             Deezer -> R.string.source_deezer
+            PetitLyrics -> R.string.source_petitlyrics
             else -> null
         }
     }

@@ -94,7 +94,7 @@ object Genius : LyricsProvider {
                 val url = jo.get(KEY_URL).asString
                 val id = jo.get(KEY_ID).asInt
 
-                val result = SearchResult(title, artist, album, artUrl, url, id, this)
+                val result = SearchResult(title, artist, album, artUrl, url, id, null, this)
                 results.add(result)
             }
 

@@ -71,7 +71,7 @@ object Deezer : LyricsProvider {
             val artUrl = songObject.get(KEY_ALBUM).asJsonObject.get(KEY_COVER).asString
             val link = songObject.get(KEY_LINK).asString
 
-            return@map SearchResult(title, artist, album, artUrl, link, id, this)
+            return@map SearchResult(title, artist, album, artUrl, link, id, null,this)
         }
 
         return Success(results)

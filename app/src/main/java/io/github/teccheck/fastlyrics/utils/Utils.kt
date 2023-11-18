@@ -14,6 +14,7 @@ import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.api.provider.Deezer
 import io.github.teccheck.fastlyrics.api.provider.Genius
 import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
+import io.github.teccheck.fastlyrics.api.provider.Netease
 import io.github.teccheck.fastlyrics.api.provider.PetitLyrics
 
 object Utils {
@@ -46,6 +47,7 @@ object Utils {
             Genius -> R.drawable.genius
             Deezer -> R.drawable.deezer
             PetitLyrics -> R.drawable.petitlyrics
+            Netease -> R.drawable.netease
             else -> null
         }
     }
@@ -55,6 +57,7 @@ object Utils {
             Genius -> R.string.source_genius
             Deezer -> R.string.source_deezer
             PetitLyrics -> R.string.source_petitlyrics
+            Netease -> R.string.source_netease
             else -> null
         }
     }

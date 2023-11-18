@@ -19,7 +19,7 @@ interface LyricsProvider {
 
     companion object {
         fun getAllProviders(): Array<LyricsProvider> {
-            return arrayOf(PetitLyrics, Deezer, Genius)
+            return arrayOf(Netease, PetitLyrics, Deezer, Genius)
         }
 
         fun getProviderByName(name: String) = getAllProviders().find { it.getName() == name }

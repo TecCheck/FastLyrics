@@ -44,7 +44,7 @@ object Utils {
         return when(provider) {
             Genius -> R.drawable.genius
             Deezer -> R.drawable.deezer
-            else -> null
+            else -> R.drawable.fastlyrics
         }
     }
 
@@ -52,7 +52,7 @@ object Utils {
         return when(provider) {
             Genius -> R.string.source_genius
             Deezer -> R.string.source_deezer
-            else -> null
+            else -> R.string.app_name
         }
     }
 }

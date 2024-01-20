@@ -11,6 +11,7 @@ import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import io.github.teccheck.fastlyrics.utils.Utils
 import java.util.concurrent.Executors
 import dev.forkhandles.result4k.Result
+import io.github.teccheck.fastlyrics.model.LyricsType
 
 object LyricStorage {
     private const val TAG = "LyricsStorage"
@@ -73,4 +74,7 @@ object LyricStorage {
 
     fun findSong(title: String, artist: String): SongWithLyrics? =
         database.songsDao().findSong(title, artist)
+
+    fun findSong(title: String, artist: String, type: LyricsType): SongWithLyrics? =
+        database.songsDao().findSong(title, artist, type)
 }

@@ -20,21 +20,25 @@ class FastLyricsViewModel : ViewModel() {
 
     private val _songMeta = MutableLiveData<Result<SongMeta, LyricsApiException>>()
     private val _songWithLyrics = MutableLiveData<Result<SongWithLyrics, LyricsApiException>>()
+    private val _songWithLyricsSynced = MutableLiveData<Result<SongWithLyrics, LyricsApiException>>()
     private val _songPosition = MutableLiveData<Long>()
 
     private var songPositionTimer: Timer? = null
 
     val songMeta: LiveData<Result<SongMeta, LyricsApiException>> = _songMeta
     val songWithLyrics: LiveData<Result<SongWithLyrics, LyricsApiException>> = _songWithLyrics
+    val songWithLyricsSynced: LiveData<Result<SongWithLyrics, LyricsApiException>> = _songWithLyricsSynced
     val songPosition: LiveData<Long> = _songPosition
 
+    var syncedLyricsAvailable = false
     var autoRefresh = false
 
     private val songMetaCallback = MediaSession.SongMetaCallback {
         if (!autoRefresh) return@SongMetaCallback
 
         _songMeta.postValue(Success(it))
-        LyricsApi.getLyricsAsync(it, _songWithLyrics)
+        loadLyrics(it)
+
     }
 
     fun loadLyricsForCurrentSong(context: Context): Boolean {
@@ -47,10 +51,16 @@ class FastLyricsViewModel : ViewModel() {
         _songMeta.value = songMetaResult
 
         if (songMetaResult is Success) {
-            LyricsApi.getLyricsAsync(songMetaResult.value, _songWithLyrics)
+            loadLyrics(songMetaResult.value)
         }
 
         return songMetaResult is Success
+    }
+
+    private fun loadLyrics(songMeta: SongMeta) {
+        syncedLyricsAvailable = false
+        LyricsApi.getLyricsAsync(songMeta, _songWithLyrics)
+        LyricsApi.getLyricsAsync(songMeta, _songWithLyricsSynced, true)
     }
 
     fun setupSongMetaListener() {

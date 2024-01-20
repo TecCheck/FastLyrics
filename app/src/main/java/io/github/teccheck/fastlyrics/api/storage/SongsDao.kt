@@ -3,6 +3,7 @@ package io.github.teccheck.fastlyrics.api.storage
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import io.github.teccheck.fastlyrics.model.LyricsType
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 
 @Dao
@@ -13,6 +14,10 @@ interface SongsDao {
 
     @Query("SELECT * FROM songs WHERE title = :title AND artist = :artist")
     fun findSong(title: String, artist: String): SongWithLyrics?
+
+
+    @Query("SELECT * FROM songs WHERE title = :title AND artist = :artist AND type = :type")
+    fun findSong(title: String, artist: String, type: LyricsType): SongWithLyrics?
 
     @Query("SELECT * FROM songs WHERE id = :id")
     fun getSong(id: Long): SongWithLyrics?

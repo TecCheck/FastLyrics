@@ -10,7 +10,9 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import io.github.teccheck.fastlyrics.R
+import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
+import io.github.teccheck.fastlyrics.utils.Utils
 
 class RecyclerAdapter :
     RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
@@ -22,6 +24,7 @@ class RecyclerAdapter :
         private val imageArt: ImageView
         private val textTitle: TextView
         private val textArtist: TextView
+        private val iconProvider: ImageView
         private val selectionIcon: ImageView
 
         private var song: SongWithLyrics? = null
@@ -30,6 +33,7 @@ class RecyclerAdapter :
             imageArt = view.findViewById(R.id.image_song_art)
             textTitle = view.findViewById(R.id.text_song_title)
             textArtist = view.findViewById(R.id.text_song_artist)
+            iconProvider = view.findViewById(R.id.provider_icon)
             selectionIcon = view.findViewById(R.id.selection_icon)
         }
 
@@ -37,6 +41,11 @@ class RecyclerAdapter :
             this.song = song
             textTitle.text = song.title
             textArtist.text = song.artist
+
+            LyricsProvider.getProviderByName(song.provider)?.let { provider ->
+                Utils.getProviderIconRes(provider)?.let { iconProvider.setImageResource(it) }
+            }
+
             Picasso.get().load(song.artUrl).into(imageArt)
             selectionIcon.visibility = if (selected) View.VISIBLE else View.GONE
         }

@@ -20,6 +20,8 @@
     <string name="lyrics_network_exception">Es gab ein Netzwerkproblem beim Laden des Textes</string>
     <string name="lyrics_unknown_error">Unbekannter Fehler</string>
 
+    <string name="synced_lyrics_available">Synchronisierter Songtext verfügbar</string>
+
     <string name="lyrics_provider_over_line">Songtext von</string>
 
     <string name="copy">Kopieren</string>

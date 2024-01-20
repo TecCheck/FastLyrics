@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.picasso.Picasso
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
+import dev.forkhandles.result4k.Result
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.Settings
 import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
@@ -58,10 +59,23 @@ class FastLyricsFragment : Fragment() {
         }
 
         lyricsViewModel.songWithLyrics.observe(viewLifecycleOwner) { result ->
+            binding.header.syncedLyricsSwitch.isChecked = false
             binding.refreshLayout.isRefreshing = false
+            displayResult(result)
+        }
+
+        lyricsViewModel.songWithLyricsSynced.observe(viewLifecycleOwner) { result ->
+            binding.refreshLayout.isRefreshing = false
+
             when (result) {
-                is Success -> displaySongWithLyrics(result.value)
-                is Failure -> displayError(result.reason)
+                is Success -> {
+                    lyricsViewModel.syncedLyricsAvailable = true
+                    binding.header.syncedLyricsAvailable.visibility = View.VISIBLE
+                }
+                is Failure -> {
+                    binding.header.syncedLyricsAvailable.visibility = View.GONE
+                    binding.header.syncedLyricsSwitch.isChecked = false
+                }
             }
         }
 
@@ -71,6 +85,16 @@ class FastLyricsFragment : Fragment() {
             R.color.theme_primary, R.color.theme_secondary
         )
         binding.refreshLayout.setOnRefreshListener { loadLyricsForCurrentSong() }
+
+        binding.header.syncedLyricsSwitch.setOnCheckedChangeListener { _, checked ->
+            val song = if (checked && lyricsViewModel.syncedLyricsAvailable) {
+                lyricsViewModel.songWithLyricsSynced.value
+            } else {
+                lyricsViewModel.songWithLyrics.value
+            }
+
+            song?.let { displayResult(it) }
+        }
 
         val notificationAccess =
             context?.let { DummyNotificationListenerService.canAccessNotifications(it) } ?: false
@@ -104,6 +128,13 @@ class FastLyricsFragment : Fragment() {
         }
     }
 
+    private fun displayResult(result: Result<SongWithLyrics, LyricsApiException>) {
+        when (result) {
+            is Success -> displaySongWithLyrics(result.value)
+            is Failure -> displayError(result.reason)
+        }
+    }
+
     private fun displaySongMeta(songMeta: SongMeta) {
         binding.header.container.visibility = View.VISIBLE
         binding.errorView.container.visibility = View.GONE
@@ -128,7 +159,12 @@ class FastLyricsFragment : Fragment() {
             val providerIconRes = Utils.getProviderIconRes(it)!!
             val icon = AppCompatResources.getDrawable(requireContext(), providerIconRes)
             binding.lyricsView.source.setIconResource(providerIconRes)
-            binding.lyricsView.textLyricsProvider.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
+            binding.lyricsView.textLyricsProvider.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                icon,
+                null,
+                null,
+                null
+            )
 
             val nameRes = Utils.getProviderNameRes(it)!!
             val name = getString(nameRes)

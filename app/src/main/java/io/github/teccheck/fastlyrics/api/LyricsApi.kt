@@ -5,9 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
+import io.github.teccheck.fastlyrics.api.provider.Deezer
+import io.github.teccheck.fastlyrics.api.provider.Genius
 import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
+import io.github.teccheck.fastlyrics.model.LyricsType
 import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
@@ -17,11 +20,16 @@ object LyricsApi {
 
     private const val TAG = "LyricsApi"
 
-    private val executor = Executors.newSingleThreadExecutor()
+    private val executor = Executors.newFixedThreadPool(2)
 
-    private var providers: Array<LyricsProvider> = LyricsProvider.getAllProviders()
+    private var providers: Array<LyricsProvider> = arrayOf(Genius)
+    private var providers_synced: Array<LyricsProvider> = arrayOf(Deezer)
+
     private val provider: LyricsProvider
         get() = providers.first()
+
+    private val provider_synced: LyricsProvider
+        get() = providers_synced.first()
 
     fun setProviderOrder(order: Array<String>) {
         val all = LyricsProvider.getAllProviders()
@@ -31,16 +39,20 @@ object LyricsApi {
 
     fun getLyricsAsync(
         songMeta: SongMeta,
-        liveDataTarget: MutableLiveData<Result<SongWithLyrics, LyricsApiException>>
+        liveDataTarget: MutableLiveData<Result<SongWithLyrics, LyricsApiException>>,
+        synced: Boolean = false
     ) {
         executor.submit {
-            val song = songMeta.artist?.let { LyricStorage.findSong(songMeta.title, it) }
+            Log.d(TAG, "getLyricsAsync($synced)")
+
+            val type = if (synced) LyricsType.LRC else LyricsType.RAW_TEXT
+            val song = songMeta.artist?.let { LyricStorage.findSong(songMeta.title, it, type) }
             if (song != null) {
                 liveDataTarget.postValue(Success(song))
                 return@submit
             }
 
-            val result = fetchLyrics(songMeta)
+            val result = fetchLyrics(songMeta, synced)
             liveDataTarget.postValue(result)
 
             if (result is Success) {
@@ -82,7 +94,8 @@ object LyricsApi {
     }
 
     private fun fetchLyrics(
-        songMeta: SongMeta
+        songMeta: SongMeta,
+        synced: Boolean = false
     ): Result<SongWithLyrics, LyricsApiException> {
         var searchQuery = songMeta.title
         if (songMeta.artist != null) {
@@ -91,6 +104,12 @@ object LyricsApi {
 
         var bestResult: SearchResult? = null
         var bestResultScore = 0.0
+
+        val providers = if (synced) {
+            providers_synced
+        } else {
+            providers
+        }
 
         for (provider in providers) {
             val search = provider.search(searchQuery)

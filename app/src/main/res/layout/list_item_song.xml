@@ -40,9 +40,10 @@
     </FrameLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:layout_weight="1"
         android:orientation="vertical">
 
         <TextView
@@ -59,5 +60,14 @@
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             tools:text="Artist" />
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/provider_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="16dp"
+        app:srcCompat="@drawable/fastlyrics"
+        android:tint="?android:attr/colorControlNormal"/>
 
 </LinearLayout>

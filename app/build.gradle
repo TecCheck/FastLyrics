@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'com.google.devtools.ksp' version '1.8.0-1.0.9'
+    id 'com.google.devtools.ksp' version '1.9.22-1.0.17'
 }
 
 android {
@@ -34,6 +34,7 @@ android {
     }
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
 }
 
@@ -54,13 +55,13 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.2.1'
 
     implementation 'com.google.android.material:material:1.11.0'
-    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'com.google.code.gson:gson:2.10.1'
 
-    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
-    implementation(platform("dev.forkhandles:forkhandles-bom:2.4.0.0"))
+    implementation(platform('dev.forkhandles:forkhandles-bom:2.12.2.0'))
     implementation("dev.forkhandles:result4k")
 
     implementation 'androidx.room:room-runtime:2.6.1'

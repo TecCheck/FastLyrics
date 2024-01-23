@@ -1,0 +1,1 @@
+Versuche einen Crash zu beheben, wenn die App keinen Zugriff auf die Benachrichtigungen hat

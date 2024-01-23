@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import io.github.teccheck.fastlyrics.api.MediaSession
 import io.github.teccheck.fastlyrics.databinding.FragmentPermissionBinding
 
 class PermissionFragment : Fragment() {
@@ -23,6 +24,11 @@ class PermissionFragment : Fragment() {
         _binding = FragmentPermissionBinding.inflate(inflater, container, false)
         binding.gotoSettingsButton.setOnClickListener { startNotificationsSettings() }
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MediaSession.init(requireContext())
     }
 
     override fun onDestroyView() {

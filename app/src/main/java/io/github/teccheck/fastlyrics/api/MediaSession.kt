@@ -12,7 +12,9 @@ import androidx.core.content.getSystemService
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
+import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.NoMusicPlayingException
+import io.github.teccheck.fastlyrics.exceptions.NoNotifPermsException
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 
@@ -27,7 +29,17 @@ object MediaSession {
     private val internalCallbacks = mutableMapOf<MediaSession.Token, MediaController.Callback>()
     private val callbacks = mutableListOf<SongMetaCallback>()
 
+    private var initialized = false
+
     fun init(context: Context) {
+        if (!DummyNotificationListenerService.canAccessNotifications(context))
+            return
+
+        if (initialized)
+            return
+
+        initialized = true
+
         nls = ComponentName(context, DummyNotificationListenerService::class.java)
         msm = context.getSystemService()!!
         msm.addOnActiveSessionsChangedListener(this::onActiveSessionsChanged, nls)
@@ -82,7 +94,9 @@ object MediaSession {
         onMetadataChanged(newActive, newActive.metadata)
     }
 
-    fun getSongInformation(): Result<SongMeta, NoMusicPlayingException> {
+    fun getSongInformation(): Result<SongMeta, LyricsApiException> {
+        if (!initialized) return Failure(NoNotifPermsException())
+
         val session = activeMediaSession ?: return Failure(NoMusicPlayingException())
         val metadata = session.metadata?.getSongMeta() ?: return Failure(
             NoMusicPlayingException()
@@ -94,10 +108,14 @@ object MediaSession {
     fun getSongPosition(): Long? = activeMediaSession?.playbackState?.position
 
     fun registerSongMetaCallback(callback: SongMetaCallback) {
+        if (!initialized) return
+
         callbacks.add(callback)
     }
 
     fun unregisterSongMetaCallback(callback: SongMetaCallback) {
+        if (!initialized) return
+
         callbacks.remove(callback)
     }
 

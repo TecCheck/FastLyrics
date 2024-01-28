@@ -7,6 +7,7 @@ import android.media.session.MediaController
 import android.media.session.MediaSession
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
+import android.os.Build
 import android.util.Log
 import androidx.core.content.getSystemService
 import dev.forkhandles.result4k.Failure
@@ -45,7 +46,7 @@ object MediaSession {
         msm.addOnActiveSessionsChangedListener(this::onActiveSessionsChanged, nls)
 
         val activeSessions = msm.getActiveSessions(nls)
-        val activeSession = activeSessions.find { it.playbackState?.isActive == true }
+        val activeSession = activeSessions.find { isActive(it.playbackState) }
         activeMediaSession = activeSession ?: activeSessions.firstOrNull()
         onActiveSessionsChanged(activeSessions)
 
@@ -78,7 +79,7 @@ object MediaSession {
     }
 
     private fun onPlaybackStateChanged(controller: MediaController, state: PlaybackState?) {
-        if (state?.isActive == true) setActiveMediaSession(controller)
+        if (isActive(state)) setActiveMediaSession(controller)
     }
 
     private fun onMetadataChanged(controller: MediaController, metadata: MediaMetadata?) {
@@ -135,6 +136,19 @@ object MediaSession {
             return null
 
         return SongMeta(title, artist, album, art)
+    }
+
+    private fun isActive(playbackState: PlaybackState?): Boolean {
+        if (playbackState == null)
+            return false
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            return playbackState.isActive
+
+        return when (playbackState.state) {
+            PlaybackState.STATE_FAST_FORWARDING, PlaybackState.STATE_REWINDING, PlaybackState.STATE_SKIPPING_TO_PREVIOUS, PlaybackState.STATE_SKIPPING_TO_NEXT, PlaybackState.STATE_SKIPPING_TO_QUEUE_ITEM, PlaybackState.STATE_BUFFERING, PlaybackState.STATE_CONNECTING, PlaybackState.STATE_PLAYING -> true
+            else -> false
+        }
     }
 
     fun interface SongMetaCallback {

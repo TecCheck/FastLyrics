@@ -20,4 +20,8 @@ data class SongWithLyrics(
 
     @ColumnInfo(defaultValue = "genius")
     val provider: String
-)
+) {
+    override fun toString(): String {
+        return "SongWithLyrics(id=$id, title='$title', artist='$artist', lyrics='$lyrics', sourceUrl='$sourceUrl', album=$album, artUrl=$artUrl, type=$type, provider='$provider')"
+    }
+}

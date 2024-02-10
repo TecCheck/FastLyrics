@@ -36,13 +36,13 @@ class ViewLyricsFragment : Fragment() {
         lyricsViewModel = ViewModelProvider(this)[ViewLyricsViewModel::class.java]
         _binding = FragmentViewLyricsBinding.inflate(inflater, container, false)
 
-        binding.refreshLayout.isEnabled = false
-        binding.refreshLayout.setColorSchemeResources(
+        binding.refresher.isEnabled = false
+        binding.refresher.setColorSchemeResources(
             R.color.theme_primary, R.color.theme_secondary
         )
 
         lyricsViewModel.songWithLyrics.observe(viewLifecycleOwner) { result ->
-            binding.refreshLayout.isRefreshing = false
+            binding.refresher.isRefreshing = false
             if (result is Success) displaySongWithLyrics(result.value)
         }
 
@@ -50,7 +50,7 @@ class ViewLyricsFragment : Fragment() {
             if (it.containsKey(ARG_SONG_ID)) {
                 lyricsViewModel.loadLyricsForSongFromStorage(it.getLong(ARG_SONG_ID, 0))
             } else if (it.containsKey(ARG_SEARCH_RESULT)) {
-                binding.refreshLayout.isRefreshing = true
+                binding.refresher.isRefreshing = true
                 val result = getSearchResult(it) ?: return@let
                 lyricsViewModel.loadLyricsForSearchResult(result)
             }
@@ -72,12 +72,12 @@ class ViewLyricsFragment : Fragment() {
 
         val provider = LyricsProvider.getProviderByName(song.provider)
         provider?.let {
-            val providerIconRes = Utils.getProviderIconRes(it)!!
+            val providerIconRes = Utils.getProviderIconRes(it)
             val icon = AppCompatResources.getDrawable(requireContext(), providerIconRes)
             binding.lyricsView.source.setIconResource(providerIconRes)
             binding.lyricsView.textLyricsProvider.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
 
-            val nameRes = Utils.getProviderNameRes(it)!!
+            val nameRes = Utils.getProviderNameRes(it)
             val name = getString(nameRes)
             binding.lyricsView.source.text = name
             binding.lyricsView.textLyricsProvider.text = name

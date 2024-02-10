@@ -31,6 +31,10 @@ class FastLyricsViewModel : ViewModel() {
     val songPosition: LiveData<Long> = _songPosition
 
     var syncedLyricsAvailable = false
+    var plainLyricsAvailable = false
+    val bothLyricsAvailable
+        get() = syncedLyricsAvailable && plainLyricsAvailable
+
     var autoRefresh = false
 
     private val songMetaCallback = MediaSession.SongMetaCallback {
@@ -38,7 +42,6 @@ class FastLyricsViewModel : ViewModel() {
 
         _songMeta.postValue(Success(it))
         loadLyrics(it)
-
     }
 
     fun loadLyricsForCurrentSong(context: Context): Boolean {
@@ -59,7 +62,8 @@ class FastLyricsViewModel : ViewModel() {
 
     private fun loadLyrics(songMeta: SongMeta) {
         syncedLyricsAvailable = false
-        LyricsApi.getLyricsAsync(songMeta, _songWithLyrics)
+        plainLyricsAvailable = false
+        LyricsApi.getLyricsAsync(songMeta, _songWithLyrics, false)
         LyricsApi.getLyricsAsync(songMeta, _songWithLyricsSynced, true)
     }
 

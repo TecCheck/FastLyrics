@@ -64,9 +64,9 @@ object LyricStorage {
     }
 
     fun store(song: SongWithLyrics) {
-        Log.d(TAG, "store")
+        Log.d(TAG, "Store $song")
 
-        if (findSong(song.title, song.artist) == null)
+        if (findSong(song.title, song.artist, song.type) == null)
             database.songsDao().insert(song)
     }
 

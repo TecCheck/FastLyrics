@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.model.SearchResult
+import io.github.teccheck.fastlyrics.utils.Utils
 
 class RecyclerAdapter :
     RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
@@ -21,6 +22,7 @@ class RecyclerAdapter :
         private val textTitle: TextView
         private val textArtist: TextView
         private val selectionIcon: ImageView
+        private val providerIcon: ImageView
 
         private var searchResult: SearchResult? = null
 
@@ -29,6 +31,7 @@ class RecyclerAdapter :
             textTitle = view.findViewById(R.id.text_song_title)
             textArtist = view.findViewById(R.id.text_song_artist)
             selectionIcon = view.findViewById(R.id.selection_icon)
+            providerIcon = view.findViewById(R.id.provider_icon)
         }
 
         fun bind(searchResult: SearchResult) {
@@ -36,6 +39,7 @@ class RecyclerAdapter :
             textTitle.text = searchResult.title
             textArtist.text = searchResult.artist
             Picasso.get().load(searchResult.artUrl).into(imageArt)
+            providerIcon.setImageResource(Utils.getProviderIconRes(searchResult.provider))
         }
 
         fun getSearchResult() = searchResult

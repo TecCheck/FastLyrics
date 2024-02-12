@@ -15,6 +15,7 @@ import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
+import kotlin.math.log
 
 class FastLyricsViewModel : ViewModel() {
 
@@ -22,6 +23,7 @@ class FastLyricsViewModel : ViewModel() {
     private val _songWithLyrics = MutableLiveData<Result<SongWithLyrics, LyricsApiException>>()
     private val _songWithLyricsSynced = MutableLiveData<Result<SongWithLyrics, LyricsApiException>>()
     private val _songPosition = MutableLiveData<Long>()
+     var storeLyric=""
 
     private var songPositionTimer: Timer? = null
 
@@ -55,6 +57,9 @@ class FastLyricsViewModel : ViewModel() {
 
         if (songMetaResult is Success) {
             loadLyrics(songMetaResult.value)
+            storeLyric=songMetaResult.value.toString()
+
+            Log.d(TAG, "Stored lyric: $storeLyric")
         }
 
         return songMetaResult is Success

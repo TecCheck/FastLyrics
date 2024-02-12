@@ -75,8 +75,20 @@
                     android:text="@string/share"
                     app:cornerRadius="32dp"
                     app:icon="?attr/actionModeShareDrawable" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/download"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Download"
+                    app:cornerRadius="32dp"
+                    app:icon="@drawable/baseline_file_download_24" />
             </LinearLayout>
+
         </HorizontalScrollView>
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

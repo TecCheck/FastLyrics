@@ -1,10 +1,12 @@
 package io.github.teccheck.fastlyrics.ui.fastlyrics
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -12,6 +14,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.picasso.Picasso
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
+import android.widget.Toast
+
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Environment
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import java.io.File
+import java.io.FileOutputStream
 import dev.forkhandles.result4k.Result
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.Settings
@@ -28,12 +41,20 @@ import io.github.teccheck.fastlyrics.utils.Utils
 import io.github.teccheck.fastlyrics.utils.Utils.copyToClipboard
 import io.github.teccheck.fastlyrics.utils.Utils.openLink
 import io.github.teccheck.fastlyrics.utils.Utils.share
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.time.delay
+import kotlinx.coroutines.delay
+import java.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 
 class FastLyricsFragment : Fragment() {
 
     private lateinit var lyricsViewModel: FastLyricsViewModel
     private var _binding: FragmentFastLyricsBinding? = null
+    lateinit var song: SongWithLyrics
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
@@ -88,7 +109,7 @@ class FastLyricsFragment : Fragment() {
         binding.header.container.visibility = View.GONE
         binding.errorView.container.visibility = View.GONE
         binding.lyricsView.container.visibility = View.GONE
-
+        
         when (result) {
             is Failure -> displayError(result.reason)
             is Success -> displaySongMeta(result.value)
@@ -161,7 +182,7 @@ class FastLyricsFragment : Fragment() {
             return
         }
 
-        val song = (result as Success).value
+         song = (result as Success).value
 
         binding.header.container.visibility = View.VISIBLE
         binding.lyricsView.container.visibility = View.VISIBLE
@@ -197,7 +218,47 @@ class FastLyricsFragment : Fragment() {
                 song.title, song.artist, song.lyrics
             )
         }
+        binding.lyricsView.download.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+
+                Toast.makeText(requireContext(), "Tap download again after allowing", Toast.LENGTH_SHORT).show()
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(1000) // Delay for 1 second
+                    // After delay, request permission
+                    ActivityCompat.requestPermissions(
+                        requireActivity(),
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        PERMISSION_REQUEST_CODE
+                    )
+            }
+            } else {
+                // Permission is already granted, proceed with saving the lyrics to a file
+                saveLyricsToFile(requireContext(), song.title, song.lyrics)
+            }
+        }
     }
+    private fun saveLyricsToFile(context: Context, title: String, lyrics: String) {
+        val externalStorageState = Environment.getExternalStorageState()
+        if (externalStorageState == Environment.MEDIA_MOUNTED) {
+            val file = File(
+                Environment.getExternalStorageDirectory(),
+                "$title.txt"
+            )
+            FileOutputStream(file).use { fos ->
+                fos.write(lyrics.toByteArray())
+            }
+            Toast.makeText(context, "Lyrics saved to $title.txt", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "External storage not available", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
 
     private fun displayLyrics(song: SongWithLyrics) {
         binding.lyricsView.syncedRecycler.visibility = View.GONE
@@ -235,5 +296,6 @@ class FastLyricsFragment : Fragment() {
     companion object {
         private const val TAG = "FastLyricsFragment"
         private const val SCROLL_DURATION = 1000
+        private const val PERMISSION_REQUEST_CODE = 1001
     }
 }

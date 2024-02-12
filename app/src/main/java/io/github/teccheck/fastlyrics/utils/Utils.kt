@@ -1,5 +1,11 @@
 package io.github.teccheck.fastlyrics.utils
 
+import android.content.Context
+import android.os.Environment
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
+
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent

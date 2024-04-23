@@ -61,6 +61,7 @@ class FastLyricsFragment : Fragment() {
         binding.refresher.setOnRefreshListener { loadLyricsForCurrentSong() }
         binding.refresher.setColorSchemeResources(R.color.theme_primary, R.color.theme_secondary)
 
+        binding.header.syncedLyricsSwitch.isChecked = settings.getSyncedLyricsByDefault()
         binding.header.syncedLyricsSwitch.setOnCheckedChangeListener { _, _ -> displaySongWithLyrics() }
 
         if (DummyNotificationListenerService.canAccessNotifications(context)) {

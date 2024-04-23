@@ -1,6 +1,7 @@
 package io.github.teccheck.fastlyrics.model
 
 import android.text.format.DateUtils
+import com.dirror.lyricviewx.LyricEntry
 import java.util.TreeMap
 import java.util.regex.Pattern
 
@@ -24,6 +25,8 @@ class SyncedLyrics private constructor(entries: List<Pair<Long, String>>) {
     fun getFullText(): String = lines.joinToString("\n")
 
     fun getLineCount() = lines.size
+
+    fun getList() = entries.map { LyricEntry(it.key, lines[it.value]) }
 
     companion object {
         private val PATTERN_LINE = Pattern.compile("((\\[\\d\\d:\\d\\d\\.\\d{2,3}\\])+)(.+)")

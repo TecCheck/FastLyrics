@@ -2,6 +2,7 @@ package io.github.teccheck.fastlyrics.ui.fastlyrics
 
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,6 +40,7 @@ class FastLyricsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var recyclerAdapter: RecyclerAdapter
+    private lateinit var settings: Settings
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -47,6 +49,7 @@ class FastLyricsFragment : Fragment() {
         _binding = FragmentFastLyricsBinding.inflate(inflater, container, false)
 
         val context = requireContext()
+        settings = Settings(context)
 
         binding.lyricsView.container.visibility = View.GONE
 
@@ -71,6 +74,24 @@ class FastLyricsFragment : Fragment() {
         binding.lyricsView.syncedRecycler.layoutManager = LinearLayoutManager(context)
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val textSize = settings.getTextSize().toFloat()
+        val textSizeFocusAdd = 2f
+
+        binding.lyricsView.lyricViewX.apply {
+            setNormalTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, textSize, resources.displayMetrics))
+            setCurrentColor(resources.getColor(R.color.theme_primary))
+            setCurrentTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, textSize + textSizeFocusAdd, resources.displayMetrics))
+        }
+
+        binding.lyricsView.textLyrics.apply {
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)
+        }
+
     }
 
     override fun onDestroyView() {
@@ -106,6 +127,11 @@ class FastLyricsFragment : Fragment() {
     }
 
     private fun setTime(time: Long) {
+        Log.d(TAG, "Set time to $time")
+        binding.lyricsView.lyricViewX.updateTime(time)
+
+        return
+
         val index = recyclerAdapter.setTime(time) ?: return
         val recycler = binding.lyricsView.syncedRecycler
 
@@ -201,6 +227,7 @@ class FastLyricsFragment : Fragment() {
 
     private fun displayLyrics(song: SongWithLyrics) {
         binding.lyricsView.syncedRecycler.visibility = View.GONE
+        binding.lyricsView.lyricViewX.visibility = View.GONE
         binding.lyricsView.textLyrics.visibility = View.GONE
 
         if (song.type == LyricsType.RAW_TEXT) {
@@ -209,8 +236,12 @@ class FastLyricsFragment : Fragment() {
             recyclerAdapter.setSyncedLyrics(null)
             lyricsViewModel.setupPositionPolling(false)
         } else if (song.type == LyricsType.LRC) {
-            binding.lyricsView.syncedRecycler.visibility = View.VISIBLE
-            SyncedLyrics.parseLrc(song.lyrics)?.let { recyclerAdapter.setSyncedLyrics(it) }
+            binding.lyricsView.lyricViewX.visibility = View.VISIBLE
+
+            SyncedLyrics.parseLrc(song.lyrics)?.let {
+                binding.lyricsView.lyricViewX.loadLyric(it.getList())
+            }
+
             binding.lyricsView.textLyrics.text = ""
             lyricsViewModel.setupPositionPolling(true)
         }

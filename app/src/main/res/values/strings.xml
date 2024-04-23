@@ -48,6 +48,7 @@
     <string name="preference_app_theme">App theme</string>
     <string name="preference_auto_refresh">Auto refresh lyrics</string>
     <string name="preference_auto_refresh_description">Automatically refresh lyrics when the music changes</string>
+    <string name="preference_text_size">Lyrics text size</string>
 
     <!-- About -->
     <string name="source_code">Source code</string>

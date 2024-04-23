@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.picasso.Picasso
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
@@ -39,7 +38,6 @@ class FastLyricsFragment : Fragment() {
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var recyclerAdapter: RecyclerAdapter
     private lateinit var settings: Settings
 
     override fun onCreateView(
@@ -69,10 +67,6 @@ class FastLyricsFragment : Fragment() {
             lyricsViewModel.setupSongMetaListener()
             lyricsViewModel.autoRefresh = Settings(context).getIsAutoRefreshEnabled()
         }
-
-        recyclerAdapter = RecyclerAdapter()
-        binding.lyricsView.syncedRecycler.adapter = recyclerAdapter
-        binding.lyricsView.syncedRecycler.layoutManager = LinearLayoutManager(context)
 
         return binding.root
     }
@@ -130,18 +124,6 @@ class FastLyricsFragment : Fragment() {
     private fun setTime(time: Long) {
         Log.d(TAG, "Set time to $time")
         binding.lyricsView.lyricViewX.updateTime(time)
-
-        return
-
-        val index = recyclerAdapter.setTime(time) ?: return
-        val recycler = binding.lyricsView.syncedRecycler
-
-        recycler.post {
-            val recyclerPos = binding.lyricsView.root.y
-            val childPos = recycler.getChildAt(index).y
-            val y: Float = childPos - recyclerPos
-            binding.scrollView.smoothScrollTo(0, y.toInt(), SCROLL_DURATION)
-        }
     }
 
     private fun displayError(exception: LyricsApiException) {
@@ -227,22 +209,17 @@ class FastLyricsFragment : Fragment() {
     }
 
     private fun displayLyrics(song: SongWithLyrics) {
-        binding.lyricsView.syncedRecycler.visibility = View.GONE
         binding.lyricsView.lyricViewX.visibility = View.GONE
         binding.lyricsView.textLyrics.visibility = View.GONE
 
         if (song.type == LyricsType.RAW_TEXT) {
             binding.lyricsView.textLyrics.visibility = View.VISIBLE
             binding.lyricsView.textLyrics.text = song.lyrics
-            recyclerAdapter.setSyncedLyrics(null)
+            binding.lyricsView.lyricViewX.loadLyric(null)
             lyricsViewModel.setupPositionPolling(false)
         } else if (song.type == LyricsType.LRC) {
             binding.lyricsView.lyricViewX.visibility = View.VISIBLE
-
-            SyncedLyrics.parseLrc(song.lyrics)?.let {
-                binding.lyricsView.lyricViewX.loadLyric(it.getList())
-            }
-
+            binding.lyricsView.lyricViewX.loadLyric(SyncedLyrics.parseLrcToList(song.lyrics))
             binding.lyricsView.textLyrics.text = ""
             lyricsViewModel.setupPositionPolling(true)
         }

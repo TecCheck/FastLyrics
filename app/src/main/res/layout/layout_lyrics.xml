@@ -8,13 +8,6 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/synced_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="true"
-        tools:listitem="@layout/list_item_synced_line" />
-
     <com.dirror.lyricviewx.LyricViewX
         android:id="@+id/lyricViewX"
         android:layout_width="match_parent"

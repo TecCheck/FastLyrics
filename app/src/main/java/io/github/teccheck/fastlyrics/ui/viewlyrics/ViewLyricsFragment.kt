@@ -100,8 +100,7 @@ class ViewLyricsFragment : Fragment() {
 
     private fun displayLyrics(song: SongWithLyrics) {
         binding.lyricsView.textLyrics.text = if (song.type == LyricsType.LRC) {
-            val syncedLyrics = SyncedLyrics.parseLrc(song.lyrics)
-            syncedLyrics?.getFullText() ?: ""
+            SyncedLyrics.parseLrcToList(song.lyrics).joinToString(separator = "\n") { it.text }
         } else {
             song.lyrics
         }

@@ -36,6 +36,7 @@ class ViewLyricsFragment : Fragment() {
         lyricsViewModel = ViewModelProvider(this)[ViewLyricsViewModel::class.java]
         _binding = FragmentViewLyricsBinding.inflate(inflater, container, false)
 
+        binding.lyricsView.lyricViewX.visibility = View.GONE
         binding.refresher.isEnabled = false
         binding.refresher.setColorSchemeResources(
             R.color.theme_primary, R.color.theme_secondary

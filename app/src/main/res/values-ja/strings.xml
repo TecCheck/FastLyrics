@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">FastLyrics</string>
+
+    <!-- Nav drawer -->
+
+    <string name="menu_lyrics">歌詞</string>
+    <string name="menu_saved">保存済み</string>
+    <string name="menu_search">検索</string>
+    <string name="menu_permission">通知の許可</string>
+    <string name="menu_settings">設定</string>
+    <string name="menu_about">詳細</string>
+
+    <!-- Menu strings -->
+    <string name="menu_copy_lyrics_to_clipboard">歌詞をクリップボードにコピーしました</string>
+
+    <!-- Lyrics View -->
+    <string name="no_song_playing">現在音楽を聴いていません</string>
+    <string name="lyrics_not_found">この曲の歌詞が見つかりませんでした</string>
+    <string name="lyrics_parse_exception">歌詞を解析できませんでした</string>
+    <string name="lyrics_network_exception">歌詞の読み込み中にネットワーク問題が発生しました</string>
+    <string name="lyrics_unknown_error">不明なエラーが発生しました</string>
+
+    <string name="synced_lyrics_available">同期された歌詞が利用可能</string>
+
+    <string name="lyrics_provider_over_line">からの歌詞</string>
+
+    <string name="copy">コピー</string>
+    <string name="lyrics_clipboard_label">歌詞</string>
+
+    <string name="share">共有</string>
+    <string name="share_title">%1$s - %2$sの歌詞</string>
+
+    <!-- Saved songs view -->
+    <string name="delete">消去</string>
+    <plurals name="items_selected">
+        <item quantity="other">%d個選択済み</item>
+    </plurals>
+
+    <!-- Notification permissions -->
+    <string name="permission_description">FastLyricsは、現在再生中の曲を確認するためにデバイスの通知にアクセスする必要があります。 下のボタンをタップして設定で許可できます</string>
+    <string name="permission_tip">ヒント：新しいAndroidのバージョンでは、FastLyricsがアクセスできる対象を個別に選択できます。 FastLyricsは実際には通知にアクセスしないため、全ての選択を解除できます。</string>
+    <string name="permission_goto_settings">設定に移動</string>
+    <string name="permission_comeback">システム設定で適切な場所が見つからない場合は、いつでも通知へのアクセスを有効または無効にすることができます。</string>
+
+    <!-- Settings -->
+    <string name="appearance_header">外観</string>
+    <string name="preference_material_style">Materialスタイル</string>
+    <string name="preference_app_theme">アプリのテーマ</string>
+    <string name="preference_auto_refresh">歌詞を自動更新</string>
+    <string name="preference_auto_refresh_description">音楽が変更されると自動的に歌詞を更新します</string>
+
+    <!-- About -->
+    <string name="source_code">ソースコード</string>
+    <string name="lyrics_sources">歌詞の出典</string>
+
+    <!-- Notification listener service -->
+    <string name="notification_access">Fastlyricsのメタデータへのアクセス</string>
+</resources>

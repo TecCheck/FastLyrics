@@ -7,6 +7,7 @@ import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.api.provider.Deezer
 import io.github.teccheck.fastlyrics.api.provider.Genius
+import io.github.teccheck.fastlyrics.api.provider.LrcLib
 import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
@@ -22,7 +23,7 @@ object LyricsApi {
 
     private val executor = Executors.newFixedThreadPool(2)
 
-    private var providers: Array<LyricsProvider> = arrayOf(Genius)
+    private var providers: Array<LyricsProvider> = arrayOf(Genius, LrcLib)
     private var providers_synced: Array<LyricsProvider> = arrayOf(Deezer)
 
     private val provider: LyricsProvider

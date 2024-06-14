@@ -15,6 +15,7 @@ import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.api.provider.Deezer
 import io.github.teccheck.fastlyrics.api.provider.Genius
+import io.github.teccheck.fastlyrics.api.provider.LrcLib
 import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
@@ -47,6 +48,7 @@ object Utils {
     fun getProviderIconRes(provider: LyricsProvider) = when (provider) {
         Genius -> R.drawable.genius
         Deezer -> R.drawable.deezer
+        LrcLib -> R.drawable.lrclib
         else -> R.drawable.fastlyrics
     }
 
@@ -54,6 +56,7 @@ object Utils {
     fun getProviderNameRes(provider: LyricsProvider) = when (provider) {
         Genius -> R.string.source_genius
         Deezer -> R.string.source_deezer
+        LrcLib -> R.string.source_lrclib
         else -> R.string.app_name
     }
 

@@ -30,6 +30,7 @@ class AboutFragment : Fragment() {
         binding.layoutSourceCode.setOnClickListener { openLink(R.string.source_code_url) }
         binding.layoutSourceGenius.setOnClickListener { openLink(R.string.source_url_genius) }
         binding.layoutSourceDeezer.setOnClickListener { openLink(R.string.source_url_deezer) }
+        binding.layoutSourceLrclib.setOnClickListener { openLink(R.string.source_url_lrclib) }
 
         return binding.root
     }

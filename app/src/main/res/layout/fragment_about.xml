@@ -156,6 +156,32 @@
                         android:text="@string/source_deezer"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_source_lrclib"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:minHeight="48dp"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="64dp"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/lrclib"
+                        app:tint="?android:attr/textColorPrimary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/source_lrclib"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>

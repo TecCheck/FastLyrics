@@ -3,7 +3,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-         // Warning: this repository is going to shut down soon
+        maven { url 'https://www.jitpack.io' }
+        // Warning: this repository is going to shut down soon
     }
 }
 rootProject.name = "FastLyrics"

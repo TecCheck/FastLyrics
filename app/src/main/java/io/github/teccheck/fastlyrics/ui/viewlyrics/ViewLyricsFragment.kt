@@ -36,6 +36,7 @@ class ViewLyricsFragment : Fragment() {
         lyricsViewModel = ViewModelProvider(this)[ViewLyricsViewModel::class.java]
         _binding = FragmentViewLyricsBinding.inflate(inflater, container, false)
 
+        binding.lyricsView.lyricViewX.visibility = View.GONE
         binding.refresher.isEnabled = false
         binding.refresher.setColorSchemeResources(
             R.color.theme_primary, R.color.theme_secondary
@@ -100,8 +101,7 @@ class ViewLyricsFragment : Fragment() {
 
     private fun displayLyrics(song: SongWithLyrics) {
         binding.lyricsView.textLyrics.text = if (song.type == LyricsType.LRC) {
-            val syncedLyrics = SyncedLyrics.parseLrc(song.lyrics)
-            syncedLyrics?.getFullText() ?: ""
+            SyncedLyrics.parseLrcToList(song.lyrics).joinToString(separator = "\n") { it.text }
         } else {
             song.lyrics
         }

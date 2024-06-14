@@ -2,13 +2,13 @@ package io.github.teccheck.fastlyrics.ui.fastlyrics
 
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.picasso.Picasso
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
@@ -38,7 +38,7 @@ class FastLyricsFragment : Fragment() {
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var recyclerAdapter: RecyclerAdapter
+    private lateinit var settings: Settings
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -47,6 +47,7 @@ class FastLyricsFragment : Fragment() {
         _binding = FragmentFastLyricsBinding.inflate(inflater, container, false)
 
         val context = requireContext()
+        settings = Settings(context)
 
         binding.lyricsView.container.visibility = View.GONE
 
@@ -58,6 +59,7 @@ class FastLyricsFragment : Fragment() {
         binding.refresher.setOnRefreshListener { loadLyricsForCurrentSong() }
         binding.refresher.setColorSchemeResources(R.color.theme_primary, R.color.theme_secondary)
 
+        binding.header.syncedLyricsSwitch.isChecked = settings.getSyncedLyricsByDefault()
         binding.header.syncedLyricsSwitch.setOnCheckedChangeListener { _, _ -> displaySongWithLyrics() }
 
         if (DummyNotificationListenerService.canAccessNotifications(context)) {
@@ -66,11 +68,25 @@ class FastLyricsFragment : Fragment() {
             lyricsViewModel.autoRefresh = Settings(context).getIsAutoRefreshEnabled()
         }
 
-        recyclerAdapter = RecyclerAdapter()
-        binding.lyricsView.syncedRecycler.adapter = recyclerAdapter
-        binding.lyricsView.syncedRecycler.layoutManager = LinearLayoutManager(context)
-
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val textSize = settings.getTextSize().toFloat()
+        val textSizeFocusAdd = 2f
+
+        binding.lyricsView.lyricViewX.apply {
+            setNormalTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, textSize, resources.displayMetrics))
+            setCurrentColor(resources.getColor(R.color.theme_primary))
+            setCurrentTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, textSize + textSizeFocusAdd, resources.displayMetrics))
+        }
+
+        binding.lyricsView.textLyrics.apply {
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)
+        }
+
     }
 
     override fun onDestroyView() {
@@ -106,15 +122,8 @@ class FastLyricsFragment : Fragment() {
     }
 
     private fun setTime(time: Long) {
-        val index = recyclerAdapter.setTime(time) ?: return
-        val recycler = binding.lyricsView.syncedRecycler
-
-        recycler.post {
-            val recyclerPos = binding.lyricsView.root.y
-            val childPos = recycler.getChildAt(index).y
-            val y: Float = childPos - recyclerPos
-            binding.scrollView.smoothScrollTo(0, y.toInt(), SCROLL_DURATION)
-        }
+        Log.d(TAG, "Set time to $time")
+        binding.lyricsView.lyricViewX.updateTime(time)
     }
 
     private fun displayError(exception: LyricsApiException) {
@@ -200,17 +209,17 @@ class FastLyricsFragment : Fragment() {
     }
 
     private fun displayLyrics(song: SongWithLyrics) {
-        binding.lyricsView.syncedRecycler.visibility = View.GONE
+        binding.lyricsView.lyricViewX.visibility = View.GONE
         binding.lyricsView.textLyrics.visibility = View.GONE
 
         if (song.type == LyricsType.RAW_TEXT) {
             binding.lyricsView.textLyrics.visibility = View.VISIBLE
             binding.lyricsView.textLyrics.text = song.lyrics
-            recyclerAdapter.setSyncedLyrics(null)
+            binding.lyricsView.lyricViewX.loadLyric(null)
             lyricsViewModel.setupPositionPolling(false)
         } else if (song.type == LyricsType.LRC) {
-            binding.lyricsView.syncedRecycler.visibility = View.VISIBLE
-            SyncedLyrics.parseLrc(song.lyrics)?.let { recyclerAdapter.setSyncedLyrics(it) }
+            binding.lyricsView.lyricViewX.visibility = View.VISIBLE
+            binding.lyricsView.lyricViewX.loadLyric(SyncedLyrics.parseLrcToList(song.lyrics))
             binding.lyricsView.textLyrics.text = ""
             lyricsViewModel.setupPositionPolling(true)
         }

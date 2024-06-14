@@ -8,12 +8,13 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/synced_recycler"
+    <com.dirror.lyricviewx.LyricViewX
+        android:id="@+id/lyricViewX"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="true"
-        tools:listitem="@layout/list_item_synced_line" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:minHeight="600dp"
+        app:lrcPadding="16dp" />
 
     <TextView
         android:id="@+id/text_lyrics"
@@ -23,7 +24,7 @@
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         android:textIsSelectable="true"
-        android:textSize="20sp"
+        android:textSize="16sp"
         tools:text="Some lyrics here" />
 
     <LinearLayout

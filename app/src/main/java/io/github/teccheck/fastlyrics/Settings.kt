@@ -33,10 +33,20 @@ class Settings(context: Context) {
         return sharedPreferences.getBoolean(KEY_AUTO_REFRESH, false)
     }
 
+    fun getSyncedLyricsByDefault(): Boolean {
+        return sharedPreferences.getBoolean(KEY_SYNCED_LYRICS_BY_DEFAULT, false)
+    }
+
+    fun getTextSize(): Int {
+        return sharedPreferences.getInt(KEY_TEXT_SIZE, 18)
+    }
+
     companion object {
         private const val KEY_APP_THEME = "app_theme"
         private const val KEY_MATERIAL_STYLE = "material_style"
         private const val KEY_AUTO_REFRESH = "auto_refresh"
+        private const val KEY_SYNCED_LYRICS_BY_DEFAULT = "synced_lyrics_by_default"
+        private const val KEY_TEXT_SIZE = "text_size"
 
         private const val MATERIAL_STYLE_ONE = "1"
         private const val MATERIAL_STYLE_TWO = "2"

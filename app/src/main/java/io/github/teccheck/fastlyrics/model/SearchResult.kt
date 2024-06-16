@@ -11,4 +11,5 @@ data class SearchResult(
     val url: String?,
     val id: Int?,
     val provider: LyricsProvider,
+    val songWithLyrics: SongWithLyrics? = null
 ) : Serializable

@@ -129,6 +129,12 @@ object LyricsApi {
         if (bestResult?.id == null) return Failure(LyricsNotFoundException())
 
         Log.d(TAG, "Best result: ${bestResult.title}, score: $bestResultScore")
+
+        bestResult.songWithLyrics?.let {
+            Log.d(TAG, "Can skip fetch because song is present in search result.")
+            return Success(it)
+        }
+
         return bestResult.provider.fetchLyrics(bestResult.id!!)
     }
 

@@ -77,13 +77,8 @@ object LrcLib : LyricsProvider {
         val results = mutableListOf<SearchResult>()
         for (jsonResult in json) {
             val jo = jsonResult.asJsonObject
-
-            val title = jo.get(TRACK_NAME).asString
-            val artist = jo.get(ARTIST_NAME).asString
-            val album = jo.get(ALBUM_NAME).asString
-            val id = jo.get(ID).asInt
-
-            val result = SearchResult(title, artist, album, null, null, id, this)
+            val song = parseSongWithLyrics(jo) ?: continue
+            val result = SearchResult(song.title, song.artist, song.album, song.artUrl, song.sourceUrl, jo.get(ID).asInt, this, song)
             results.add(result)
         }
 

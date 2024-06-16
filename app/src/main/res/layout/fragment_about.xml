@@ -104,84 +104,16 @@
                     android:textColor="?attr/colorSecondary"
                     android:textStyle="bold" />
 
-                <LinearLayout
-                    android:id="@+id/layout_source_genius"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:minHeight="48dp"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="64dp"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/genius"
-                        app:tint="?android:attr/textColorPrimary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/source_genius"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
-                </LinearLayout>
+                    android:isScrollContainer="false"
+                    android:nestedScrollingEnabled="false"
+                    tools:itemCount="5"
+                    tools:listitem="@layout/list_item_provider" />
 
 
-                <LinearLayout
-                    android:id="@+id/layout_source_deezer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:minHeight="48dp"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="64dp"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/deezer"
-                        app:tint="?android:attr/textColorPrimary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/source_deezer"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/layout_source_lrclib"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:minHeight="48dp"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="64dp"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/lrclib"
-                        app:tint="?android:attr/textColorPrimary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/source_lrclib"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
-                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>

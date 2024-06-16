@@ -8,8 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.teccheck.fastlyrics.BuildConfig
-import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.databinding.FragmentAboutBinding
 
 class AboutFragment : Fragment() {
@@ -27,17 +27,15 @@ class AboutFragment : Fragment() {
         _binding = FragmentAboutBinding.inflate(inflater, container, false)
 
         binding.textVersion.text = BuildConfig.VERSION_NAME
-        binding.layoutSourceCode.setOnClickListener { openLink(R.string.source_code_url) }
-        binding.layoutSourceGenius.setOnClickListener { openLink(R.string.source_url_genius) }
-        binding.layoutSourceDeezer.setOnClickListener { openLink(R.string.source_url_deezer) }
-        binding.layoutSourceLrclib.setOnClickListener { openLink(R.string.source_url_lrclib) }
+        binding.recycler.adapter = RecyclerAdapter(this::openUrl)
+        binding.recycler.layoutManager = LinearLayoutManager(requireContext())
 
         return binding.root
     }
 
-    private fun openLink(@StringRes resId: Int) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(resId)))
-        startActivity(intent)
+    private fun openUrl(@StringRes urlRes: Int?) {
+        if (urlRes == null) return
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(urlRes))))
     }
 
     override fun onDestroyView() {

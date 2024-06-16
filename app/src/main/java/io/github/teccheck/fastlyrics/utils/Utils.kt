@@ -61,6 +61,14 @@ object Utils {
     }
 
     @StringRes
+    fun getProviderUrlRes(provider: LyricsProvider) = when(provider) {
+        Genius -> R.string.source_url_genius
+        Deezer -> R.string.source_url_deezer
+        LrcLib -> R.string.source_url_lrclib
+        else -> null
+    }
+
+    @StringRes
     fun getErrorTextRes(exception: LyricsApiException) = when (exception) {
         is LyricsNotFoundException -> R.string.lyrics_not_found
         is NetworkException -> R.string.lyrics_network_exception

@@ -58,10 +58,12 @@
 
     <string name="source_genius" translatable="false">Genius</string>
     <string name="source_deezer" translatable="false">Deezer</string>
+    <string name="source_lrclib" translatable="false">LRCLIB</string>
 
     <string name="source_code_url" translatable="false">https://github.com/TecCheck/FastLyrics</string>
     <string name="source_url_genius" translatable="false">https://genius.com/</string>
     <string name="source_url_deezer" translatable="false">https://deezer.com/</string>
+    <string name="source_url_lrclib" translatable="false">https://lrclib.net/</string>
 
     <!-- Notification listener service -->
     <string name="notification_access">Fastlyrics song metadata access</string>

@@ -24,7 +24,7 @@ object LyricsApi {
     private val executor = Executors.newFixedThreadPool(2)
 
     private var providers: Array<LyricsProvider> = arrayOf(Genius, LrcLib)
-    private var providers_synced: Array<LyricsProvider> = arrayOf(Deezer)
+    private var providers_synced: Array<LyricsProvider> = arrayOf(Deezer, LrcLib)
 
     private val provider: LyricsProvider
         get() = providers.first()
@@ -98,11 +98,6 @@ object LyricsApi {
         songMeta: SongMeta,
         synced: Boolean = false
     ): Result<SongWithLyrics, LyricsApiException> {
-        var searchQuery = songMeta.title
-        if (songMeta.artist != null) {
-            searchQuery += " ${songMeta.artist}"
-        }
-
         var bestResult: SearchResult? = null
         var bestResultScore = 0.0
 
@@ -113,7 +108,7 @@ object LyricsApi {
         }
 
         for (provider in providers) {
-            val search = provider.search(searchQuery)
+            val search = provider.search(songMeta)
             if (search !is Success)
                 continue
 

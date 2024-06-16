@@ -91,7 +91,7 @@ object Genius : LyricsProvider {
                 val album = getAlbum(jo)
                 val artUrl = jo.get(KEY_SONG_ART_URL).asString
                 val url = jo.get(KEY_URL).asString
-                val id = jo.get(KEY_ID).asInt
+                val id = jo.get(KEY_ID).asLong
 
                 val result = SearchResult(title, artist, album, artUrl, url, id, this)
                 results.add(result)
@@ -104,7 +104,7 @@ object Genius : LyricsProvider {
         }
     }
 
-    override fun fetchLyrics(songId: Int): Result<SongWithLyrics, LyricsApiException> {
+    override fun fetchLyrics(songId: Long): Result<SongWithLyrics, LyricsApiException> {
         Log.i(TAG, "Fetching song $songId")
         val jsonBody: JsonElement?
 
@@ -174,6 +174,6 @@ object Genius : LyricsProvider {
         fun search(@Query("q") query: String): Call<JsonElement>?
 
         @GET("songs/{songId}")
-        fun fetchSongInfo(@Path("songId") songId: Int): Call<JsonElement>?
+        fun fetchSongInfo(@Path("songId") songId: Long): Call<JsonElement>?
     }
 }

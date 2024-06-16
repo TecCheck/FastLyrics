@@ -78,14 +78,14 @@ object LrcLib : LyricsProvider {
         for (jsonResult in json) {
             val jo = jsonResult.asJsonObject
             val song = parseSongWithLyrics(jo) ?: continue
-            val result = SearchResult(song.title, song.artist, song.album, song.artUrl, song.sourceUrl, jo.get(ID).asInt, this, song)
+            val result = SearchResult(song.title, song.artist, song.album, song.artUrl, song.sourceUrl, jo.get(ID).asLong, this, song)
             results.add(result)
         }
 
         return Success(results)
     }
 
-    override fun fetchLyrics(songId: Int): Result<SongWithLyrics, LyricsApiException> {
+    override fun fetchLyrics(songId: Long): Result<SongWithLyrics, LyricsApiException> {
         try {
             val json = apiService.fetchSongInfo(songId)?.execute()?.body()?.asJsonObject
                 ?: return Failure(ParseException())
@@ -123,6 +123,6 @@ object LrcLib : LyricsProvider {
         ): Call<JsonElement>?
 
         @GET("get/{songId}")
-        fun fetchSongInfo(@Path("songId") songId: Int): Call<JsonElement>?
+        fun fetchSongInfo(@Path("songId") songId: Long): Call<JsonElement>?
     }
 }

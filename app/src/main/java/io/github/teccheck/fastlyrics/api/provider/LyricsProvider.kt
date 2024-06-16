@@ -22,7 +22,7 @@ interface LyricsProvider {
         return search(searchQuery)
     }
 
-    fun fetchLyrics(songId: Int): Result<SongWithLyrics, LyricsApiException>
+    fun fetchLyrics(songId: Long): Result<SongWithLyrics, LyricsApiException>
 
     fun fetchLyrics(searchResult: SearchResult): Result<SongWithLyrics, LyricsApiException> {
         if (searchResult.id == null) return Failure(LyricsNotFoundException())

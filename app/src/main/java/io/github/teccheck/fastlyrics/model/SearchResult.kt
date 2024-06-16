@@ -9,7 +9,11 @@ data class SearchResult(
     val album: String?,
     val artUrl: String?,
     val url: String?,
-    val id: Int?,
+    val id: Long?,
     val provider: LyricsProvider,
     val songWithLyrics: SongWithLyrics? = null
-) : Serializable
+) : Serializable {
+    override fun toString(): String {
+        return "SearchResult(title='$title', artist='$artist', album=$album, artUrl=$artUrl, url=$url, id=$id, provider=$provider, songWithLyrics=$songWithLyrics)"
+    }
+}

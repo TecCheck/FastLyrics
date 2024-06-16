@@ -122,7 +122,6 @@ class FastLyricsFragment : Fragment() {
     }
 
     private fun setTime(time: Long) {
-        Log.d(TAG, "Set time to $time")
         binding.lyricsView.lyricViewX.updateTime(time)
     }
 

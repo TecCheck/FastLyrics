@@ -23,7 +23,7 @@ object LyricsApi {
 
     private val executor = Executors.newFixedThreadPool(2)
 
-    private var providers: Array<LyricsProvider> = arrayOf(Genius, LrcLib)
+    private var providers: Array<LyricsProvider> = arrayOf(Genius, Deezer, LrcLib)
     private var providers_synced: Array<LyricsProvider> = arrayOf(Deezer, LrcLib)
 
     private val provider: LyricsProvider
@@ -44,7 +44,7 @@ object LyricsApi {
         synced: Boolean = false
     ) {
         executor.submit {
-            Log.d(TAG, "getLyricsAsync($synced)")
+            Log.d(TAG, "getLyricsAsync($songMeta, $synced)")
 
             val type = if (synced) LyricsType.LRC else LyricsType.RAW_TEXT
             val song = songMeta.artist?.let { LyricStorage.findSong(songMeta.title, it, type) }
@@ -114,14 +114,11 @@ object LyricsApi {
                 bestResult = result
                 bestResultScore = score
             }
-
-            if (score > 0.8)
-                break
         }
 
         if (bestResult?.id == null) return Failure(LyricsNotFoundException())
 
-        Log.d(TAG, "Best result: ${bestResult.title}, score: $bestResultScore")
+        Log.d(TAG, "Best result: ${bestResult.title}, score: $bestResultScore, provider: ${bestResult.provider.getName()}")
 
         bestResult.songWithLyrics?.let {
             Log.d(TAG, "Can skip fetch because song is present in search result.")
@@ -149,6 +146,9 @@ object LyricsApi {
             score += 0.4
         else if (searchResult.artist.startsWith(songMeta.artist))
             score += 0.3
+
+        if (songMeta.album == searchResult.album)
+            score += 0.5
 
         return score
     }

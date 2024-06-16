@@ -87,23 +87,23 @@ class ViewLyricsFragment : Fragment() {
         binding.lyricsView.source.setOnClickListener { openLink(song.sourceUrl) }
         binding.lyricsView.copy.setOnClickListener {
             copyToClipboard(
-                getString(R.string.lyrics_clipboard_label), song.lyrics
+                getString(R.string.lyrics_clipboard_label), song.getDefaultLyrics()
             )
         }
         binding.lyricsView.share.setOnClickListener {
             share(
                 song.title,
                 song.artist,
-                song.lyrics
+                song.getDefaultLyrics()
             )
         }
     }
 
     private fun displayLyrics(song: SongWithLyrics) {
         binding.lyricsView.textLyrics.text = if (song.type == LyricsType.LRC) {
-            SyncedLyrics.parseLrcToList(song.lyrics).joinToString(separator = "\n") { it.text }
+            SyncedLyrics.parseLrcToList(song.lyricsSynced ?: "").joinToString(separator = "\n") { it.text }
         } else {
-            song.lyrics
+            song.lyricsPlain
         }
     }
 

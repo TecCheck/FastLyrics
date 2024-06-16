@@ -98,6 +98,7 @@ object Deezer : LyricsProvider {
                 0,
                 title,
                 artist,
+                null,
                 lyrics,
                 link,
                 album,

@@ -130,6 +130,7 @@ object Genius : LyricsProvider {
                     title,
                     artist,
                     lyrics,
+                    null,
                     sourceUrl,
                     album,
                     artUrl,

@@ -10,7 +10,8 @@ data class SongWithLyrics(
     val id: Long,
     val title: String,
     val artist: String,
-    val lyrics: String,
+    val lyricsPlain: String?,
+    val lyricsSynced: String?,
     val sourceUrl: String,
     val album: String?,
     val artUrl: String?,
@@ -21,7 +22,9 @@ data class SongWithLyrics(
     @ColumnInfo(defaultValue = "genius")
     val provider: String
 ) {
+    fun getDefaultLyrics() = lyricsPlain ?: lyricsSynced ?: ""
+
     override fun toString(): String {
-        return "SongWithLyrics(id=$id, title='$title', artist='$artist', lyrics='$lyrics', sourceUrl='$sourceUrl', album=$album, artUrl=$artUrl, type=$type, provider='$provider')"
+        return "SongWithLyrics(id=$id, title='$title', artist='$artist', lyricsPlain=$lyricsPlain, lyricsSynced=$lyricsSynced, sourceUrl='$sourceUrl', album=$album, artUrl=$artUrl, type=$type, provider='$provider')"
     }
 }

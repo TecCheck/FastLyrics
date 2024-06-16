@@ -198,12 +198,12 @@ class FastLyricsFragment : Fragment() {
         binding.lyricsView.source.setOnClickListener { openLink(song.sourceUrl) }
         binding.lyricsView.copy.setOnClickListener {
             copyToClipboard(
-                getString(R.string.lyrics_clipboard_label), song.lyrics
+                getString(R.string.lyrics_clipboard_label), song.getDefaultLyrics()
             )
         }
         binding.lyricsView.share.setOnClickListener {
             share(
-                song.title, song.artist, song.lyrics
+                song.title, song.artist, song.getDefaultLyrics()
             )
         }
     }
@@ -214,13 +214,13 @@ class FastLyricsFragment : Fragment() {
 
         if (song.type == LyricsType.RAW_TEXT) {
             binding.lyricsView.textLyrics.visibility = View.VISIBLE
-            binding.lyricsView.textLyrics.text = song.lyrics
+            binding.lyricsView.textLyrics.text = song.lyricsPlain
             binding.lyricsView.lyricViewX.loadLyric(null)
             lyricsViewModel.setupPositionPolling(false)
         } else if (song.type == LyricsType.LRC) {
             binding.lyricsView.lyricViewX.visibility = View.VISIBLE
-            binding.lyricsView.lyricViewX.loadLyric(SyncedLyrics.parseLrcToList(song.lyrics))
-            binding.lyricsView.textLyrics.text = ""
+            binding.lyricsView.lyricViewX.loadLyric(SyncedLyrics.parseLrcToList(song.lyricsSynced ?: ""))
+            binding.lyricsView.textLyrics.text = null
             lyricsViewModel.setupPositionPolling(true)
         }
     }

@@ -30,6 +30,7 @@ object LrcLib : LyricsProvider {
     private const val ALBUM_NAME = "albumName"
     private const val ID = "id"
     private const val LYRICS_PLAN = "plainLyrics"
+    private const val LYRICS_SYNCED = "syncedLyrics"
 
     private val apiService: ApiService
 
@@ -87,10 +88,23 @@ object LrcLib : LyricsProvider {
             val title = jsonBody.get(TRACK_NAME).asString
             val artist = jsonBody.get(ARTIST_NAME).asString
             val album = jsonBody.get(ALBUM_NAME).asString
-            val id = jsonBody.get(ID).asInt
-            val lyrics = jsonBody.get(LYRICS_PLAN).asString
+            val lyricsPlain = jsonBody.get(LYRICS_PLAN).asString
+            val lyricsSynced = jsonBody.get(LYRICS_SYNCED).asString
 
-            return Success(SongWithLyrics(id.toLong(), title, artist, lyrics, "https://lrclib.net/", album, null, LyricsType.RAW_TEXT, getName()))
+            return Success(
+                SongWithLyrics(
+                    0,
+                    title,
+                    artist,
+                    lyricsPlain,
+                    lyricsSynced,
+                    "https://lrclib.net/",
+                    album,
+                    null,
+                    LyricsType.LRC,
+                    getName()
+                )
+            )
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
             return Failure(NetworkException())

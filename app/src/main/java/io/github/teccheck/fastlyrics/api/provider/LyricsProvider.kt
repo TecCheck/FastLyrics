@@ -1,7 +1,9 @@
 package io.github.teccheck.fastlyrics.api.provider
 
+import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
+import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
@@ -21,6 +23,12 @@ interface LyricsProvider {
     }
 
     fun fetchLyrics(songId: Int): Result<SongWithLyrics, LyricsApiException>
+
+    fun fetchLyrics(searchResult: SearchResult): Result<SongWithLyrics, LyricsApiException> {
+        if (searchResult.id == null) return Failure(LyricsNotFoundException())
+
+        return fetchLyrics(searchResult.id)
+    }
 
     companion object {
         fun getAllProviders(): Array<LyricsProvider> {

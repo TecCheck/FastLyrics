@@ -9,19 +9,20 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
-import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.exceptions.NetworkException
 import io.github.teccheck.fastlyrics.exceptions.ParseException
 import io.github.teccheck.fastlyrics.model.LyricsType
 import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
+import org.json.JSONException
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import java.io.IOException
 
 object LrcLib : LyricsProvider {
 
@@ -51,54 +52,79 @@ object LrcLib : LyricsProvider {
 
     override fun search(songMeta: SongMeta): Result<List<SearchResult>, LyricsApiException> {
         try {
-            val jsonBody = apiService.search(null, songMeta.title, songMeta.artist, songMeta.album)?.execute()?.body()?.asJsonArray
-            return parseSearchResults(jsonBody)
-        } catch (e: Exception) {
+            val jsonBody = apiService.search(
+                null,
+                songMeta.title,
+                songMeta.artist,
+                songMeta.album
+            )?.execute()?.body()?.asJsonArray
+
+            return Success(parseSearchResults(jsonBody))
+        } catch (e: IOException) {
             Log.e(TAG, e.message, e)
             return Failure(NetworkException())
+        } catch (e: JSONException) {
+            Log.e(TAG, e.message, e)
+            return Failure(ParseException())
         }
     }
 
     override fun search(searchQuery: String): Result<List<SearchResult>, LyricsApiException> {
-        Log.i(TAG, "Searching for \"$searchQuery\"")
-
         try {
-            val jsonBody = apiService.search(searchQuery, null)?.execute()?.body()?.asJsonArray
-            return parseSearchResults(jsonBody)
-        } catch (e: Exception) {
+            val jsonBody = apiService.search(
+                searchQuery,
+                null
+            )?.execute()?.body()?.asJsonArray
+
+            return Success(parseSearchResults(jsonBody))
+        } catch (e: IOException) {
             Log.e(TAG, e.message, e)
             return Failure(NetworkException())
+        } catch (e: JSONException) {
+            Log.e(TAG, e.message, e)
+            return Failure(ParseException())
         }
-    }
-
-    private fun parseSearchResults(json: JsonArray?): Result<List<SearchResult>, LyricsApiException> {
-        if (json == null) return Failure(LyricsNotFoundException())
-
-        val results = mutableListOf<SearchResult>()
-        for (jsonResult in json) {
-            val jo = jsonResult.asJsonObject
-            val song = parseSongWithLyrics(jo) ?: continue
-            val result = SearchResult(song.title, song.artist, song.album, song.artUrl, song.sourceUrl, jo.get(ID).asLong, this, song)
-            results.add(result)
-        }
-
-        return Success(results)
     }
 
     override fun fetchLyrics(songId: Long): Result<SongWithLyrics, LyricsApiException> {
         try {
-            val json = apiService.fetchSongInfo(songId)?.execute()?.body()?.asJsonObject
+            val json = apiService.get(songId)
+                ?.execute()
+                ?.body()
+                ?.asJsonObject
                 ?: return Failure(ParseException())
 
-            val song = parseSongWithLyrics(json) ?: return Failure(ParseException())
+            val song = parseSongWithLyrics(json)
             return Success(song)
-        } catch (e: Exception) {
+        } catch (e: IOException) {
             Log.e(TAG, e.message, e)
             return Failure(NetworkException())
+        } catch (e: JSONException) {
+            Log.e(TAG, e.message, e)
+            return Failure(ParseException())
         }
     }
 
-    private fun parseSongWithLyrics(json: JsonObject): SongWithLyrics? {
+    private fun parseSearchResults(json: JsonArray?): List<SearchResult> {
+        if (json == null) return emptyList()
+
+        return json.mapNotNull {
+            val jo = it.asJsonObject
+            val song = parseSongWithLyrics(jo)
+            SearchResult(
+                song.title,
+                song.artist,
+                song.album,
+                song.artUrl,
+                song.sourceUrl,
+                jo.get(ID).asLong,
+                this,
+                song
+            )
+        }
+    }
+
+    private fun parseSongWithLyrics(json: JsonObject): SongWithLyrics {
         return SongWithLyrics(
             0,
             json.get(TRACK_NAME).asString,
@@ -123,6 +149,6 @@ object LrcLib : LyricsProvider {
         ): Call<JsonElement>?
 
         @GET("get/{songId}")
-        fun fetchSongInfo(@Path("songId") songId: Long): Call<JsonElement>?
+        fun get(@Path("songId") songId: Long): Call<JsonElement>?
     }
 }

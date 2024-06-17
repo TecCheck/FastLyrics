@@ -17,6 +17,8 @@ import io.github.teccheck.fastlyrics.api.provider.Deezer
 import io.github.teccheck.fastlyrics.api.provider.Genius
 import io.github.teccheck.fastlyrics.api.provider.LrcLib
 import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
+import io.github.teccheck.fastlyrics.api.provider.Netease
+import io.github.teccheck.fastlyrics.api.provider.PetitLyrics
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.exceptions.NetworkException
@@ -64,6 +66,8 @@ object Utils {
         Genius -> R.drawable.genius
         Deezer -> R.drawable.deezer
         LrcLib -> R.drawable.lrclib
+        PetitLyrics -> R.drawable.petitlyrics
+        Netease -> R.drawable.netease
         else -> R.drawable.fastlyrics
     }
 
@@ -72,6 +76,8 @@ object Utils {
         Genius -> R.string.source_genius
         Deezer -> R.string.source_deezer
         LrcLib -> R.string.source_lrclib
+        PetitLyrics -> R.string.source_petitlyrics
+        Netease -> R.string.source_netease
         else -> R.string.app_name
     }
 
@@ -80,6 +86,8 @@ object Utils {
         Genius -> R.string.source_url_genius
         Deezer -> R.string.source_url_deezer
         LrcLib -> R.string.source_url_lrclib
+        PetitLyrics -> R.string.source_url_petitlyrics
+        Netease -> R.string.source_url_netease
         else -> null
     }
 

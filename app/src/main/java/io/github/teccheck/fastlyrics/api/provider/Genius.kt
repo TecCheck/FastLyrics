@@ -16,13 +16,14 @@ import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONException
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import java.util.*
+import java.io.IOException
 
 object Genius : LyricsProvider {
 
@@ -72,35 +73,39 @@ object Genius : LyricsProvider {
     override fun getName() = "genius"
 
     override fun search(searchQuery: String): Result<List<SearchResult>, LyricsApiException> {
-        Log.i(TAG, "Searching for \"$searchQuery\"")
-
-        val jsonBody: JsonElement?
-
         try {
-            jsonBody = apiService.search(searchQuery)?.execute()?.body()
-            val jsonResponse = jsonBody?.asJsonObject?.getAsJsonObject(KEY_RESPONSE)
-            val jsonHits =
-                jsonResponse?.getAsJsonArray(KEY_HITS) ?: return Failure(ParseException())
+            val jsonBody = apiService.search(searchQuery)?.execute()?.body()
+            val jsonHits = jsonBody?.asJsonObject
+                ?.getAsJsonObject(KEY_RESPONSE)
+                ?.getAsJsonArray(KEY_HITS)
+                ?: return Failure(ParseException())
 
-            val results = mutableListOf<SearchResult>()
-            for (jsonHit in jsonHits) {
-                val jo = jsonHit.asJsonObject.get(KEY_RESULT).asJsonObject
+            val results = jsonHits.mapNotNull {
+                try {
+                    val jo = it.asJsonObject.getAsJsonObject(KEY_RESULT)
 
-                val title = jo.get(KEY_TITLE).asString
-                val artist = jo.get(KEY_PRIMARY_ARTIST).asJsonObject.get(KEY_NAME).asString
-                val album = getAlbum(jo)
-                val artUrl = jo.get(KEY_SONG_ART_URL).asString
-                val url = jo.get(KEY_URL).asString
-                val id = jo.get(KEY_ID).asLong
+                    val title = jo.get(KEY_TITLE).asString
+                    val artist = jo.getAsJsonObject(KEY_PRIMARY_ARTIST).get(KEY_NAME).asString
+                    val album = getAlbum(jo)
+                    val artUrl = jo.get(KEY_SONG_ART_URL).asString
+                    val url = jo.get(KEY_URL).asString
+                    val id = jo.get(KEY_ID).asLong
 
-                val result = SearchResult(title, artist, album, artUrl, url, id, this)
-                results.add(result)
+                    SearchResult(title, artist, album, artUrl, url, id, this)
+                } catch (e: Exception) {
+                    Log.e(TAG, e.message, e)
+                }
+
+                null
             }
 
             return Success(results)
-        } catch (e: Exception) {
+        } catch (e: IOException) {
             Log.e(TAG, e.message, e)
             return Failure(NetworkException())
+        } catch (e: JSONException) {
+            Log.e(TAG, e.message, e)
+            return Failure(ParseException())
         }
     }
 
@@ -110,19 +115,19 @@ object Genius : LyricsProvider {
 
         try {
             jsonBody = apiService.fetchSongInfo(songId)?.execute()?.body()
-
-            val jsonResponse = jsonBody?.asJsonObject?.getAsJsonObject(KEY_RESPONSE)
-            val jsonSong =
-                jsonResponse?.getAsJsonObject(KEY_SONG) ?: return Failure(ParseException())
+            val jsonSong = jsonBody?.asJsonObject
+                ?.getAsJsonObject(KEY_RESPONSE)
+                ?.getAsJsonObject(KEY_SONG)
+                ?: return Failure(ParseException())
 
             val title = jsonSong.get(KEY_TITLE).asString
-            val artist = jsonSong.get(KEY_PRIMARY_ARTIST).asJsonObject.get(KEY_NAME).asString
+            val artist = jsonSong.getAsJsonObject(KEY_PRIMARY_ARTIST).get(KEY_NAME).asString
             val sourceUrl = jsonSong.get(KEY_URL).asString
             val album = getAlbum(jsonSong)
             val artUrl = jsonSong.get(KEY_SONG_ART_URL).asString
 
             val lyrics =
-                parseLyricsJsonTag(jsonSong.get(KEY_LYRICS).asJsonObject.get(KEY_DOM).asJsonObject)
+                parseLyricsJsonTag(jsonSong.getAsJsonObject(KEY_LYRICS).getAsJsonObject(KEY_DOM))
 
             return Success(
                 SongWithLyrics(
@@ -151,21 +156,22 @@ object Genius : LyricsProvider {
     }
 
     private fun parseLyricsJsonTag(lyricsJsonTag: JsonElement): String {
-        if (lyricsJsonTag.isJsonPrimitive) {
-            return lyricsJsonTag.asString
-        }
+        if (lyricsJsonTag.isJsonPrimitive) return lyricsJsonTag.asString
+
         val jsonObject = lyricsJsonTag.asJsonObject
         if (jsonObject.has(KEY_TAG) && jsonObject.get(KEY_TAG).asString.equals(TAG_BR)) {
             return "\n"
         }
+
         if (jsonObject.has(KEY_CHILDREN)) {
             var text = ""
-            val jsonChildren = jsonObject.get(KEY_CHILDREN).asJsonArray
+            val jsonChildren = jsonObject.getAsJsonArray(KEY_CHILDREN)
             for (jsonChild in jsonChildren) {
                 text += parseLyricsJsonTag(jsonChild)
             }
             return text
         }
+
         return ""
     }
 

@@ -75,11 +75,11 @@ object Deezer : LyricsProvider {
                     NetworkException()
                 )
 
-            val dataJson = json.get(KEY_DATA).asJsonObject
-            val tracksJson = dataJson.get(KEY_SEARCH).asJsonObject
-                .get(KEY_RESULTS).asJsonObject
-                .get(KEY_TRACKS).asJsonObject
-                .get(KEY_EDGES).asJsonArray
+            val dataJson = json.getAsJsonObject(KEY_DATA)
+            val tracksJson = dataJson.getAsJsonObject(KEY_SEARCH)
+                .getAsJsonObject(KEY_RESULTS)
+                .getAsJsonObject(KEY_TRACKS)
+                .getAsJsonArray(KEY_EDGES)
 
             return parseSearchResults(tracksJson)
         } catch (e: Exception) {
@@ -99,9 +99,9 @@ object Deezer : LyricsProvider {
                     NetworkException()
                 )
 
-            val dataJson = json.get(KEY_DATA).asJsonObject
-            val trackJson = dataJson.get(KEY_TRACK).asJsonObject
-            val song = parseTrackJson(trackJson) ?: return Failure(ParseException())
+            val dataJson = json.getAsJsonObject(KEY_DATA)
+            val trackJson = dataJson.getAsJsonObject(KEY_TRACK)
+            val song = parseTrackJson(trackJson)
 
             return Success(song)
         } catch (e: Exception) {
@@ -114,69 +114,70 @@ object Deezer : LyricsProvider {
     private fun parseSearchResults(json: JsonArray?): Result<List<SearchResult>, LyricsApiException> {
         if (json == null) return Failure(LyricsNotFoundException())
 
-        val results = mutableListOf<SearchResult>()
-        for (jsonResult in json) {
-            val jo = jsonResult.asJsonObject.get(KEY_NODE).asJsonObject
-            val song = parseTrackJson(jo) ?: continue
-            val result = SearchResult(
-                song.title,
-                song.artist,
-                song.album,
-                song.artUrl,
-                song.sourceUrl,
-                jo.get(KEY_ID).asString.toLong(),
-                this,
-                song
-            )
-            results.add(result)
+        val results = json.mapNotNull {
+            try {
+                val jo = it.asJsonObject.getAsJsonObject(KEY_NODE)
+                val song = parseTrackJson(jo)
+
+                SearchResult(
+                    song.title,
+                    song.artist,
+                    song.album,
+                    song.artUrl,
+                    song.sourceUrl,
+                    jo.get(KEY_ID).asString.toLong(),
+                    this,
+                    song
+                )
+            } catch (e: Exception) {
+                Log.d(TAG, e.message, e)
+                null
+            }
         }
 
         return Success(results)
     }
 
-    private fun parseTrackJson(json: JsonObject): SongWithLyrics? {
-        try {
-            val lyricsJson = json.get(KEY_LYRICS).asJsonObject
+    private fun parseTrackJson(json: JsonObject): SongWithLyrics {
+        val lyricsJson = json.getAsJsonObject(KEY_LYRICS)
 
-            val lyricsSynced = lyricsJson.get(KEY_SYNCED_LINES)?.let {
-                if (it.isJsonNull) return@let null
-                parseSyncedLyrics(it.asJsonArray)
-            }
-            val lyricsPlain = lyricsJson.get(KEY_TEXT)?.asString
-
-            val id = json.get(KEY_ID).asString
-            val title = json.get(KEY_TITLE).asString
-            val album = json.get(KEY_ALBUM).asJsonObject.get(KEY_LABEL).asString
-            val contributors = json.get(KEY_CONTRIBUTORS).asJsonObject.get(KEY_EDGES).asJsonArray
-            val artist = contributors.first {
-                it.asJsonObject
-                    .get(KEY_ROLES).asJsonArray
-                    .any { it.asString.equals(ROLE_MAIN) }
-            }.asJsonObject
-                .get(KEY_NODE).asJsonObject
-                .get(KEY_NAME).asString
-
-            val artUrl =
-                json.get(KEY_ALBUM).asJsonObject.get(KEY_COVER).asJsonObject.get(KEY_URLS).asJsonArray.first().asString
-            val link = "https://www.deezer.com/track/$id"
-
-            return SongWithLyrics(
-                0,
-                title,
-                artist,
-                lyricsPlain,
-                lyricsSynced,
-                link,
-                album,
-                artUrl,
-                LyricsType.LRC,
-                getName()
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, e.message, e)
+        val lyricsSynced = lyricsJson.get(KEY_SYNCED_LINES)?.let {
+            if (it.isJsonNull) return@let null
+            parseSyncedLyrics(it.asJsonArray)
         }
+        val lyricsPlain = lyricsJson.get(KEY_TEXT)?.asString
 
-        return null
+        val id = json.get(KEY_ID).asString
+        val title = json.get(KEY_TITLE).asString
+        val album = json.getAsJsonObject(KEY_ALBUM).get(KEY_LABEL).asString
+        val contributors = json.getAsJsonObject(KEY_CONTRIBUTORS).getAsJsonArray(KEY_EDGES)
+        val artist = contributors.first {
+            it.asJsonObject
+                .getAsJsonArray(KEY_ROLES)
+                .any { it.asString.equals(ROLE_MAIN) }
+        }.asJsonObject
+            .getAsJsonObject(KEY_NODE)
+            .get(KEY_NAME).asString
+
+        val artUrl = json.getAsJsonObject(KEY_ALBUM)
+            .getAsJsonObject(KEY_COVER)
+            .getAsJsonArray(KEY_URLS)
+            .first().asString
+
+        val link = "https://www.deezer.com/track/$id"
+
+        return SongWithLyrics(
+            0,
+            title,
+            artist,
+            lyricsPlain,
+            lyricsSynced,
+            link,
+            album,
+            artUrl,
+            LyricsType.LRC,
+            getName()
+        )
     }
 
     private fun parseSyncedLyrics(lines: JsonArray): String {

@@ -1,5 +1,6 @@
 package io.github.teccheck.fastlyrics.api.provider
 
+import android.os.Build
 import android.util.Log
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
@@ -8,6 +9,8 @@ import com.google.gson.JsonObject
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
+import io.github.teccheck.fastlyrics.BuildConfig
+import io.github.teccheck.fastlyrics.Tokens
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.NetworkException
 import io.github.teccheck.fastlyrics.exceptions.ParseException
@@ -15,6 +18,8 @@ import io.github.teccheck.fastlyrics.model.LyricsType
 import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.json.JSONException
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -38,10 +43,21 @@ object LrcLib : LyricsProvider {
     private val apiService: ApiService
 
     init {
+        val client = OkHttpClient.Builder().addInterceptor { chain ->
+            val newRequest: Request = chain.request().newBuilder()
+                .addHeader(
+                    "User-Agent",
+                    "FastLyrics v${BuildConfig.VERSION_NAME} (https://github.com/TecCheck/FastLyrics)"
+                )
+                .build()
+            chain.proceed(newRequest)
+        }.build()
+
         val gson = GsonBuilder().disableJdkUnsafe().create()
 
         val retrofit = Retrofit.Builder()
             .baseUrl("https://lrclib.net/api/")
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 

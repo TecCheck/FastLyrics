@@ -94,9 +94,8 @@ object Genius : LyricsProvider {
                     SearchResult(title, artist, album, artUrl, url, id, this)
                 } catch (e: Exception) {
                     Log.e(TAG, e.message, e)
+                    null
                 }
-
-                null
             }
 
             return Success(results)

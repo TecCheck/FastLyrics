@@ -24,13 +24,13 @@ object LyricsApi {
     private val executor = Executors.newFixedThreadPool(2)
 
     private var providers: Array<LyricsProvider> = arrayOf(Genius, Deezer, LrcLib)
-    private var providers_synced: Array<LyricsProvider> = arrayOf(Deezer, LrcLib)
+    private var providersSynced: Array<LyricsProvider> = arrayOf(Deezer, LrcLib)
 
     private val provider: LyricsProvider
         get() = providers.first()
 
-    private val provider_synced: LyricsProvider
-        get() = providers_synced.first()
+    private val providerSynced: LyricsProvider
+        get() = providersSynced.first()
 
     fun setProviderOrder(order: Array<String>) {
         val all = LyricsProvider.getAllProviders()
@@ -92,7 +92,7 @@ object LyricsApi {
         var bestResultScore = 0.0
 
         val providers = if (synced) {
-            providers_synced
+            providersSynced
         } else {
             providers
         }

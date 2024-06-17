@@ -19,13 +19,13 @@ import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
 import io.github.teccheck.fastlyrics.databinding.FragmentFastLyricsBinding
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.NoMusicPlayingException
-import io.github.teccheck.fastlyrics.model.LyricsType
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import io.github.teccheck.fastlyrics.model.SyncedLyrics
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 import io.github.teccheck.fastlyrics.utils.Utils
 import io.github.teccheck.fastlyrics.utils.Utils.copyToClipboard
+import io.github.teccheck.fastlyrics.utils.Utils.getLyrics
 import io.github.teccheck.fastlyrics.utils.Utils.openLink
 import io.github.teccheck.fastlyrics.utils.Utils.share
 
@@ -86,7 +86,6 @@ class FastLyricsFragment : Fragment() {
         binding.lyricsView.textLyrics.apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)
         }
-
     }
 
     override fun onDestroyView() {
@@ -149,12 +148,9 @@ class FastLyricsFragment : Fragment() {
 
         binding.refresher.isRefreshing = false
 
-        when (song.type) {
-            LyricsType.LRC -> lyricsViewModel.syncedLyricsAvailable = true
-            LyricsType.RAW_TEXT -> lyricsViewModel.plainLyricsAvailable = true
-        }
+        if (song.lyricsSynced != null) lyricsViewModel.syncedLyricsAvailable = true
 
-        binding.header.syncedLyricsAvailable.visibility = if (lyricsViewModel.bothLyricsAvailable) {
+        binding.header.syncedLyricsAvailable.visibility = if (lyricsViewModel.syncedLyricsAvailable) {
             View.VISIBLE
         } else {
             View.GONE
@@ -197,12 +193,12 @@ class FastLyricsFragment : Fragment() {
         binding.lyricsView.source.setOnClickListener { openLink(song.sourceUrl) }
         binding.lyricsView.copy.setOnClickListener {
             copyToClipboard(
-                getString(R.string.lyrics_clipboard_label), song.getDefaultLyrics()
+                getString(R.string.lyrics_clipboard_label), song.getLyrics()
             )
         }
         binding.lyricsView.share.setOnClickListener {
             share(
-                song.title, song.artist, song.getDefaultLyrics()
+                song.title, song.artist, song.getLyrics()
             )
         }
     }
@@ -211,33 +207,24 @@ class FastLyricsFragment : Fragment() {
         binding.lyricsView.lyricViewX.visibility = View.GONE
         binding.lyricsView.textLyrics.visibility = View.GONE
 
-        if (song.type == LyricsType.RAW_TEXT) {
+        if (song.lyricsSynced != null && binding.header.syncedLyricsSwitch.isChecked) {
+            binding.lyricsView.lyricViewX.visibility = View.VISIBLE
+            binding.lyricsView.lyricViewX.loadLyric(SyncedLyrics.parseLrcToList(song.lyricsSynced))
+            binding.lyricsView.textLyrics.text = null
+            lyricsViewModel.setupPositionPolling(true)
+        } else {
             binding.lyricsView.textLyrics.visibility = View.VISIBLE
             binding.lyricsView.textLyrics.text = song.lyricsPlain
             binding.lyricsView.lyricViewX.loadLyric(null)
             lyricsViewModel.setupPositionPolling(false)
-        } else if (song.type == LyricsType.LRC) {
-            binding.lyricsView.lyricViewX.visibility = View.VISIBLE
-            binding.lyricsView.lyricViewX.loadLyric(SyncedLyrics.parseLrcToList(song.lyricsSynced ?: ""))
-            binding.lyricsView.textLyrics.text = null
-            lyricsViewModel.setupPositionPolling(true)
         }
     }
 
     private fun getCurrentSongWithLyrics(): Result<SongWithLyrics, LyricsApiException>? {
-        val result = if (lyricsViewModel.bothLyricsAvailable) {
-            if (binding.header.syncedLyricsSwitch.isChecked) {
-                lyricsViewModel.songWithLyricsSynced.value
-            } else {
-                lyricsViewModel.songWithLyrics.value
-            }
-        } else if (lyricsViewModel.syncedLyricsAvailable) {
-            lyricsViewModel.songWithLyricsSynced.value
-        } else {
-            lyricsViewModel.songWithLyrics.value
-        }
+        if (lyricsViewModel.syncedLyricsAvailable && binding.header.syncedLyricsSwitch.isChecked)
+            return lyricsViewModel.songWithLyricsSynced.value
 
-        return result
+        return lyricsViewModel.songWithLyrics.value
     }
 
     companion object {

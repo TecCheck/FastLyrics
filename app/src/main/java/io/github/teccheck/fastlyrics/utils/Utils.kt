@@ -22,6 +22,8 @@ import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.exceptions.NetworkException
 import io.github.teccheck.fastlyrics.exceptions.NoMusicPlayingException
 import io.github.teccheck.fastlyrics.exceptions.ParseException
+import io.github.teccheck.fastlyrics.model.SongWithLyrics
+import io.github.teccheck.fastlyrics.model.SyncedLyrics
 
 object Utils {
     fun <T, E> result(value: T?, exception: E): Result<T, E> {
@@ -42,6 +44,19 @@ object Utils {
         val title = getString(R.string.share_title, songTitle, artist)
         ShareCompat.IntentBuilder(requireContext()).setText(text).setType("text/plain")
             .setChooserTitle(title).setSubject(title).startChooser()
+    }
+
+    fun SongWithLyrics.getLyrics(preferSynced: Boolean = false): String {
+        if (preferSynced && lyricsSynced != null)
+            return lyricsSynced
+
+        if (lyricsPlain != null)
+            return lyricsPlain
+
+        if (lyricsSynced != null)
+            return SyncedLyrics.parseLrcToList(lyricsSynced).joinToString("\n") { it.text }
+
+        return ""
     }
 
     @DrawableRes

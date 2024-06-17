@@ -19,6 +19,7 @@ import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import io.github.teccheck.fastlyrics.model.SyncedLyrics
 import io.github.teccheck.fastlyrics.utils.Utils
 import io.github.teccheck.fastlyrics.utils.Utils.copyToClipboard
+import io.github.teccheck.fastlyrics.utils.Utils.getLyrics
 import io.github.teccheck.fastlyrics.utils.Utils.openLink
 import io.github.teccheck.fastlyrics.utils.Utils.share
 
@@ -87,14 +88,14 @@ class ViewLyricsFragment : Fragment() {
         binding.lyricsView.source.setOnClickListener { openLink(song.sourceUrl) }
         binding.lyricsView.copy.setOnClickListener {
             copyToClipboard(
-                getString(R.string.lyrics_clipboard_label), song.getDefaultLyrics()
+                getString(R.string.lyrics_clipboard_label), song.getLyrics()
             )
         }
         binding.lyricsView.share.setOnClickListener {
             share(
                 song.title,
                 song.artist,
-                song.getDefaultLyrics()
+                song.getLyrics()
             )
         }
     }

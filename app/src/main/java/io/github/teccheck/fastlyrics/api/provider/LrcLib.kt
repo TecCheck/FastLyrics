@@ -1,5 +1,6 @@
 package io.github.teccheck.fastlyrics.api.provider
 
+import android.os.Build
 import android.util.Log
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
@@ -8,18 +9,25 @@ import com.google.gson.JsonObject
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
+import io.github.teccheck.fastlyrics.BuildConfig
+import io.github.teccheck.fastlyrics.Tokens
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
-import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.exceptions.NetworkException
+import io.github.teccheck.fastlyrics.exceptions.ParseException
 import io.github.teccheck.fastlyrics.model.LyricsType
 import io.github.teccheck.fastlyrics.model.SearchResult
+import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONException
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import java.io.IOException
 
 object LrcLib : LyricsProvider {
 
@@ -30,14 +38,26 @@ object LrcLib : LyricsProvider {
     private const val ALBUM_NAME = "albumName"
     private const val ID = "id"
     private const val LYRICS_PLAN = "plainLyrics"
+    private const val LYRICS_SYNCED = "syncedLyrics"
 
     private val apiService: ApiService
 
     init {
+        val client = OkHttpClient.Builder().addInterceptor { chain ->
+            val newRequest: Request = chain.request().newBuilder()
+                .addHeader(
+                    "User-Agent",
+                    "FastLyrics v${BuildConfig.VERSION_NAME} (https://github.com/TecCheck/FastLyrics)"
+                )
+                .build()
+            chain.proceed(newRequest)
+        }.build()
+
         val gson = GsonBuilder().disableJdkUnsafe().create()
 
         val retrofit = Retrofit.Builder()
             .baseUrl("https://lrclib.net/api/")
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
@@ -46,62 +66,105 @@ object LrcLib : LyricsProvider {
 
     override fun getName() = "lrclib"
 
-    override fun search(searchQuery: String): Result<List<SearchResult>, LyricsApiException> {
-        Log.i(TAG, "Searching for \"$searchQuery\"")
-
-        val jsonBody: JsonArray?
-
+    override fun search(songMeta: SongMeta): Result<List<SearchResult>, LyricsApiException> {
         try {
-            jsonBody = apiService.search(searchQuery)?.execute()?.body()?.asJsonArray
+            val jsonBody = apiService.search(
+                null,
+                songMeta.title,
+                songMeta.artist,
+                songMeta.album
+            )?.execute()?.body()?.asJsonArray
 
-            if (jsonBody == null) return Failure(LyricsNotFoundException())
-
-            val results = mutableListOf<SearchResult>()
-            for (jsonHit in jsonBody) {
-                val jo = jsonHit.asJsonObject
-
-                val title = jo.get(TRACK_NAME).asString
-                val artist = jo.get(ARTIST_NAME).asString
-                val album = jo.get(ALBUM_NAME).asString
-                val id = jo.get(ID).asInt
-
-                val result = SearchResult(title, artist, album, null, null, id, this)
-                results.add(result)
-            }
-
-            return Success(results)
-        } catch (e: Exception) {
+            return Success(parseSearchResults(jsonBody))
+        } catch (e: IOException) {
             Log.e(TAG, e.message, e)
             return Failure(NetworkException())
+        } catch (e: JSONException) {
+            Log.e(TAG, e.message, e)
+            return Failure(ParseException())
         }
     }
 
-    override fun fetchLyrics(songId: Int): Result<SongWithLyrics, LyricsApiException> {
-        val jsonBody: JsonObject?
-
+    override fun search(searchQuery: String): Result<List<SearchResult>, LyricsApiException> {
         try {
-            jsonBody = apiService.fetchSongInfo(songId)?.execute()?.body()?.asJsonObject
+            val jsonBody = apiService.search(
+                searchQuery,
+                null
+            )?.execute()?.body()?.asJsonArray
 
-            if (jsonBody == null) return Failure(LyricsNotFoundException())
-
-            val title = jsonBody.get(TRACK_NAME).asString
-            val artist = jsonBody.get(ARTIST_NAME).asString
-            val album = jsonBody.get(ALBUM_NAME).asString
-            val id = jsonBody.get(ID).asInt
-            val lyrics = jsonBody.get(LYRICS_PLAN).asString
-
-            return Success(SongWithLyrics(id.toLong(), title, artist, lyrics, "https://lrclib.net/", album, null, LyricsType.RAW_TEXT, getName()))
-        } catch (e: Exception) {
+            return Success(parseSearchResults(jsonBody))
+        } catch (e: IOException) {
             Log.e(TAG, e.message, e)
             return Failure(NetworkException())
+        } catch (e: JSONException) {
+            Log.e(TAG, e.message, e)
+            return Failure(ParseException())
         }
+    }
+
+    override fun fetchLyrics(songId: Long): Result<SongWithLyrics, LyricsApiException> {
+        try {
+            val json = apiService.get(songId)
+                ?.execute()
+                ?.body()
+                ?.asJsonObject
+                ?: return Failure(ParseException())
+
+            val song = parseSongWithLyrics(json)
+            return Success(song)
+        } catch (e: IOException) {
+            Log.e(TAG, e.message, e)
+            return Failure(NetworkException())
+        } catch (e: JSONException) {
+            Log.e(TAG, e.message, e)
+            return Failure(ParseException())
+        }
+    }
+
+    private fun parseSearchResults(json: JsonArray?): List<SearchResult> {
+        if (json == null) return emptyList()
+
+        return json.mapNotNull {
+            val jo = it.asJsonObject
+            val song = parseSongWithLyrics(jo)
+            SearchResult(
+                song.title,
+                song.artist,
+                song.album,
+                song.artUrl,
+                song.sourceUrl,
+                jo.get(ID).asLong,
+                this,
+                song
+            )
+        }
+    }
+
+    private fun parseSongWithLyrics(json: JsonObject): SongWithLyrics {
+        return SongWithLyrics(
+            0,
+            json.get(TRACK_NAME).asString,
+            json.get(ARTIST_NAME).asString,
+            json.get(LYRICS_PLAN)?.asString,
+            json.get(LYRICS_SYNCED)?.asString,
+            "https://lrclib.net/",
+            json.get(ALBUM_NAME).asString,
+            null,
+            LyricsType.LRC,
+            getName()
+        )
     }
 
     interface ApiService {
         @GET("search")
-        fun search(@Query("q") query: String): Call<JsonElement>?
+        fun search(
+            @Query("q") query: String?,
+            @Query("track_name") trackName: String?,
+            @Query("artist_name") artistName: String? = null,
+            @Query("album_name") albumName: String? = null
+        ): Call<JsonElement>?
 
         @GET("get/{songId}")
-        fun fetchSongInfo(@Path("songId") songId: Int): Call<JsonElement>?
+        fun get(@Path("songId") songId: Long): Call<JsonElement>?
     }
 }

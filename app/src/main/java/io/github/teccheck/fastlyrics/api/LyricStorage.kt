@@ -20,7 +20,9 @@ object LyricStorage {
     private lateinit var database: LyricsDatabase
 
     fun init(context: Context) {
-        database = Room.databaseBuilder(context, LyricsDatabase::class.java, "lyrics").build()
+        database = Room.databaseBuilder(context, LyricsDatabase::class.java, "lyrics")
+            .addMigrations(LyricsDatabase.MIGRATION_3_4)
+            .build()
     }
 
     fun deleteAsync(ids: List<Long>) {

@@ -83,8 +83,6 @@ object MediaSession {
     }
 
     private fun onMetadataChanged(controller: MediaController, metadata: MediaMetadata?) {
-        Log.d(TAG, "onMetadataChanged")
-
         if (controller.sessionToken != activeMediaSession?.sessionToken) return
         val songMeta = metadata?.getSongMeta() ?: return
         callbacks.forEach { it.onSongMetaChanged(songMeta) }

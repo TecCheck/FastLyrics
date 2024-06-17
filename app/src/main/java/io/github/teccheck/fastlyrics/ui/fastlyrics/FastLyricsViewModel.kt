@@ -31,9 +31,6 @@ class FastLyricsViewModel : ViewModel() {
     val songPosition: LiveData<Long> = _songPosition
 
     var syncedLyricsAvailable = false
-    var plainLyricsAvailable = false
-    val bothLyricsAvailable
-        get() = syncedLyricsAvailable && plainLyricsAvailable
 
     var autoRefresh = false
 
@@ -62,7 +59,6 @@ class FastLyricsViewModel : ViewModel() {
 
     private fun loadLyrics(songMeta: SongMeta) {
         syncedLyricsAvailable = false
-        plainLyricsAvailable = false
         LyricsApi.getLyricsAsync(songMeta, _songWithLyrics, false)
         LyricsApi.getLyricsAsync(songMeta, _songWithLyricsSynced, true)
     }

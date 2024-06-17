@@ -23,14 +23,14 @@ object LyricsApi {
 
     private val executor = Executors.newFixedThreadPool(2)
 
-    private var providers: Array<LyricsProvider> = arrayOf(Genius, LrcLib)
-    private var providers_synced: Array<LyricsProvider> = arrayOf(Deezer)
+    private var providers: Array<LyricsProvider> = arrayOf(Genius, Deezer, LrcLib)
+    private var providersSynced: Array<LyricsProvider> = arrayOf(Deezer, LrcLib)
 
     private val provider: LyricsProvider
         get() = providers.first()
 
-    private val provider_synced: LyricsProvider
-        get() = providers_synced.first()
+    private val providerSynced: LyricsProvider
+        get() = providersSynced.first()
 
     fun setProviderOrder(order: Array<String>) {
         val all = LyricsProvider.getAllProviders()
@@ -44,7 +44,7 @@ object LyricsApi {
         synced: Boolean = false
     ) {
         executor.submit {
-            Log.d(TAG, "getLyricsAsync($synced)")
+            Log.d(TAG, "getLyricsAsync($songMeta, $synced)")
 
             val type = if (synced) LyricsType.LRC else LyricsType.RAW_TEXT
             val song = songMeta.artist?.let { LyricStorage.findSong(songMeta.title, it, type) }
@@ -67,11 +67,7 @@ object LyricsApi {
         liveDataTarget: MutableLiveData<Result<SongWithLyrics, LyricsApiException>>
     ) {
         executor.submit {
-            val provider = searchResult.provider
-
-            val result = searchResult.id?.let { provider.fetchLyrics(it) } ?: Failure(
-                LyricsNotFoundException()
-            )
+            val result = searchResult.provider.fetchLyrics(searchResult)
             liveDataTarget.postValue(result)
 
             if (result is Success) {
@@ -85,56 +81,51 @@ object LyricsApi {
         liveDataTarget: MutableLiveData<Result<List<SearchResult>, LyricsApiException>>,
         provider: LyricsProvider = this.provider
     ) {
-        executor.submit {
-            liveDataTarget.postValue(provider.search(query))
-            val results = provider.search(query)
-
-            if (results is Success)
-                results.value[0].id?.let { provider.fetchLyrics(it) }
-        }
+        executor.submit { liveDataTarget.postValue(provider.search(query)) }
     }
 
     private fun fetchLyrics(
         songMeta: SongMeta,
         synced: Boolean = false
     ): Result<SongWithLyrics, LyricsApiException> {
-        var searchQuery = songMeta.title
-        if (songMeta.artist != null) {
-            searchQuery += " ${songMeta.artist}"
-        }
-
         var bestResult: SearchResult? = null
         var bestResultScore = 0.0
 
         val providers = if (synced) {
-            providers_synced
+            providersSynced
         } else {
             providers
         }
 
         for (provider in providers) {
-            val search = provider.search(searchQuery)
+            val search = provider.search(songMeta)
             if (search !is Success)
                 continue
 
             val result = search.value.maxByOrNull { getResultScore(songMeta, it) } ?: continue
             val score = getResultScore(songMeta, result)
 
-            Log.d(TAG, "Search with ${provider.getName()}: ${result.title} by ${result.artist}, score: $score")
+            Log.d(
+                TAG,
+                "Search with ${provider.getName()}: ${result.title} by ${result.artist}, score: $score"
+            )
 
             if (score > bestResultScore) {
                 bestResult = result
                 bestResultScore = score
             }
-
-            if (score > 0.8)
-                break
         }
 
         if (bestResult?.id == null) return Failure(LyricsNotFoundException())
 
-        Log.d(TAG, "Best result: ${bestResult.title}, score: $bestResultScore")
-        return bestResult.provider.fetchLyrics(bestResult.id!!)
+        Log.d(TAG, "Best result: ${bestResult.title}, score: $bestResultScore, provider: ${bestResult.provider.getName()}")
+
+        bestResult.songWithLyrics?.let {
+            Log.d(TAG, "Can skip fetch because song is present in search result.")
+            return Success(it)
+        }
+
+        return bestResult.provider.fetchLyrics(bestResult)
     }
 
     private fun getResultScore(songMeta: SongMeta, searchResult: SearchResult): Double {
@@ -155,6 +146,9 @@ object LyricsApi {
             score += 0.4
         else if (searchResult.artist.startsWith(songMeta.artist))
             score += 0.3
+
+        if (songMeta.album == searchResult.album)
+            score += 0.5
 
         return score
     }

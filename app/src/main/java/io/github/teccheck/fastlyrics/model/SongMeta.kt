@@ -7,4 +7,8 @@ data class SongMeta(
     val artist: String?,
     val album: String?,
     val art: Bitmap?
-)
+) {
+    override fun toString(): String {
+        return "SongMeta(title='$title', artist=$artist, album=$album, art=$art)"
+    }
+}

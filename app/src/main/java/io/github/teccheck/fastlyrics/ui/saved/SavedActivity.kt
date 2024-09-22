@@ -1,37 +1,27 @@
 package io.github.teccheck.fastlyrics.ui.saved
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StableIdKeyProvider
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
 import dev.forkhandles.result4k.Success
+import io.github.teccheck.fastlyrics.BaseActivity
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.api.LyricStorage
-import io.github.teccheck.fastlyrics.databinding.FragmentSavedBinding
-import io.github.teccheck.fastlyrics.ui.viewlyrics.ViewLyricsFragment
+import io.github.teccheck.fastlyrics.databinding.ActivitySavedBinding
+import io.github.teccheck.fastlyrics.ui.viewlyrics.ViewLyricsActivity
 
-class SavedFragment : Fragment() {
+class SavedActivity : BaseActivity() {
 
-    private var _binding: FragmentSavedBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
-
+    private lateinit var binding: ActivitySavedBinding
     private lateinit var viewModel: SavedViewModel
     private lateinit var adapter: RecyclerAdapter
     private lateinit var selectionTracker: SelectionTracker<Long>
@@ -42,13 +32,13 @@ class SavedFragment : Fragment() {
     private val selectionObserver = object : SelectionTracker.SelectionObserver<Long>() {
         override fun onSelectionChanged() {
             super.onSelectionChanged()
-            this@SavedFragment.onSelectionChanged()
+            this@SavedActivity.onSelectionChanged()
         }
     }
 
     private val actionModeCallback = object : ActionMode.Callback {
         override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-            return this@SavedFragment.onCreateActionMode(menu)
+            return this@SavedActivity.onCreateActionMode(menu)
         }
 
         override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
@@ -56,24 +46,27 @@ class SavedFragment : Fragment() {
         }
 
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
-            return this@SavedFragment.onActionItemClicked(mode, item)
+            return this@SavedActivity.onActionItemClicked(mode, item)
         }
 
         override fun onDestroyActionMode(mode: ActionMode?) {
-            this@SavedFragment.onDestroyActionMode()
+            this@SavedActivity.onDestroyActionMode()
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        binding = ActivitySavedBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setupToolbar(binding.toolbarLayout.toolbar, R.string.menu_saved)
+
         viewModel = ViewModelProvider(this)[SavedViewModel::class.java]
-        _binding = FragmentSavedBinding.inflate(inflater, container, false)
 
         adapter = RecyclerAdapter()
         adapter.setHasStableIds(true)
         binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
         selectionTracker = SelectionTracker.Builder(
             SELECTION_ID,
@@ -86,20 +79,13 @@ class SavedFragment : Fragment() {
         selectionTracker.addObserver(selectionObserver)
         adapter.setSelectionTracker(selectionTracker)
 
-        viewModel.songs.observe(viewLifecycleOwner) { result ->
+        viewModel.songs.observe(this) { result ->
             if (result is Success) {
                 adapter.setSongs(result.value)
             }
         }
 
         viewModel.fetchSongs()
-
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -107,8 +93,8 @@ class SavedFragment : Fragment() {
         selectionTracker.onSaveInstanceState(outState)
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
         selectionTracker.onRestoreInstanceState(savedInstanceState)
     }
 
@@ -126,7 +112,7 @@ class SavedFragment : Fragment() {
         }
 
         if (actionMode == null) {
-            actionMode = (activity as AppCompatActivity).startSupportActionMode(actionModeCallback)
+            actionMode = startSupportActionMode(actionModeCallback)
         }
 
         val count = selectionTracker.selection.size()
@@ -134,7 +120,7 @@ class SavedFragment : Fragment() {
     }
 
     private fun onCreateActionMode(menu: Menu?): Boolean {
-        activity?.menuInflater?.inflate(R.menu.fragment_saved_contextual_appbar_menu, menu)
+        menuInflater.inflate(R.menu.fragment_saved_contextual_appbar_menu, menu)
         return true
     }
 
@@ -158,10 +144,9 @@ class SavedFragment : Fragment() {
     }
 
     private fun viewSong(id: Long) {
-        Log.d(TAG, "Show song $id")
-        val bundle = Bundle()
-        bundle.putLong(ViewLyricsFragment.ARG_SONG_ID, id)
-        findNavController().navigate(R.id.nav_view_lyrics, bundle)
+        val intent = Intent(this, ViewLyricsActivity::class.java)
+        intent.putExtra(ViewLyricsActivity.ARG_SONG_ID, id)
+        startActivity(intent)
     }
 
     private fun deleteItems(itemIds: List<Long>) {

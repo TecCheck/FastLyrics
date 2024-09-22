@@ -1,69 +1,58 @@
 package io.github.teccheck.fastlyrics
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.navigation.NavigationView
 import io.github.teccheck.fastlyrics.databinding.ActivityMainBinding
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
+import io.github.teccheck.fastlyrics.ui.about.AboutActivity
+import io.github.teccheck.fastlyrics.ui.permission.PermissionActivity
+import io.github.teccheck.fastlyrics.ui.saved.SavedActivity
+import io.github.teccheck.fastlyrics.ui.settings.SettingsActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
     private lateinit var binding: ActivityMainBinding
-    private lateinit var settings: Settings
 
     private var searchMenuItem: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        settings = Settings(this)
-        setTheme(settings.getMaterialStyle())
-        setNightMode(settings.getAppTheme())
-
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.appBarMain.toolbar)
 
         navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_fast_lyrics), binding.drawerLayout)
+        binding.navView.setNavigationItemSelectedListener(this)
 
+        setSupportActionBar(binding.appBarMain.toolbarLayout.toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
-        binding.navView.setupWithNavController(navController)
-
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            onDestinationChanged(destination)
-        }
 
         if (!DummyNotificationListenerService.canAccessNotifications(this)) navController.navigate(R.id.nav_permission)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        Log.d(TAG, "onCreateOptionsMenu")
         menuInflater.inflate(R.menu.menu_main, menu)
         menu?.findItem(R.id.app_bar_search)?.let { searchMenuItem = it }
-        updateSearchEnabled()
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.app_bar_search -> {
-                if (navController.currentDestination?.id != R.id.nav_search) navController.navigate(
-                    R.id.nav_search
-                )
+                if (navController.currentDestination?.id != R.id.nav_search) {
+                    navController.navigate(R.id.nav_search)
+                }
                 true
             }
 
@@ -75,24 +64,15 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    private fun setNightMode(mode: Int) {
-        AppCompatDelegate.setDefaultNightMode(mode)
-    }
-
-    private fun onDestinationChanged(destination: NavDestination) {
-        val lockMode = if (destination.id in appBarConfiguration.topLevelDestinations) {
-            DrawerLayout.LOCK_MODE_UNLOCKED
-        } else {
-            DrawerLayout.LOCK_MODE_LOCKED_CLOSED
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_saved -> startActivity(Intent(this, SavedActivity::class.java))
+            R.id.nav_permission -> startActivity(Intent(this, PermissionActivity::class.java))
+            R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
+            R.id.nav_about -> startActivity(Intent(this, AboutActivity::class.java))
         }
-        binding.drawerLayout.setDrawerLockMode(lockMode)
 
-        updateSearchEnabled()
-    }
-
-    private fun updateSearchEnabled() {
-        val dest = navController.currentDestination ?: return
-        searchMenuItem?.isVisible = dest.id == R.id.nav_fast_lyrics || dest.id == R.id.nav_search
+        return false
     }
 
     fun getSearchMenuItem(): MenuItem? {

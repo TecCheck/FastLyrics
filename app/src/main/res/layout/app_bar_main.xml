@@ -7,19 +7,9 @@
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            style="?attr/materialToolbarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="?attr/homeAsUpIndicator"
-            app:title="@string/app_name" />
-
-    </com.google.android.material.appbar.AppBarLayout>
+    <include
+        android:id="@+id/toolbar_layout"
+        layout="@layout/layout_toolbar" />
 
     <fragment
         android:id="@+id/nav_host_fragment_content_main"

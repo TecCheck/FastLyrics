@@ -13,6 +13,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FastLyrics.Material1">
         <activity
+            android:name=".ui.about.AboutActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.permission.PermissionActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.saved.SavedActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.viewlyrics.ViewLyricsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:exported="true" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

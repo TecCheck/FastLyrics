@@ -1,41 +1,40 @@
 package io.github.teccheck.fastlyrics.ui.viewlyrics
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.fragment.app.Fragment
+import androidx.core.app.ShareCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
 import dev.forkhandles.result4k.Success
+import io.github.teccheck.fastlyrics.BaseActivity
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
-import io.github.teccheck.fastlyrics.databinding.FragmentViewLyricsBinding
+import io.github.teccheck.fastlyrics.databinding.ActivityViewLyricsBinding
 import io.github.teccheck.fastlyrics.model.LyricsType
 import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import io.github.teccheck.fastlyrics.model.SyncedLyrics
 import io.github.teccheck.fastlyrics.utils.Utils
-import io.github.teccheck.fastlyrics.utils.Utils.copyToClipboard
 import io.github.teccheck.fastlyrics.utils.Utils.getLyrics
-import io.github.teccheck.fastlyrics.utils.Utils.openLink
-import io.github.teccheck.fastlyrics.utils.Utils.share
 
-class ViewLyricsFragment : Fragment() {
+class ViewLyricsActivity : BaseActivity() {
 
+    private lateinit var binding: ActivityViewLyricsBinding
     private lateinit var lyricsViewModel: ViewLyricsViewModel
-    private var _binding: FragmentViewLyricsBinding? = null
 
-    // This property is only valid between onCreateView and onDestroyView.
-    private val binding get() = _binding!!
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        lyricsViewModel = ViewModelProvider(this)[ViewLyricsViewModel::class.java]
-        _binding = FragmentViewLyricsBinding.inflate(inflater, container, false)
+        binding = ActivityViewLyricsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setupToolbar(binding.toolbarLayout.toolbar)
 
         binding.lyricsView.lyricViewX.visibility = View.GONE
         binding.refresher.isEnabled = false
@@ -43,27 +42,23 @@ class ViewLyricsFragment : Fragment() {
             R.color.theme_primary, R.color.theme_secondary
         )
 
-        lyricsViewModel.songWithLyrics.observe(viewLifecycleOwner) { result ->
+        lyricsViewModel = ViewModelProvider(this)[ViewLyricsViewModel::class.java]
+
+        lyricsViewModel.songWithLyrics.observe(this) { result ->
             binding.refresher.isRefreshing = false
             if (result is Success) displaySongWithLyrics(result.value)
         }
 
-        arguments?.let {
-            if (it.containsKey(ARG_SONG_ID)) {
-                lyricsViewModel.loadLyricsForSongFromStorage(it.getLong(ARG_SONG_ID, 0))
-            } else if (it.containsKey(ARG_SEARCH_RESULT)) {
-                binding.refresher.isRefreshing = true
-                val result = getSearchResult(it) ?: return@let
-                lyricsViewModel.loadLyricsForSearchResult(result)
-            }
+        if (intent.hasExtra(ARG_SONG_ID)) {
+            lyricsViewModel.loadLyricsForSongFromStorage(intent.getLongExtra(ARG_SONG_ID, 0))
+            return
         }
 
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        if (intent.hasExtra(ARG_SEARCH_RESULT)) {
+            binding.refresher.isRefreshing = true
+            val result = getSearchResult(intent) ?: return
+            lyricsViewModel.loadLyricsForSearchResult(result)
+        }
     }
 
     private fun displaySongWithLyrics(song: SongWithLyrics) {
@@ -75,9 +70,11 @@ class ViewLyricsFragment : Fragment() {
         val provider = LyricsProvider.getProviderByName(song.provider)
         provider?.let {
             val providerIconRes = Utils.getProviderIconRes(it)
-            val icon = AppCompatResources.getDrawable(requireContext(), providerIconRes)
+            val icon = AppCompatResources.getDrawable(this, providerIconRes)
             binding.lyricsView.source.setIconResource(providerIconRes)
-            binding.lyricsView.textLyricsProvider.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
+            binding.lyricsView.textLyricsProvider.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                icon, null, null, null
+            )
 
             val nameRes = Utils.getProviderNameRes(it)
             val name = getString(nameRes)
@@ -93,28 +90,40 @@ class ViewLyricsFragment : Fragment() {
         }
         binding.lyricsView.share.setOnClickListener {
             share(
-                song.title,
-                song.artist,
-                song.getLyrics()
+                song.title, song.artist, song.getLyrics()
             )
         }
     }
 
     private fun displayLyrics(song: SongWithLyrics) {
         binding.lyricsView.textLyrics.text = if (song.type == LyricsType.LRC) {
-            SyncedLyrics.parseLrcToList(song.lyricsSynced ?: "").joinToString(separator = "\n") { it.text }
+            SyncedLyrics.parseLrcToList(song.lyricsSynced ?: "")
+                .joinToString(separator = "\n") { it.text }
         } else {
             song.lyricsPlain
         }
     }
 
-    private fun getSearchResult(args: Bundle): SearchResult? {
+    private fun getSearchResult(intent: Intent): SearchResult? {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            args.getSerializable(ARG_SEARCH_RESULT, SearchResult::class.java)
+            intent.getSerializableExtra(ARG_SEARCH_RESULT, SearchResult::class.java)
         } else {
-            @Suppress("DEPRECATION")
-            args.getSerializable(ARG_SEARCH_RESULT) as SearchResult
+            @Suppress("DEPRECATION") intent.getSerializableExtra(ARG_SEARCH_RESULT) as SearchResult
         }
+    }
+
+    private fun copyToClipboard(title: String, text: String) {
+        val clipboard = ContextCompat.getSystemService(this, ClipboardManager::class.java)
+        val clip = ClipData.newPlainText(title, text)
+        clipboard?.setPrimaryClip(clip)
+    }
+
+    private fun openLink(link: String) = startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
+
+    private fun share(songTitle: String, artist: String, text: String) {
+        val title = getString(R.string.share_title, songTitle, artist)
+        ShareCompat.IntentBuilder(this).setText(text).setType("text/plain").setChooserTitle(title)
+            .setSubject(title).startChooser()
     }
 
     companion object {

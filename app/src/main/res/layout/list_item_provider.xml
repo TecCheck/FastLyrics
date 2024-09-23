@@ -16,14 +16,14 @@
         android:id="@+id/icon"
         android:layout_width="64dp"
         android:layout_height="wrap_content"
-        tools:srcCompat="@drawable/lrclib"
-        app:tint="?android:attr/textColorPrimary" />
+        app:tint="?android:attr/textColorPrimary"
+        tools:srcCompat="@drawable/lrclib" />
 
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        tools:text="@string/source_lrclib"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        tools:text="@string/source_lrclib" />
 </LinearLayout>

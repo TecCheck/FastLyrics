@@ -21,7 +21,6 @@ class RecyclerAdapter :
         private val imageArt: ImageView = view.findViewById(R.id.image_song_art)
         private val textTitle: TextView = view.findViewById(R.id.text_song_title)
         private val textArtist: TextView = view.findViewById(R.id.text_song_artist)
-        private val selectionIcon: ImageView = view.findViewById(R.id.selection_icon)
         private val providerIcon: ImageView = view.findViewById(R.id.provider_icon)
 
         private var searchResult: SearchResult? = null

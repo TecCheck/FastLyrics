@@ -229,6 +229,5 @@ class FastLyricsFragment : Fragment() {
 
     companion object {
         private const val TAG = "FastLyricsFragment"
-        private const val SCROLL_DURATION = 1000
     }
 }

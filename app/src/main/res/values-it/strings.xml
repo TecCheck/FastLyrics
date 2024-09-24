@@ -1,8 +1,7 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">FastLyrics</string>
 
     <!-- Nav drawer -->
-
     <string name="menu_lyrics">Testo</string>
     <string name="menu_saved">Salvati</string>
     <string name="menu_search">Cerca</string>
@@ -19,7 +18,7 @@
 
     <string name="lyrics_provider_over_line">Testo da</string>
 
-    <string name="copy">Copia</string>
+    <string tools:override="true" name="copy">Copia</string>
     <string name="lyrics_clipboard_label">Testo</string>
 
     <string name="share">Condividi</string>

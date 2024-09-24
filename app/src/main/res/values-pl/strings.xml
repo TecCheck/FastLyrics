@@ -1,8 +1,7 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">FastLyrics</string>
 
     <!-- Nav drawer -->
-
     <string name="menu_lyrics">Tekst</string>
     <string name="menu_saved">Zapisane</string>
     <string name="menu_search">Szukaj</string>
@@ -19,7 +18,7 @@
 
     <string name="lyrics_provider_over_line">Dostawcą tekstu jest</string>
 
-    <string name="copy">Kopiuj</string>
+    <string name="copy" tools:override="true">Kopiuj</string>
     <string name="lyrics_clipboard_label">Tekst</string>
 
     <string name="share">Udostępnij</string>
@@ -47,11 +46,6 @@
     <!-- About -->
     <string name="source_code">Kod źródłowy</string>
     <string name="lyrics_sources">Dostawcy tekstów</string>
-
-    <string name="source_genius" translatable="false">Genius</string>
-
-    <string name="source_code_url" translatable="false">https://github.com/TecCheck/FastLyrics</string>
-    <string name="source_url_genius" translatable="false">https://genius.com/</string>
 
     <!-- Notification listener service -->
     <string name="notification_access">Dostęp do metadanych utwórów dla FastLyrics</string>

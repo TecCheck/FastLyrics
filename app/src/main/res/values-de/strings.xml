@@ -1,8 +1,7 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">FastLyrics</string>
 
     <!-- Nav drawer -->
-
     <string name="menu_lyrics">Songtext</string>
     <string name="menu_saved">Gespeichert</string>
     <string name="menu_search">Suche</string>
@@ -21,7 +20,7 @@
 
     <string name="lyrics_provider_over_line">Songtext von</string>
 
-    <string name="copy">Kopieren</string>
+    <string name="copy" tools:override="true">Kopieren</string>
     <string name="lyrics_clipboard_label">Songtext</string>
 
     <string name="share">Teilen</string>

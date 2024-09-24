@@ -7,8 +7,9 @@ import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
+import java.io.Serializable
 
-interface LyricsProvider {
+interface LyricsProvider : Serializable {
     fun getName(): String
 
     fun search(searchQuery: String): Result<List<SearchResult>, LyricsApiException>

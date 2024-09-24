@@ -10,9 +10,6 @@
     <string name="menu_settings">Impostazioni</string>
     <string name="menu_about">Informazioni</string>
 
-    <!-- Menu strings -->
-    <string name="menu_copy_lyrics_to_clipboard">Copia testo negli appunti</string>
-
     <!-- Lyrics View -->
     <string name="no_song_playing">Non stai ascoltando niente in questo momento</string>
     <string name="lyrics_not_found">Impossibile trovare il testo per questa canzone</string>

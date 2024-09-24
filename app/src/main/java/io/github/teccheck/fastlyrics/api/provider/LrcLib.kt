@@ -1,6 +1,5 @@
 package io.github.teccheck.fastlyrics.api.provider
 
-import android.os.Build
 import android.util.Log
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
@@ -10,7 +9,6 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import io.github.teccheck.fastlyrics.BuildConfig
-import io.github.teccheck.fastlyrics.Tokens
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.NetworkException
 import io.github.teccheck.fastlyrics.exceptions.ParseException

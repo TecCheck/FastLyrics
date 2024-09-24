@@ -151,8 +151,8 @@ object Deezer : LyricsProvider {
         val title = json.get(KEY_TITLE).asString
         val album = json.getAsJsonObject(KEY_ALBUM).get(KEY_LABEL).asString
         val contributors = json.getAsJsonObject(KEY_CONTRIBUTORS).getAsJsonArray(KEY_EDGES)
-        val artist = contributors.first {
-            it.asJsonObject
+        val artist = contributors.first { contributor ->
+            contributor.asJsonObject
                 .getAsJsonArray(KEY_ROLES)
                 .any { it.asString.equals(ROLE_MAIN) }
         }.asJsonObject

@@ -7,12 +7,8 @@ import androidx.appcompat.app.AppCompatDelegate
 
 class Settings(context: Context) {
 
-    private val sharedPreferences: SharedPreferences
-
-    init {
-        sharedPreferences =
-            context.getSharedPreferences(context.packageName + "_preferences", Context.MODE_PRIVATE)
-    }
+    private val sharedPreferences: SharedPreferences =
+        context.getSharedPreferences(context.packageName + "_preferences", Context.MODE_PRIVATE)
 
     fun getAppTheme(): Int {
         return sharedPreferences.getString(KEY_APP_THEME, DEFAULT_APP_THEME)?.toInt()

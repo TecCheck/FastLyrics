@@ -49,7 +49,7 @@ class FastLyricsFragment : Fragment() {
         val context = requireContext()
         settings = Settings(context)
 
-        binding.lyricsView.container.visibility = View.GONE
+        binding.lyricsView.root.visibility = View.GONE
 
         lyricsViewModel.songMeta.observe(viewLifecycleOwner, this::songMetaObserver)
         lyricsViewModel.songWithLyrics.observe(viewLifecycleOwner, this::observer)
@@ -100,9 +100,9 @@ class FastLyricsFragment : Fragment() {
     }
 
     private fun songMetaObserver(result: Result<SongMeta, LyricsApiException>) {
-        binding.header.container.visibility = View.GONE
-        binding.errorView.container.visibility = View.GONE
-        binding.lyricsView.container.visibility = View.GONE
+        binding.header.root.visibility = View.GONE
+        binding.errorView.root.visibility = View.GONE
+        binding.lyricsView.root.visibility = View.GONE
 
         when (result) {
             is Failure -> displayError(result.reason)
@@ -111,9 +111,9 @@ class FastLyricsFragment : Fragment() {
     }
 
     private fun observer(result: Result<SongWithLyrics, LyricsApiException>) {
-        binding.header.container.visibility = View.GONE
-        binding.errorView.container.visibility = View.GONE
-        binding.lyricsView.container.visibility = View.GONE
+        binding.header.root.visibility = View.GONE
+        binding.errorView.root.visibility = View.GONE
+        binding.lyricsView.root.visibility = View.GONE
 
         if (result is Success) handleSongWithLyrics(result.value)
 
@@ -127,8 +127,8 @@ class FastLyricsFragment : Fragment() {
     private fun displayError(exception: LyricsApiException) {
         binding.refresher.isRefreshing = false
 
-        binding.errorView.container.visibility = View.VISIBLE
-        if (exception !is NoMusicPlayingException) binding.header.container.visibility =
+        binding.errorView.root.visibility = View.VISIBLE
+        if (exception !is NoMusicPlayingException) binding.header.root.visibility =
             View.VISIBLE
 
         binding.errorView.errorText.setText(Utils.getErrorTextRes(exception))
@@ -136,7 +136,7 @@ class FastLyricsFragment : Fragment() {
     }
 
     private fun displaySongMeta(songMeta: SongMeta) {
-        binding.header.container.visibility = View.VISIBLE
+        binding.header.root.visibility = View.VISIBLE
 
         binding.header.textSongTitle.text = songMeta.title
         binding.header.textSongArtist.text = songMeta.artist
@@ -167,8 +167,8 @@ class FastLyricsFragment : Fragment() {
 
         val song = (result as Success).value
 
-        binding.header.container.visibility = View.VISIBLE
-        binding.lyricsView.container.visibility = View.VISIBLE
+        binding.header.root.visibility = View.VISIBLE
+        binding.lyricsView.root.visibility = View.VISIBLE
 
         binding.header.textSongTitle.text = song.title
         binding.header.textSongArtist.text = song.artist

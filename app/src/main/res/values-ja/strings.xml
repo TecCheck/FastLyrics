@@ -1,17 +1,13 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">FastLyrics</string>
 
     <!-- Nav drawer -->
-
     <string name="menu_lyrics">歌詞</string>
     <string name="menu_saved">保存済み</string>
     <string name="menu_search">検索</string>
     <string name="menu_permission">通知の許可</string>
     <string name="menu_settings">設定</string>
     <string name="menu_about">詳細</string>
-
-    <!-- Menu strings -->
-    <string name="menu_copy_lyrics_to_clipboard">歌詞をクリップボードにコピーしました</string>
 
     <!-- Lyrics View -->
     <string name="no_song_playing">現在音楽を聴いていません</string>
@@ -24,7 +20,7 @@
 
     <string name="lyrics_provider_over_line">からの歌詞</string>
 
-    <string name="copy">コピー</string>
+    <string name="copy" tools:override="true">コピー</string>
     <string name="lyrics_clipboard_label">歌詞</string>
 
     <string name="share">共有</string>

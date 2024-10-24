@@ -18,21 +18,12 @@ class RecyclerAdapter :
     private var searchResults: List<SearchResult> = listOf()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val imageArt: ImageView
-        private val textTitle: TextView
-        private val textArtist: TextView
-        private val selectionIcon: ImageView
-        private val providerIcon: ImageView
+        private val imageArt: ImageView = view.findViewById(R.id.image_song_art)
+        private val textTitle: TextView = view.findViewById(R.id.text_song_title)
+        private val textArtist: TextView = view.findViewById(R.id.text_song_artist)
+        private val providerIcon: ImageView = view.findViewById(R.id.provider_icon)
 
         private var searchResult: SearchResult? = null
-
-        init {
-            imageArt = view.findViewById(R.id.image_song_art)
-            textTitle = view.findViewById(R.id.text_song_title)
-            textArtist = view.findViewById(R.id.text_song_artist)
-            selectionIcon = view.findViewById(R.id.selection_icon)
-            providerIcon = view.findViewById(R.id.provider_icon)
-        }
 
         fun bind(searchResult: SearchResult) {
             this.searchResult = searchResult

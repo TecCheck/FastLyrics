@@ -21,21 +21,13 @@ class RecyclerAdapter :
     private var selectionTracker: SelectionTracker<Long>? = null
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val imageArt: ImageView
-        private val textTitle: TextView
-        private val textArtist: TextView
-        private val iconProvider: ImageView
-        private val selectionIcon: ImageView
+        private val imageArt: ImageView = view.findViewById(R.id.image_song_art)
+        private val textTitle: TextView = view.findViewById(R.id.text_song_title)
+        private val textArtist: TextView = view.findViewById(R.id.text_song_artist)
+        private val iconProvider: ImageView = view.findViewById(R.id.provider_icon)
+        private val selectionIcon: ImageView = view.findViewById(R.id.selection_icon)
 
         private var song: SongWithLyrics? = null
-
-        init {
-            imageArt = view.findViewById(R.id.image_song_art)
-            textTitle = view.findViewById(R.id.text_song_title)
-            textArtist = view.findViewById(R.id.text_song_artist)
-            iconProvider = view.findViewById(R.id.provider_icon)
-            selectionIcon = view.findViewById(R.id.selection_icon)
-        }
 
         fun bind(song: SongWithLyrics, selected: Boolean) {
             this.song = song
@@ -43,7 +35,7 @@ class RecyclerAdapter :
             textArtist.text = song.artist
 
             LyricsProvider.getProviderByName(song.provider)?.let { provider ->
-                Utils.getProviderIconRes(provider)?.let { iconProvider.setImageResource(it) }
+                Utils.getProviderIconRes(provider).let { iconProvider.setImageResource(it) }
             }
 
             Picasso.get().load(song.artUrl).into(imageArt)

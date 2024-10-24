@@ -1,20 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="56dp"
+    android:layout_weight="1"
     android:background="?attr/navHeaderBackground"
-    android:gravity="center"
-    android:orientation="horizontal"
+    android:fontFamily="sans-serif-medium"
     android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin">
-
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:fontFamily="sans-serif-medium"
-        android:text="@string/app_name"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-        android:textColor="?attr/navHeaderForeground" />
-
-</LinearLayout>
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:text="@string/app_name"
+    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+    android:textColor="?attr/navHeaderForeground"
+    android:gravity="center_vertical"/>

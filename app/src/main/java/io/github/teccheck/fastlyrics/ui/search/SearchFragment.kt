@@ -83,7 +83,7 @@ class SearchFragment : Fragment() {
             .withSelectionPredicate(SelectionPredicate()).build()
 
         viewModel.searchResults.observe(viewLifecycleOwner) { searchResults ->
-            binding.progresIndicator.visibility = View.GONE
+            binding.progressIndicator.visibility = View.GONE
             if (searchResults is Success) recyclerAdapter.setSearchResults(searchResults.value)
         }
 
@@ -101,7 +101,7 @@ class SearchFragment : Fragment() {
         if (query?.isBlank() != false)
             return true
 
-        binding.progresIndicator.visibility = View.VISIBLE
+        binding.progressIndicator.visibility = View.VISIBLE
         viewModel.search(query)
         return true
     }

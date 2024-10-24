@@ -1,17 +1,13 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">FastLyrics</string>
 
     <!-- Nav drawer -->
-
     <string name="menu_lyrics">Testo</string>
     <string name="menu_saved">Salvati</string>
     <string name="menu_search">Cerca</string>
     <string name="menu_permission">Permesso per notifiche</string>
     <string name="menu_settings">Impostazioni</string>
     <string name="menu_about">Informazioni</string>
-
-    <!-- Menu strings -->
-    <string name="menu_copy_lyrics_to_clipboard">Copia testo negli appunti</string>
 
     <!-- Lyrics View -->
     <string name="no_song_playing">Non stai ascoltando niente in questo momento</string>
@@ -22,7 +18,7 @@
 
     <string name="lyrics_provider_over_line">Testo da</string>
 
-    <string name="copy">Copia</string>
+    <string tools:override="true" name="copy">Copia</string>
     <string name="lyrics_clipboard_label">Testo</string>
 
     <string name="share">Condividi</string>

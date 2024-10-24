@@ -38,7 +38,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setSupportActionBar(binding.appBarMain.toolbarLayout.toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        if (!DummyNotificationListenerService.canAccessNotifications(this)) navController.navigate(R.id.nav_permission)
+        if (!DummyNotificationListenerService.canAccessNotifications(this)) {
+            startActivity(Intent(this, PermissionActivity::class.java))
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

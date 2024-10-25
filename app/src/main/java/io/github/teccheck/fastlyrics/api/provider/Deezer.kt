@@ -62,6 +62,8 @@ object Deezer : LyricsProvider {
         apiService = retrofit.create(ApiService::class.java)
     }
 
+    private fun readResolve(): Any = Deezer
+
     override fun getName() = "deezer"
 
     override fun search(searchQuery: String): Result<List<SearchResult>, LyricsApiException> {

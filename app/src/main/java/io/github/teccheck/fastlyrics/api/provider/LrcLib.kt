@@ -58,6 +58,8 @@ object LrcLib : LyricsProvider {
         apiService = retrofit.create(ApiService::class.java)
     }
 
+    private fun readResolve(): Any = LrcLib
+
     override fun getName() = "lrclib"
 
     override fun search(songMeta: SongMeta): Result<List<SearchResult>, LyricsApiException> {

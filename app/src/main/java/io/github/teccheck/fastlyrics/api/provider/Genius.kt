@@ -70,6 +70,8 @@ object Genius : LyricsProvider {
         apiService = retrofit.create(ApiService::class.java)
     }
 
+    private fun readResolve(): Any = Genius
+
     override fun getName() = "genius"
 
     override fun search(searchQuery: String): Result<List<SearchResult>, LyricsApiException> {

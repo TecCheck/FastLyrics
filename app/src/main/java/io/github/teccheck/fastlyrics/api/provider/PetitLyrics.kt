@@ -37,6 +37,8 @@ object PetitLyrics : LyricsProvider {
         apiService = retrofit.create(ApiService::class.java)
     }
 
+    private fun readResolve(): Any = PetitLyrics
+
     override fun getName() = "petitlyrics"
 
     override fun search(songMeta: SongMeta): Result<List<SearchResult>, LyricsApiException> {

@@ -138,6 +138,7 @@ object Genius : LyricsProvider {
                     sourceUrl,
                     album,
                     artUrl,
+                    null,
                     LyricsType.RAW_TEXT,
                     getName()
                 )

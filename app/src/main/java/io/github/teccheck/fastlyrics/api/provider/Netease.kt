@@ -104,6 +104,7 @@ object Netease : LyricsProvider {
                     searchResult.url!!,
                     searchResult.album,
                     null,
+                    null,
                     LyricsType.LRC,
                     getName()
                 )

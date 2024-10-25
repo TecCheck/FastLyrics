@@ -15,6 +15,7 @@ data class SongWithLyrics(
     val sourceUrl: String,
     val album: String?,
     val artUrl: String?,
+    val duration: Long?,
 
     @Deprecated("Because there can be both synced and plain lyrics, this is not need.")
     @ColumnInfo(defaultValue = "RAW_TEXT")

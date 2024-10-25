@@ -41,9 +41,12 @@ object PetitLyrics : LyricsProvider {
 
     override fun search(songMeta: SongMeta): Result<List<SearchResult>, LyricsApiException> {
         try {
-            val response =
-                apiService.search(songMeta.title, songMeta.artist ?: "", songMeta.album ?: "")
-                    ?.execute()?.body() ?: return Failure(LyricsNotFoundException())
+            val response = apiService.search(
+                songMeta.title,
+                songMeta.artist ?: "",
+                songMeta.album ?: "",
+                songMeta.duration,
+            )?.execute()?.body() ?: return Failure(LyricsNotFoundException())
 
             return Success(wrapSearchResults(response.string()))
         } catch (e: Exception) {
@@ -99,6 +102,7 @@ object PetitLyrics : LyricsProvider {
                 null,
                 "https://petitlyrics.com/lyrics/${lyricsId}",
                 album,
+                null,
                 null,
                 LyricsType.RAW_TEXT,
                 getName()

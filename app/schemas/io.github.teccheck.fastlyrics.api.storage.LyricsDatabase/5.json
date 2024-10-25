@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 4,
-    "identityHash": "322bc07ec0f4bdd728810dcf135d3063",
+    "version": 5,
+    "identityHash": "1d4c70872a679932413876bdd1f790ef",
     "entities": [
       {
         "tableName": "songs",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `artist` TEXT NOT NULL, `lyricsPlain` TEXT, `lyricsSynced` TEXT, `sourceUrl` TEXT NOT NULL, `album` TEXT, `artUrl` TEXT, `type` TEXT NOT NULL DEFAULT 'RAW_TEXT', `provider` TEXT NOT NULL DEFAULT 'genius')",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `artist` TEXT NOT NULL, `lyricsPlain` TEXT, `lyricsSynced` TEXT, `sourceUrl` TEXT NOT NULL, `album` TEXT, `artUrl` TEXT, `duration` INTEGER, `type` TEXT NOT NULL DEFAULT 'RAW_TEXT', `provider` TEXT NOT NULL DEFAULT 'genius')",
         "fields": [
           {
             "fieldPath": "id",
@@ -57,6 +57,12 @@
             "notNull": false
           },
           {
+            "fieldPath": "duration",
+            "columnName": "duration",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
             "fieldPath": "type",
             "columnName": "type",
             "affinity": "TEXT",
@@ -84,7 +90,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '322bc07ec0f4bdd728810dcf135d3063')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1d4c70872a679932413876bdd1f790ef')"
     ]
   }
 }

@@ -51,6 +51,7 @@ object LyricsApi {
             val type = if (synced) LyricsType.LRC else LyricsType.RAW_TEXT
             val song = songMeta.artist?.let { LyricStorage.findSong(songMeta.title, it, type) }
             if (song != null) {
+                Log.d(TAG, "Found cached: $song")
                 liveDataTarget.postValue(Success(song))
                 return@submit
             }
@@ -90,6 +91,7 @@ object LyricsApi {
         songMeta: SongMeta,
         synced: Boolean = false
     ): Result<SongWithLyrics, LyricsApiException> {
+        Log.d(TAG, "fetchLyrics($songMeta, $synced)")
         var bestResult: SearchResult? = null
         var bestResultScore = 0.0
 

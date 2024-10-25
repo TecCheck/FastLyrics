@@ -121,7 +121,7 @@ object MediaSession {
     private fun MediaMetadata.getSongMeta(): SongMeta? {
         // Some of those attributes may be stored with different keys (depending on the device)
         // For the ?: syntax see https://kotlinlang.org/docs/null-safety.html#elvis-operator
-        val title = getString(MediaMetadata.METADATA_KEY_TITLE)
+        val title = getString(MediaMetadata.METADATA_KEY_TITLE) ?: return null
         val album = getString(MediaMetadata.METADATA_KEY_ALBUM)
         val artist = getString(MediaMetadata.METADATA_KEY_ARTIST) ?: getString(
             MediaMetadata.METADATA_KEY_ALBUM_ARTIST
@@ -130,10 +130,9 @@ object MediaSession {
             MediaMetadata.METADATA_KEY_ART
         )
 
-        if (title == null)
-            return null
+        val duration = getLong(MediaMetadata.METADATA_KEY_DURATION)
 
-        return SongMeta(title, artist, album, art)
+        return SongMeta(title, artist, album, art, duration)
     }
 
     private fun isActive(playbackState: PlaybackState?): Boolean {

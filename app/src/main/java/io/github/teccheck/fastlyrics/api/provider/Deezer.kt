@@ -46,6 +46,7 @@ object Deezer : LyricsProvider {
     private const val KEY_TEXT = "text"
     private const val KEY_URLS = "urls"
     private const val KEY_SYNCED_LINES = "synchronizedLines"
+    private const val KEY_DURATION = "duration"
 
     private const val ROLE_MAIN = "MAIN"
 
@@ -163,6 +164,7 @@ object Deezer : LyricsProvider {
             .getAsJsonObject(KEY_COVER)
             .getAsJsonArray(KEY_URLS)
             .first().asString
+        val duration = json.get(KEY_DURATION).asLong
 
         val link = "https://www.deezer.com/track/$id"
 
@@ -175,6 +177,7 @@ object Deezer : LyricsProvider {
             link,
             album,
             artUrl,
+            duration,
             LyricsType.LRC,
             getName()
         )

@@ -47,6 +47,8 @@ object Netease : LyricsProvider {
         apiService = retrofit.create(ApiService::class.java)
     }
 
+    private fun readResolve(): Any = Netease
+
     override fun getName() = "netease"
 
     override fun search(searchQuery: String): Result<List<SearchResult>, LyricsApiException> {

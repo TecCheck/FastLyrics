@@ -20,19 +20,14 @@ import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import java.util.concurrent.Executors
 
 object LyricsApi {
-
     private const val TAG = "LyricsApi"
 
     private val executor = Executors.newFixedThreadPool(2)
 
-    private var providers: Array<LyricsProvider> = arrayOf(Genius, Deezer, LrcLib, PetitLyrics)
-    private var providersSynced: Array<LyricsProvider> = arrayOf(Deezer, LrcLib, Netease)
+    private var providers: Array<LyricsProvider> = arrayOf(Genius, Deezer, LrcLib, Netease, PetitLyrics)
 
-    private val provider: LyricsProvider
+    private val defaultProvider: LyricsProvider
         get() = providers.first()
-
-    private val providerSynced: LyricsProvider
-        get() = providersSynced.first()
 
     fun setProviderOrder(order: Array<String>) {
         val all = LyricsProvider.getAllProviders()
@@ -70,7 +65,7 @@ object LyricsApi {
         liveDataTarget: MutableLiveData<Result<SongWithLyrics, LyricsApiException>>
     ) {
         executor.submit {
-            val result = searchResult.provider.fetchLyrics(searchResult)
+            val result = fetchLyrics(searchResult)
             liveDataTarget.postValue(result)
 
             if (result is Success) {
@@ -82,7 +77,7 @@ object LyricsApi {
     fun search(
         query: String,
         liveDataTarget: MutableLiveData<Result<List<SearchResult>, LyricsApiException>>,
-        provider: LyricsProvider = this.provider
+        provider: LyricsProvider = this.defaultProvider
     ) {
         executor.submit { liveDataTarget.postValue(provider.search(query)) }
     }
@@ -95,12 +90,6 @@ object LyricsApi {
         var bestResult: SearchResult? = null
         var bestResultScore = 0.0
 
-        val providers = if (synced) {
-            providersSynced
-        } else {
-            providers
-        }
-
         for (provider in providers) {
             val search = provider.search(songMeta)
             if (search !is Success)
@@ -109,27 +98,23 @@ object LyricsApi {
             val result = search.value.maxByOrNull { getResultScore(songMeta, it) } ?: continue
             val score = getResultScore(songMeta, result)
 
-            Log.d(
-                TAG,
-                "Search with ${provider.getName()}: ${result.title} by ${result.artist}, score: $score"
-            )
-
             if (score > bestResultScore) {
                 bestResult = result
                 bestResultScore = score
             }
         }
 
-        if (bestResult?.id == null) return Failure(LyricsNotFoundException())
+        return fetchLyrics(bestResult)
+    }
 
-        Log.d(TAG, "Best result: ${bestResult.title}, score: $bestResultScore, provider: ${bestResult.provider.getName()}")
-
-        bestResult.songWithLyrics?.let {
+    private fun fetchLyrics(searchResult: SearchResult?): Result<SongWithLyrics, LyricsApiException> {
+        searchResult?.songWithLyrics?.let {
             Log.d(TAG, "Can skip fetch because song is present in search result.")
             return Success(it)
         }
 
-        return bestResult.provider.fetchLyrics(bestResult)
+        if (searchResult?.id == null) return Failure(LyricsNotFoundException())
+        return searchResult.provider.fetchLyrics(searchResult)
     }
 
     private fun getResultScore(songMeta: SongMeta, searchResult: SearchResult): Double {

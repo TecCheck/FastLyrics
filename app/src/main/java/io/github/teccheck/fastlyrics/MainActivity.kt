@@ -34,6 +34,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_fast_lyrics), binding.drawerLayout)
         binding.navView.setNavigationItemSelectedListener(this)
+        binding.navView.setCheckedItem(R.id.nav_fast_lyrics)
 
         setSupportActionBar(binding.appBarMain.toolbarLayout.toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -73,6 +74,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
             R.id.nav_about -> startActivity(Intent(this, AboutActivity::class.java))
         }
+
+        binding.drawerLayout.closeDrawer(binding.navView, true)
 
         return false
     }

@@ -13,6 +13,6 @@ class SavedViewModel : ViewModel() {
     val songs: LiveData<Result<List<SongWithLyrics>, LyricsApiException>> = _songs
 
     fun fetchSongs() {
-        LyricStorage.fetchSongsAsync(_songs)
+        LyricStorage.getSongsAsync(_songs)
     }
 }

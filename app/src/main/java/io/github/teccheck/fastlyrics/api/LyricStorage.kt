@@ -29,7 +29,7 @@ object LyricStorage {
         executor.submit { database.songsDao().deleteAll(ids) }
     }
 
-    fun fetchSongsAsync(liveDataTarget: MutableLiveData<Result<List<SongWithLyrics>, LyricsApiException>>) {
+    fun getSongsAsync(liveDataTarget: MutableLiveData<Result<List<SongWithLyrics>, LyricsApiException>>) {
         Log.d(TAG, "fetchSongsAsync")
         executor.submit {
             liveDataTarget.postValue(
@@ -50,29 +50,12 @@ object LyricStorage {
         }
     }
 
-    fun findLyricsAsync(
-        title: String,
-        artist: String,
-        liveDataTarget: MutableLiveData<Result<SongWithLyrics, LyricsApiException>>
-    ) {
-        Log.d(TAG, "findLyricsAsync")
-        executor.submit {
-            liveDataTarget.postValue(
-                Utils.result(
-                    findSong(title, artist), LyricsNotFoundException()
-                )
-            )
-        }
-    }
-
     fun store(song: SongWithLyrics) {
-        Log.d(TAG, "Store $song")
-
         if (findSong(song.title, song.artist, song.type) == null)
             database.songsDao().insert(song)
     }
 
-    fun getSong(id: Long): SongWithLyrics? = database.songsDao().getSong(id)
+    private fun getSong(id: Long): SongWithLyrics? = database.songsDao().getSong(id)
 
     fun findSong(title: String, artist: String): SongWithLyrics? =
         database.songsDao().findSong(title, artist)

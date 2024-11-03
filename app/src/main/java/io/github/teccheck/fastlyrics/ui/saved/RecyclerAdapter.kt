@@ -12,6 +12,7 @@ import com.squareup.picasso.Picasso
 import io.github.teccheck.fastlyrics.R
 import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
+import io.github.teccheck.fastlyrics.utils.PlaceholderDrawable
 import io.github.teccheck.fastlyrics.utils.Utils
 
 class RecyclerAdapter :
@@ -34,11 +35,16 @@ class RecyclerAdapter :
             textTitle.text = song.title
             textArtist.text = song.artist
 
+            val picasso = Picasso.get().load(song.artUrl)
+
             LyricsProvider.getProviderByName(song.provider)?.let { provider ->
-                Utils.getProviderIconRes(provider).let { iconProvider.setImageResource(it) }
+                Utils.getProviderIconRes(provider).let {
+                    iconProvider.setImageResource(it)
+                    picasso.placeholder(PlaceholderDrawable(imageArt.context, it))
+                }
             }
 
-            Picasso.get().load(song.artUrl).into(imageArt)
+            picasso.into(imageArt)
             selectionIcon.visibility = if (selected) View.VISIBLE else View.GONE
         }
 

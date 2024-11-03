@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:minHeight="600dp"
+        android:minHeight="320dp"
         app:lrcPadding="16dp" />
 
     <TextView
@@ -80,8 +80,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            >
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/textView5"

@@ -20,7 +20,6 @@ import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
 
 object MediaSession {
-
     private const val TAG = "MediaSession"
 
     private lateinit var nls: ComponentName
@@ -108,6 +107,7 @@ object MediaSession {
 
     fun registerSongMetaCallback(callback: SongMetaCallback) {
         if (!initialized) return
+        if (callbacks.contains(callback)) return
 
         callbacks.add(callback)
     }

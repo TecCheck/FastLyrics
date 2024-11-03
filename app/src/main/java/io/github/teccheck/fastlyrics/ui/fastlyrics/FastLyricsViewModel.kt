@@ -13,26 +13,24 @@ import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import io.github.teccheck.fastlyrics.service.DummyNotificationListenerService
+import io.github.teccheck.fastlyrics.utils.DebouncedMutableLiveData
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
 
 class FastLyricsViewModel : ViewModel() {
 
-    private val _songMeta = MutableLiveData<Result<SongMeta, LyricsApiException>>()
+    private val _songMeta = DebouncedMutableLiveData<Result<SongMeta, LyricsApiException>>()
     private val _songWithLyrics = MutableLiveData<Result<SongWithLyrics, LyricsApiException>>()
-    private val _songWithLyricsSynced = MutableLiveData<Result<SongWithLyrics, LyricsApiException>>()
     private val _songPosition = MutableLiveData<Long>()
 
     private var songPositionTimer: Timer? = null
 
     val songMeta: LiveData<Result<SongMeta, LyricsApiException>> = _songMeta
     val songWithLyrics: LiveData<Result<SongWithLyrics, LyricsApiException>> = _songWithLyrics
-    val songWithLyricsSynced: LiveData<Result<SongWithLyrics, LyricsApiException>> = _songWithLyricsSynced
     val songPosition: LiveData<Long> = _songPosition
 
-    var syncedLyricsAvailable = false
-
     var autoRefresh = false
+    var state: UiState = StartupState()
 
     private val songMetaCallback = MediaSession.SongMetaCallback {
         if (!autoRefresh) return@SongMetaCallback
@@ -48,7 +46,7 @@ class FastLyricsViewModel : ViewModel() {
         }
 
         val songMetaResult = MediaSession.getSongInformation()
-        _songMeta.value = songMetaResult
+        _songMeta.setValue(songMetaResult)
 
         if (songMetaResult is Success) {
             loadLyrics(songMetaResult.value)
@@ -58,9 +56,7 @@ class FastLyricsViewModel : ViewModel() {
     }
 
     private fun loadLyrics(songMeta: SongMeta) {
-        syncedLyricsAvailable = false
         LyricsApi.getLyricsAsync(songMeta, _songWithLyrics, false)
-        LyricsApi.getLyricsAsync(songMeta, _songWithLyricsSynced, true)
     }
 
     fun setupSongMetaListener() {

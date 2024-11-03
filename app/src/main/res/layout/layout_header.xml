@@ -16,7 +16,7 @@
             android:id="@+id/image_song_art"
             android:layout_width="96dp"
             android:layout_height="96dp"
-            android:background="@android:color/darker_gray"
+            android:background="@color/art_placeholder_background"
             app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent"
             app:srcCompat="@drawable/round_music_note_24" />
 
@@ -57,9 +57,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:drawableStart="@drawable/fastlyrics"
-            android:drawablePadding="8dp"
-            android:drawableTint="?android:attr/colorControlNormal"
             android:text="@string/synced_lyrics_available"
             app:useMaterialThemeColors="true" />
 

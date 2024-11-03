@@ -21,6 +21,7 @@ import io.github.teccheck.fastlyrics.model.LyricsType
 import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
 import io.github.teccheck.fastlyrics.model.SyncedLyrics
+import io.github.teccheck.fastlyrics.utils.PlaceholderDrawable
 import io.github.teccheck.fastlyrics.utils.Utils
 import io.github.teccheck.fastlyrics.utils.Utils.getLyrics
 
@@ -65,11 +66,14 @@ class ViewLyricsActivity : BaseActivity() {
         binding.header.textSongTitle.text = song.title
         binding.header.textSongArtist.text = song.artist
         displayLyrics(song)
-        Picasso.get().load(song.artUrl).into(binding.header.imageSongArt)
+
+        val picasso = Picasso.get().load(song.artUrl).centerInside()
 
         val provider = LyricsProvider.getProviderByName(song.provider)
         provider?.let {
             val providerIconRes = Utils.getProviderIconRes(it)
+            picasso.placeholder(PlaceholderDrawable(this, providerIconRes))
+
             val icon = AppCompatResources.getDrawable(this, providerIconRes)
             binding.lyricsView.source.setIconResource(providerIconRes)
             binding.lyricsView.textLyricsProvider.setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -81,6 +85,8 @@ class ViewLyricsActivity : BaseActivity() {
             binding.lyricsView.source.text = name
             binding.lyricsView.textLyricsProvider.text = name
         }
+
+        picasso.into(binding.header.imageSongArt)
 
         binding.lyricsView.source.setOnClickListener { openLink(song.sourceUrl) }
         binding.lyricsView.copy.setOnClickListener {

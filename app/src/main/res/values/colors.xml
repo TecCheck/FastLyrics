@@ -9,4 +9,7 @@
 
     <color name="theme_background_dark">#202124</color>
 
+    <color name="art_placeholder_background">#E2E2E2</color>
+    <color name="art_placeholder_foreground">#454545</color>
+
 </resources>

@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
 import android.net.Uri
+import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.app.ShareCompat
@@ -31,6 +32,10 @@ object Utils {
     fun <T, E> result(value: T?, exception: E): Result<T, E> {
         return if (value == null) Failure(exception)
         else Success(value)
+    }
+
+    fun View.setVisible(visible: Boolean) {
+        visibility = if (visible) View.VISIBLE else View.GONE
     }
 
     fun Fragment.copyToClipboard(title: String, text: String) {
@@ -82,7 +87,7 @@ object Utils {
     }
 
     @StringRes
-    fun getProviderUrlRes(provider: LyricsProvider) = when(provider) {
+    fun getProviderUrlRes(provider: LyricsProvider) = when (provider) {
         Genius -> R.string.source_url_genius
         Deezer -> R.string.source_url_deezer
         LrcLib -> R.string.source_url_lrclib

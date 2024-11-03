@@ -134,8 +134,7 @@ object LrcLib : LyricsProvider {
                 ParseException()
             )
 
-            val song = parseSongWithLyrics(json)
-            return Success(song)
+            return Success(parseSongWithLyrics(json))
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)
             return Failure(NetworkException())

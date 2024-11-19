@@ -108,12 +108,14 @@ class FastLyricsFragment : Fragment() {
             )
         }
 
-        binding.lyricsView.source.setOnClickListener { openLink(state.getSourceUrl()) }
+        binding.lyricsView.source.setOnClickListener {
+            openLink(requireContext(), state.getSourceUrl())
+        }
         binding.lyricsView.copy.setOnClickListener {
-            copyToClipboard(getString(R.string.lyrics_clipboard_label), state.getLyrics())
+            copyToClipboard(requireContext(), getString(R.string.lyrics_clipboard_label), state.getLyrics())
         }
         binding.lyricsView.share.setOnClickListener {
-            share(state.getSongTitle(), state.getSongArtist(), state.getLyrics())
+            share(requireContext(), state.getSongTitle(), state.getSongArtist(), state.getLyrics())
         }
 
         showSynced(binding.header.syncedLyricsSwitch.isChecked)

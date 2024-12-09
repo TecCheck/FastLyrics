@@ -22,7 +22,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (homeAsUp && item.itemId == android.R.id.home) {
-            finish()
+            onBackPressedDispatcher.onBackPressed()
             return true
         }
 

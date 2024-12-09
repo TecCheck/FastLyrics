@@ -5,18 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
-import io.github.teccheck.fastlyrics.api.provider.Deezer
-import io.github.teccheck.fastlyrics.api.provider.Genius
-import io.github.teccheck.fastlyrics.api.provider.LrcLib
 import io.github.teccheck.fastlyrics.api.provider.LyricsProvider
-import io.github.teccheck.fastlyrics.api.provider.Netease
-import io.github.teccheck.fastlyrics.api.provider.PetitLyrics
 import io.github.teccheck.fastlyrics.exceptions.LyricsApiException
 import io.github.teccheck.fastlyrics.exceptions.LyricsNotFoundException
 import io.github.teccheck.fastlyrics.model.LyricsType
 import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
+import io.github.teccheck.fastlyrics.utils.ProviderOrder
 import java.util.concurrent.Executors
 
 object LyricsApi {
@@ -24,16 +20,8 @@ object LyricsApi {
 
     private val executor = Executors.newFixedThreadPool(2)
 
-    private var providers: Array<LyricsProvider> = arrayOf(Genius, Deezer, LrcLib, Netease, PetitLyrics)
-
-    private val defaultProvider: LyricsProvider
-        get() = providers.first()
-
-    fun setProviderOrder(order: Array<String>) {
-        val all = LyricsProvider.getAllProviders()
-        providers = order.mapNotNull { name -> all.find { provider -> provider.getName() == name } }
-            .toTypedArray()
-    }
+    private val providers: Array<LyricsProvider> get() = ProviderOrder.providers
+    private val defaultProvider: LyricsProvider get() = providers.first()
 
     fun getLyricsAsync(
         songMeta: SongMeta,
@@ -83,8 +71,7 @@ object LyricsApi {
     }
 
     private fun fetchLyrics(
-        songMeta: SongMeta,
-        synced: Boolean = false
+        songMeta: SongMeta, synced: Boolean = false
     ): Result<SongWithLyrics, LyricsApiException> {
         Log.d(TAG, "fetchLyrics($songMeta, $synced)")
         var bestResult: SearchResult? = null
@@ -92,8 +79,7 @@ object LyricsApi {
 
         for (provider in providers) {
             val search = provider.search(songMeta)
-            if (search !is Success)
-                continue
+            if (search !is Success) continue
 
             val result = search.value.maxByOrNull { getResultScore(songMeta, it) } ?: continue
             val score = getResultScore(songMeta, result)
@@ -120,24 +106,16 @@ object LyricsApi {
     private fun getResultScore(songMeta: SongMeta, searchResult: SearchResult): Double {
         var score = 0.0
 
-        if (songMeta.title == searchResult.title)
-            score += 0.5
-        else if (songMeta.title.startsWith(searchResult.title))
-            score += 0.4
-        else if (searchResult.title.startsWith(songMeta.title))
-            score += 0.3
+        if (songMeta.title == searchResult.title) score += 0.5
+        else if (songMeta.title.startsWith(searchResult.title)) score += 0.4
+        else if (searchResult.title.startsWith(songMeta.title)) score += 0.3
 
-        if (songMeta.artist == null)
-            return score
-        else if (songMeta.artist == searchResult.artist)
-            score += 0.5
-        else if (songMeta.artist.startsWith(searchResult.artist))
-            score += 0.4
-        else if (searchResult.artist.startsWith(songMeta.artist))
-            score += 0.3
+        if (songMeta.artist == null) return score
+        else if (songMeta.artist == searchResult.artist) score += 0.5
+        else if (songMeta.artist.startsWith(searchResult.artist)) score += 0.4
+        else if (searchResult.artist.startsWith(songMeta.artist)) score += 0.3
 
-        if (songMeta.album == searchResult.album)
-            score += 0.5
+        if (songMeta.album == searchResult.album) score += 0.5
 
         return score
     }

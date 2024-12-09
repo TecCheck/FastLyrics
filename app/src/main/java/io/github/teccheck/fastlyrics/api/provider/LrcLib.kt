@@ -17,6 +17,7 @@ import io.github.teccheck.fastlyrics.model.LyricsType
 import io.github.teccheck.fastlyrics.model.SearchResult
 import io.github.teccheck.fastlyrics.model.SongMeta
 import io.github.teccheck.fastlyrics.model.SongWithLyrics
+import io.github.teccheck.fastlyrics.utils.Utils.asStringOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONException
@@ -171,8 +172,8 @@ object LrcLib : LyricsProvider {
             0,
             json.get(TRACK_NAME).asString,
             json.get(ARTIST_NAME).asString,
-            json.get(LYRICS_PLAN)?.asString,
-            json.get(LYRICS_SYNCED)?.asString,
+            json.get(LYRICS_PLAN).asString,
+            json.get(LYRICS_SYNCED).asStringOrNull(),
             "https://lrclib.net/",
             json.get(ALBUM_NAME).asString,
             null,

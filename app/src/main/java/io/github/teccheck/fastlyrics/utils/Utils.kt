@@ -68,6 +68,12 @@ object Utils {
         return this.asString
     }
 
+    fun <T> Array<T>.swap(first: Int, second: Int) {
+        val tmp = this[second]
+        this[second] = this[first]
+        this[first] = tmp
+    }
+
     @DrawableRes
     fun getProviderIconRes(provider: LyricsProvider) = when (provider) {
         Genius -> R.drawable.genius

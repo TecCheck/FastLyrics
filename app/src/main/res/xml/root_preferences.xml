@@ -13,6 +13,10 @@
             android:defaultValue="false"
             android:key="synced_lyrics_by_default"
             android:title="@string/preference_synced_lyrics_by_default" />
+
+        <PreferenceScreen
+            android:fragment="io.github.teccheck.fastlyrics.ui.settings.ProviderSettingsFragment"
+            app:title="Provider Settings" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/appearance_header">

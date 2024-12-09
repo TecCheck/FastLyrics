@@ -10,6 +10,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
+import com.google.gson.JsonElement
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
@@ -60,6 +61,11 @@ object Utils {
             .joinToString("\n") { it.text }
 
         return ""
+    }
+
+    fun JsonElement.asStringOrNull() : String? {
+        if (this.isJsonNull) return null
+        return this.asString
     }
 
     @DrawableRes

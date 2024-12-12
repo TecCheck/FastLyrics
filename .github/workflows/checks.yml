@@ -31,3 +31,14 @@ jobs:
           curl -sSLO https://github.com/pinterest/ktlint/releases/download/1.5.0/ktlint && chmod a+x ktlint && sudo mv ktlint /usr/local/bin/
       - name: "Run ktlint"
         run: sh .ci/lint.sh ktlint
+
+  codespell:
+    name: "codespell"
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Install codespell"
+        run: sudo apt install codespell -y
+      - name: "Run codespell"
+        run: sh .ci/lint.sh codespell

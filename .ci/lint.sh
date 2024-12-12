@@ -32,9 +32,9 @@ main() {
     fi
 
     if [ $FAILED -eq 0 ]; then
-        printf "\nSUMMARY: All jobs succesfull\n"
+        printf "\n\e[92mSUMMARY: All jobs succesfull\e[0m\n"
     else
-        printf "\nSUMMARY (%d %s failed):\n%s" $FAILED "job$([ $FAILED -ne 1 ] && printf s)" "$STEP_MESSAGES"
+        printf "\n\e[91mSUMMARY (%d %s failed):\e[0m\n%s" $FAILED "job$([ $FAILED -ne 1 ] && printf s)" "$STEP_MESSAGES"
     fi
 
     return $FAILED

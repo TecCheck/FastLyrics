@@ -1,0 +1,4 @@
+[codespell]
+skip = ./gradle,.idea,./app/build,./assets,./fastlane,./app/src/main/res/values-*/strings.xml
+
+ignore-words-list = showIn
